@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -8,24 +8,23 @@ import {
   ChevronDown,
   Clock,
   Heart,
-  ShoppingCart,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { complexes } from "@/data/mock";
+import { useCart } from "@/lib/cart-context";
 
 const categories = [
   {
     title: "Анализы",
     items: [
-      { label: "Все анализы", count: 7 },
-      { label: "Биохимические исследования", count: 4 },
-      { label: "Гормональные исследования", count: 1 },
-      { label: "Витамины", count: 1 },
+      { label: "Все анализы", count: 32 },
+      { label: "Биохимические исследования", count: 12 },
+      { label: "Гормональные исследования", count: 7 },
+      { label: "Витамины", count: 3 },
     ],
   },
   {
@@ -38,22 +37,61 @@ const categories = [
   },
 ];
 
-const sortOptions = ["По популярности", "По цене", "По сроку", "По алфавиту"];
+const sortOptions = [
+  { value: "popular", label: "По популярности" },
+  { value: "price", label: "По цене" },
+  { value: "duration", label: "По сроку" },
+  { value: "alpha", label: "По алфавиту" },
+];
 
 export default function ComplexesPage() {
   const [sortOpen, setSortOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("По популярности");
-  const [cart, setCart] = useState<string[]>([]);
+  const [selectedSort, setSelectedSort] = useState("popular");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { toggleItem, isInCart } = useCart();
 
-  const toggleCart = (id: string) => {
-    setCart((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
+  // СОРТИРОВКА + ПОИСК
+  const sortedComplexes = useMemo(() => {
+    let list = [...complexes];
+
+    // Поиск по названию/описанию
+    const q = searchQuery.toLowerCase().trim();
+    if (q) {
+      list = list.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.short.toLowerCase().includes(q)
+      );
+    }
+
+    // Сортировка
+    switch (selectedSort) {
+      case "price":
+        return list.sort((a, b) => a.priceFrom - b.priceFrom);
+      case "duration":
+        return list.sort((a, b) => {
+          const getDays = (d: string) => {
+            if (d.includes("1–2") || d.includes("1-2")) return 2;
+            if (d.includes("2–3") || d.includes("2-3")) return 3;
+            return 1;
+          };
+          return getDays(a.duration) - getDays(b.duration);
+        });
+      case "alpha":
+        return list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+      case "popular":
+      default:
+        return list;
+    }
+  }, [selectedSort, searchQuery]);
+
+  const currentSortLabel =
+    sortOptions.find((o) => o.value === selectedSort)?.label ||
+    "По популярности";
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
-      <div className="mx-auto max-w-[1280px] px-6 py-6">
+      <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
@@ -64,15 +102,15 @@ export default function ComplexesPage() {
 
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#101828]">
+            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
               Чекапы и комплексы
             </h1>
             <p className="mt-1 text-sm text-[#667085]">
-              Найдено {complexes.length} комплекса
+              Найдено {sortedComplexes.length} комплекса
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <Button variant="outline" className="gap-2">
               <SlidersHorizontal className="h-4 w-4" />
               Фильтры
@@ -84,26 +122,26 @@ export default function ComplexesPage() {
                 className="gap-2"
                 onClick={() => setSortOpen(!sortOpen)}
               >
-                {selectedSort}
+                {currentSortLabel}
                 <ChevronDown className="h-4 w-4" />
               </Button>
 
               {sortOpen && (
-                <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-lg border border-[#E4E7EC] bg-white py-1 shadow-md">
+                <div className="absolute right-0 top-full z-20 mt-1 w-48 rounded-lg border border-[#E4E7EC] bg-white py-1 shadow-md">
                   {sortOptions.map((option) => (
                     <button
-                      key={option}
+                      key={option.value}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
-                        selectedSort === option
-                          ? "text-[#1677FF]"
+                        selectedSort === option.value
+                          ? "text-[#1677FF] font-medium"
                           : "text-[#101828]"
                       }`}
                       onClick={() => {
-                        setSelectedSort(option);
+                        setSelectedSort(option.value);
                         setSortOpen(false);
                       }}
                     >
-                      {option}
+                      {option.label}
                     </button>
                   ))}
                 </div>
@@ -113,12 +151,13 @@ export default function ComplexesPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-          {/* САЙДБАР */}
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                 <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Поиск комплексов"
                   className="pl-9 h-9 text-sm"
                 />
@@ -152,7 +191,6 @@ export default function ComplexesPage() {
             </div>
           </aside>
 
-          {/* СПИСОК */}
           <div>
             <div className="mb-4 flex flex-wrap gap-2">
               {["Цена", "Срок выполнения", "Количество исследований"].map(
@@ -169,16 +207,35 @@ export default function ComplexesPage() {
             </div>
 
             <div className="space-y-3">
-              {complexes.map((c) => {
-                const inCart = cart.includes(c.id);
+              {sortedComplexes.length === 0 && (
+                <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-white p-12 text-center">
+                  <div className="text-[#667085]">
+                    {searchQuery
+                      ? `По запросу «${searchQuery}» ничего не найдено`
+                      : "Комплексов пока нет"}
+                  </div>
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="mt-3 text-sm text-[#1677FF] hover:underline"
+                  >
+                    Сбросить поиск
+                  </button>
+                </div>
+              )}
+
+              {sortedComplexes.map((c) => {
+                const inCart = isInCart(c.id);
 
                 return (
                   <Card
                     key={c.id}
                     className="border-[#E4E7EC] transition hover:shadow-md"
                   >
-                    <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center">
-                      <div className="h-20 w-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]" />
+                    <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:p-5">
+                      <Link
+                        href={`/complexes/${c.slug}`}
+                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]"
+                      />
 
                       <div className="flex-1">
                         <Link
@@ -202,8 +259,8 @@ export default function ComplexesPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 md:flex-col md:items-end">
-                        <div className="text-right">
+                      <div className="flex items-center justify-between gap-4 md:flex-col md:items-end">
+                        <div className="text-left md:text-right">
                           <div className="text-xs text-[#667085]">от</div>
                           <div className="text-lg font-bold text-[#101828]">
                             {c.priceFrom} ₽
@@ -221,7 +278,15 @@ export default function ComplexesPage() {
                                 ? "bg-[#12B76A] hover:bg-[#0E9B58]"
                                 : "bg-[#1677FF] hover:bg-[#0969E8]"
                             }
-                            onClick={() => toggleCart(c.id)}
+                            onClick={() =>
+                              toggleItem({
+                                id: c.id,
+                                type: "complex",
+                                name: c.name,
+                                price: c.priceFrom,
+                                duration: c.duration,
+                              })
+                            }
                           >
                             {inCart ? "В корзине" : "В корзину"}
                           </Button>
