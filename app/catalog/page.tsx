@@ -39,13 +39,15 @@ const durationOptions = ["До 1 дня", "1–2 дня", "2–3 дня", "Бо�
 const biomaterialOptions = ["Кровь из вены", "Капиллярная кровь", "Моча", "Слюна"];
 const methodOptions = ["Биохимический", "Иммунохемилюминесцентный", "ПЦР"];
 
+type OpenChip = "duration" | "biomaterial" | "method" | null;
+
 export default function CatalogPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("По популярности");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [openChip, setOpenChip] = useState<OpenChip>(null);
   const { toggleItem, isInCart } = useCart();
 
-  // Выбранные фильтры
   const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
   const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
@@ -56,9 +58,7 @@ export default function CatalogPage() {
     setList: (v: string[]) => void
   ) => {
     setList(
-      list.includes(value)
-        ? list.filter((x) => x !== value)
-        : [...list, value]
+      list.includes(value) ? list.filter((x) => x !== value) : [...list, value]
     );
   };
 
@@ -95,10 +95,10 @@ export default function CatalogPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            {/* Кнопка «Фильтры» — на mobile открывает bottom sheet */}
+            {/* Кнопка «Фильтры» — только mobile */}
             <Button
               variant="outline"
-              className="gap-2"
+              className="gap-2 lg:hidden"
               onClick={() => setMobileFiltersOpen(true)}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -121,14 +121,12 @@ export default function CatalogPage() {
               </Button>
 
               {sortOpen && (
-                <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-lg border border-[#E4E7EC] bg-white py-1 shadow-md">
+                <div className="absolute right-0 top-full z-20 mt-1 w-48 rounded-lg border border-[#E4E7EC] bg-white py-1 shadow-md">
                   {sortOptions.map((option) => (
                     <button
                       key={option}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
-                        selectedSort === option
-                          ? "text-[#1677FF]"
-                          : "text-[#101828]"
+                        selectedSort === option ? "text-[#1677FF]" : "text-[#101828]"
                       }`}
                       onClick={() => {
                         setSelectedSort(option);
@@ -145,7 +143,7 @@ export default function CatalogPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-          {/* САЙДБАР — только desktop */}
+          {/* САЙДБАР — desktop */}
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
               <div className="relative mb-4">
@@ -185,17 +183,156 @@ export default function CatalogPage() {
           </aside>
 
           <div>
-            {/* CHIPS-фильтры — только desktop */}
+            {/* CHIPS-фильтры — desktop (раскрывающиеся) */}
             <div className="mb-4 hidden flex-wrap gap-2 lg:flex">
-              {["Цена", "Срок выполнения", "Биоматериал", "Метод"].map((f) => (
+              {/* Цена */}
+              <button className="flex items-center gap-1 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]">
+                Цена
+                <ChevronDown className="h-3 w-3" />
+              </button>
+
+              {/* Срок */}
+              <div className="relative">
                 <button
-                  key={f}
-                  className="flex items-center gap-1 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                  onClick={() =>
+                    setOpenChip(openChip === "duration" ? null : "duration")
+                  }
+                  className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
+                    selectedDuration.length > 0
+                      ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
+                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                  }`}
                 >
-                  {f}
+                  Срок выполнения
+                  {selectedDuration.length > 0 && (
+                    <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                      {selectedDuration.length}
+                    </span>
+                  )}
                   <ChevronDown className="h-3 w-3" />
                 </button>
-              ))}
+
+                {openChip === "duration" && (
+                  <div className="absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-[#E4E7EC] bg-white p-3 shadow-md">
+                    {durationOptions.map((opt) => (
+                      <label
+                        key={opt}
+                        className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[#F2F4F7]"
+                      >
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-[#D0D5DD]"
+                          checked={selectedDuration.includes(opt)}
+                          onChange={() =>
+                            toggleFilter(opt, selectedDuration, setSelectedDuration)
+                          }
+                        />
+                        <span className="text-[#475467]">{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Биоматериал */}
+              <div className="relative">
+                <button
+                  onClick={() =>
+                    setOpenChip(openChip === "biomaterial" ? null : "biomaterial")
+                  }
+                  className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
+                    selectedBiomaterial.length > 0
+                      ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
+                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                  }`}
+                >
+                  Биоматериал
+                  {selectedBiomaterial.length > 0 && (
+                    <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                      {selectedBiomaterial.length}
+                    </span>
+                  )}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+
+                {openChip === "biomaterial" && (
+                  <div className="absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-[#E4E7EC] bg-white p-3 shadow-md">
+                    {biomaterialOptions.map((opt) => (
+                      <label
+                        key={opt}
+                        className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[#F2F4F7]"
+                      >
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-[#D0D5DD]"
+                          checked={selectedBiomaterial.includes(opt)}
+                          onChange={() =>
+                            toggleFilter(
+                              opt,
+                              selectedBiomaterial,
+                              setSelectedBiomaterial
+                            )
+                          }
+                        />
+                        <span className="text-[#475467]">{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Метод */}
+              <div className="relative">
+                <button
+                  onClick={() =>
+                    setOpenChip(openChip === "method" ? null : "method")
+                  }
+                  className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
+                    selectedMethod.length > 0
+                      ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
+                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                  }`}
+                >
+                  Метод
+                  {selectedMethod.length > 0 && (
+                    <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                      {selectedMethod.length}
+                    </span>
+                  )}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+
+                {openChip === "method" && (
+                  <div className="absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-[#E4E7EC] bg-white p-3 shadow-md">
+                    {methodOptions.map((opt) => (
+                      <label
+                        key={opt}
+                        className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[#F2F4F7]"
+                      >
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-[#D0D5DD]"
+                          checked={selectedMethod.includes(opt)}
+                          onChange={() =>
+                            toggleFilter(opt, selectedMethod, setSelectedMethod)
+                          }
+                        />
+                        <span className="text-[#475467]">{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Сбросить */}
+              {activeFiltersCount > 0 && (
+                <button
+                  onClick={resetFilters}
+                  className="text-sm text-[#1677FF] hover:underline"
+                >
+                  Сбросить
+                </button>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -274,18 +411,15 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      {/* МОБИЛЬНЫЙ BOTTOM SHEET С ФИЛЬТРАМИ */}
+      {/* BOTTOM SHEET — только mobile */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
-          {/* Затемнение */}
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileFiltersOpen(false)}
           />
 
-          {/* Bottom sheet */}
           <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white">
-            {/* Заголовок */}
             <div className="sticky top-0 flex items-center justify-between border-b border-[#E4E7EC] bg-white px-4 py-4">
               <div className="flex items-center gap-2 text-base font-semibold">
                 Фильтры
@@ -303,9 +437,7 @@ export default function CatalogPage() {
               </button>
             </div>
 
-            {/* Контент */}
             <div className="space-y-6 p-4">
-              {/* Цена */}
               <div>
                 <div className="mb-3 text-sm font-medium text-[#101828]">
                   Цена
@@ -317,7 +449,6 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              {/* Срок выполнения */}
               <div>
                 <div className="mb-3 text-sm font-medium text-[#101828]">
                   Срок выполнения
@@ -333,11 +464,7 @@ export default function CatalogPage() {
                         className="h-4 w-4 rounded border-[#D0D5DD]"
                         checked={selectedDuration.includes(opt)}
                         onChange={() =>
-                          toggleFilter(
-                            opt,
-                            selectedDuration,
-                            setSelectedDuration
-                          )
+                          toggleFilter(opt, selectedDuration, setSelectedDuration)
                         }
                       />
                       <span className="text-[#475467]">{opt}</span>
@@ -346,7 +473,6 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              {/* Биоматериал */}
               <div>
                 <div className="mb-3 text-sm font-medium text-[#101828]">
                   Биоматериал
@@ -375,7 +501,6 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              {/* Метод */}
               <div>
                 <div className="mb-3 text-sm font-medium text-[#101828]">
                   Метод
@@ -401,13 +526,8 @@ export default function CatalogPage() {
               </div>
             </div>
 
-            {/* Кнопки внизу */}
             <div className="sticky bottom-0 flex gap-3 border-t border-[#E4E7EC] bg-white p-4">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={resetFilters}
-              >
+              <Button variant="outline" className="flex-1" onClick={resetFilters}>
                 Сбросить все
               </Button>
               <Button
