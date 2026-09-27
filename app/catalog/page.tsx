@@ -9,15 +9,13 @@ import {
   Droplet,
   Clock,
   Heart,
-  ShoppingCart,
-  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses } from "@/data/mock";
+import { useCart } from "@/lib/cart-context";
 
 const categories = [
   {
@@ -39,18 +37,11 @@ const sortOptions = ["По популярности", "По цене", "По с�
 export default function CatalogPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("По популярности");
-  const [cart, setCart] = useState<string[]>([]);
-
-  const toggleCart = (id: string) => {
-    setCart((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
+  const { toggleItem, isInCart } = useCart();
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
       <div className="mx-auto max-w-[1280px] px-6 py-6">
-        {/* Хлебные крошки */}
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
@@ -59,7 +50,6 @@ export default function CatalogPage() {
           ]}
         />
 
-        {/* Заголовок */}
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-[#101828]">Анализы</h1>
@@ -74,7 +64,6 @@ export default function CatalogPage() {
               Фильтры
             </Button>
 
-            {/* Сортировка */}
             <div className="relative">
               <Button
                 variant="outline"
@@ -107,18 +96,14 @@ export default function CatalogPage() {
           </div>
         </div>
 
-        {/* Основная сетка: сайдбар + список */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-          {/* САЙДБАР */}
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
-              {/* Поиск */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                 <Input placeholder="Поиск анализов" className="pl-9 h-9 text-sm" />
               </div>
 
-              {/* Категории */}
               {categories.map((cat) => (
                 <div key={cat.title} className="mb-4">
                   <div className="mb-2 text-sm font-semibold text-[#101828]">
@@ -147,9 +132,7 @@ export default function CatalogPage() {
             </div>
           </aside>
 
-          {/* СПИСОК */}
           <div>
-            {/* Фильтры-chips */}
             <div className="mb-4 flex flex-wrap gap-2">
               {["Цена", "Срок выполнения", "Биоматериал", "Метод"].map((f) => (
                 <button
@@ -162,10 +145,9 @@ export default function CatalogPage() {
               ))}
             </div>
 
-            {/* Список карточек */}
             <div className="space-y-3">
               {analyses.map((a) => {
-                const inCart = cart.includes(a.id);
+                const inCart = isInCart(a.id);
 
                 return (
                   <Card
@@ -173,10 +155,8 @@ export default function CatalogPage() {
                     className="border-[#E4E7EC] transition hover:shadow-md"
                   >
                     <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center">
-                      {/* Картинка (заглушка) */}
                       <div className="h-20 w-20 flex-shrink-0 rounded-lg bg-[#EFF6FF]" />
 
-                      {/* Информация */}
                       <div className="flex-1">
                         <Link
                           href={`/catalog/${a.slug}`}
@@ -199,7 +179,6 @@ export default function CatalogPage() {
                         </div>
                       </div>
 
-                      {/* Цена и действия */}
                       <div className="flex items-center gap-4 md:flex-col md:items-end">
                         <div className="text-right">
                           <div className="text-xs text-[#667085]">от</div>
@@ -219,7 +198,15 @@ export default function CatalogPage() {
                                 ? "bg-[#12B76A] hover:bg-[#0E9B58]"
                                 : "bg-[#1677FF] hover:bg-[#0969E8]"
                             }
-                            onClick={() => toggleCart(a.id)}
+                            onClick={() =>
+                              toggleItem({
+                                id: a.id,
+                                type: "analysis",
+                                name: a.name,
+                                price: a.priceFrom,
+                                duration: a.duration,
+                              })
+                            }
                           >
                             {inCart ? "В корзине" : "В корзину"}
                           </Button>
@@ -230,13 +217,6 @@ export default function CatalogPage() {
                 );
               })}
             </div>
-
-            {/* Если ничего не найдено */}
-            {analyses.length === 0 && (
-              <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-white p-12 text-center">
-                <div className="text-[#667085]">Ничего не найдено</div>
-              </div>
-            )}
           </div>
         </div>
       </div>
