@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -22,6 +22,7 @@ const categories = [
   {
     title: "Анализы",
     items: [
+      { label: "Все анализы", count: 7 },
       { label: "Биохимические исследования", count: 4, active: true },
       { label: "Гормональные исследования", count: 1 },
       { label: "Витамины", count: 1 },
@@ -33,7 +34,12 @@ const categories = [
   },
 ];
 
-const sortOptions = ["По популярности", "По цене", "По сроку", "По алфавиту"];
+const sortOptions = [
+  { value: "popular", label: "По популярности" },
+  { value: "price", label: "По цене" },
+  { value: "duration", label: "По сроку" },
+  { value: "alpha", label: "По алфавиту" },
+];
 
 const durationOptions = ["До 1 дня", "1–2 дня", "2–3 дня", "Более 3 дней"];
 const biomaterialOptions = ["Кровь из вены", "Капиллярная кровь", "Моча", "Слюна"];
@@ -43,7 +49,7 @@ type OpenChip = "duration" | "biomaterial" | "method" | null;
 
 export default function CatalogPage() {
   const [sortOpen, setSortOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("По популярности");
+  const [selectedSort, setSelectedSort] = useState("popular");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [openChip, setOpenChip] = useState<OpenChip>(null);
   const { toggleItem, isInCart } = useCart();
@@ -51,6 +57,30 @@ export default function CatalogPage() {
   const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
   const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
+
+  // СОРТИРОВКА
+  const sortedAnalyses = useMemo(() => {
+    const list = [...analyses];
+
+    switch (selectedSort) {
+      case "price":
+        return list.sort((a, b) => a.priceFrom - b.priceFrom);
+      case "duration":
+        return list.sort((a, b) => {
+          const getDays = (d: string) => {
+            if (d.includes("1–2") || d.includes("1-2")) return 2;
+            if (d.includes("2–3") || d.includes("2-3")) return 3;
+            return 1;
+          };
+          return getDays(a.duration) - getDays(b.duration);
+        });
+      case "alpha":
+        return list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+      case "popular":
+      default:
+        return list;
+    }
+  }, [selectedSort]);
 
   const toggleFilter = (
     value: string,
@@ -73,6 +103,10 @@ export default function CatalogPage() {
     selectedBiomaterial.length +
     selectedMethod.length;
 
+  const currentSortLabel =
+    sortOptions.find((o) => o.value === selectedSort)?.label ||
+    "По популярности";
+
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
       <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
@@ -90,12 +124,11 @@ export default function CatalogPage() {
               Анализы
             </h1>
             <p className="mt-1 text-sm text-[#667085]">
-              Найдено {analyses.length} исследований
+              Найдено {sortedAnalyses.length} исследований
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            {/* Кнопка «Фильтры» — только mobile */}
             <Button
               variant="outline"
               className="gap-2 lg:hidden"
@@ -116,7 +149,7 @@ export default function CatalogPage() {
                 className="gap-2"
                 onClick={() => setSortOpen(!sortOpen)}
               >
-                {selectedSort}
+                {currentSortLabel}
                 <ChevronDown className="h-4 w-4" />
               </Button>
 
@@ -124,16 +157,18 @@ export default function CatalogPage() {
                 <div className="absolute right-0 top-full z-20 mt-1 w-48 rounded-lg border border-[#E4E7EC] bg-white py-1 shadow-md">
                   {sortOptions.map((option) => (
                     <button
-                      key={option}
+                      key={option.value}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
-                        selectedSort === option ? "text-[#1677FF]" : "text-[#101828]"
+                        selectedSort === option.value
+                          ? "text-[#1677FF] font-medium"
+                          : "text-[#101828]"
                       }`}
                       onClick={() => {
-                        setSelectedSort(option);
+                        setSelectedSort(option.value);
                         setSortOpen(false);
                       }}
                     >
-                      {option}
+                      {option.label}
                     </button>
                   ))}
                 </div>
@@ -143,7 +178,6 @@ export default function CatalogPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-          {/* САЙДБАР — desktop */}
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
               <div className="relative mb-4">
@@ -183,15 +217,12 @@ export default function CatalogPage() {
           </aside>
 
           <div>
-            {/* CHIPS-фильтры — desktop (раскрывающиеся) */}
             <div className="mb-4 hidden flex-wrap gap-2 lg:flex">
-              {/* Цена */}
               <button className="flex items-center gap-1 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]">
                 Цена
                 <ChevronDown className="h-3 w-3" />
               </button>
 
-              {/* Срок */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -234,7 +265,6 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* Биоматериал */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -281,7 +311,6 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* Метод */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -324,7 +353,6 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* Сбросить */}
               {activeFiltersCount > 0 && (
                 <button
                   onClick={resetFilters}
@@ -336,7 +364,7 @@ export default function CatalogPage() {
             </div>
 
             <div className="space-y-3">
-              {analyses.map((a) => {
+              {sortedAnalyses.map((a) => {
                 const inCart = isInCart(a.id);
 
                 return (
@@ -345,7 +373,10 @@ export default function CatalogPage() {
                     className="border-[#E4E7EC] transition hover:shadow-md"
                   >
                     <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:p-5">
-                      <div className="h-20 w-20 flex-shrink-0 rounded-lg bg-[#EFF6FF]" />
+                      <Link
+                        href={`/catalog/${a.slug}`}
+                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-[#EFF6FF]"
+                      />
 
                       <div className="flex-1">
                         <Link
@@ -411,7 +442,6 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      {/* BOTTOM SHEET — только mobile */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
           <div
@@ -534,7 +564,7 @@ export default function CatalogPage() {
                 className="flex-1 bg-[#1677FF] hover:bg-[#0969E8]"
                 onClick={() => setMobileFiltersOpen(false)}
               >
-                Применить ({analyses.length})
+                Применить ({sortedAnalyses.length})
               </Button>
             </div>
           </div>
