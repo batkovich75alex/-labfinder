@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -19,14 +19,13 @@ import { analyses, complexes, articles } from "@/data/mock";
 
 type Tab = "all" | "analyses" | "complexes" | "articles";
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") || "";
 
   const [query, setQuery] = useState(urlQuery);
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
-  // Если urlQuery меняется (переход из шапки) — обновляем input
   useEffect(() => {
     setQuery(urlQuery);
   }, [urlQuery]);
@@ -64,7 +63,7 @@ export default function SearchPage() {
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
-      <div className="mx-auto max-w-[1280px] px-6 py-6">
+      <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
@@ -344,5 +343,30 @@ export default function SearchPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="bg-[#F8FAFC] min-h-screen">
+          <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
+            <div className="mt-6 h-12 w-full max-w-2xl animate-pulse rounded-lg bg-[#F2F4F7]" />
+            <div className="mt-8 h-8 w-64 animate-pulse rounded bg-[#F2F4F7]" />
+            <div className="mt-4 flex gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-10 w-28 animate-pulse rounded-full bg-[#F2F4F7]"
+                />
+              ))}
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }
