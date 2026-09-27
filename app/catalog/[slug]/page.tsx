@@ -2,6 +2,7 @@
 
 import { useState, use, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import {
   Droplet,
@@ -41,15 +42,14 @@ export default function AnalysisPage({ params }: Props) {
   const { slug } = use(params);
   const analysis = analyses.find((a) => a.slug === slug);
   const { toggleItem, isInCart } = useCart();
+  const router = useRouter();
 
   const [activeSection, setActiveSection] = useState("short");
   const [shareCopied, setShareCopied] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Активный якорь при скролле
   useEffect(() => {
     const handleScroll = () => {
-      // Собираем все секции
       const sectionData = sections
         .map((s) => {
           const el = document.getElementById(s.id);
@@ -59,8 +59,6 @@ export default function AnalysisPage({ params }: Props) {
         })
         .filter((s): s is { id: string; top: number } => s !== null);
 
-      // Находим секцию, которая ближе всего сверху (но не ниже 200px)
-      // 150 — примерно высота шапки + крошек
       let current = sectionData[0]?.id || "short";
       for (const s of sectionData) {
         if (s.top <= 150) {
@@ -74,7 +72,7 @@ export default function AnalysisPage({ params }: Props) {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // при монтировании
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -95,6 +93,20 @@ export default function AnalysisPage({ params }: Props) {
     });
   };
 
+  // Выбор лаборатории: добавляем анализ в корзину и переходим в /cart
+  const handleSelectLab = () => {
+    if (!inCart) {
+      toggleItem({
+        id: analysis.id,
+        type: "analysis",
+        name: analysis.name,
+        price: analysis.priceFrom,
+        duration: analysis.duration,
+      });
+    }
+    router.push("/cart");
+  };
+
   const handleShare = async () => {
     const url = window.location.href;
     try {
@@ -109,16 +121,14 @@ export default function AnalysisPage({ params }: Props) {
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       }
-    } catch (e) {
-      // Пользователь отменил — ничего не делаем
-    }
+    } catch (e) {}
   };
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
       const rect = el.getBoundingClientRect();
-      const top = window.scrollY + rect.top - 130; // 130 — высота шапки + отступ
+      const top = window.scrollY + rect.top - 130;
       window.scrollTo({ top, behavior: "smooth" });
       setActiveSection(id);
     }
@@ -138,7 +148,6 @@ export default function AnalysisPage({ params }: Props) {
         />
 
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
-          {/* ЛЕВАЯ ЧАСТЬ */}
           <div>
             <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
               {analysis.name}
@@ -155,7 +164,6 @@ export default function AnalysisPage({ params }: Props) {
 
             <p className="mt-4 text-[#475467]">{analysis.short}</p>
 
-            {/* МЕТА */}
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-5">
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
@@ -229,7 +237,6 @@ export default function AnalysisPage({ params }: Props) {
               )}
             </div>
 
-            {/* НАВИГАЦИЯ ПО РАЗДЕЛАМ — рабочая */}
             <div className="mt-8 sticky top-16 z-30 -mx-4 overflow-x-auto border-b border-[#E4E7EC] bg-[#F8FAFC] px-4 md:-mx-6 md:px-6">
               <div className="flex gap-6 whitespace-nowrap text-sm">
                 {sections.map((section) => (
@@ -248,7 +255,6 @@ export default function AnalysisPage({ params }: Props) {
               </div>
             </div>
 
-            {/* БЛОКИ */}
             <div className="mt-8 space-y-8">
               <section id="short" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
@@ -331,10 +337,12 @@ export default function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
+              {/* ПРЕДЛОЖЕНИЯ ЛАБОРАТОРИЙ — кнопка «Выбрать» добавляет в корзину и ведёт в /cart */}
               <section id="labs" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Предложения лабораторий
                 </h2>
+
                 <div className="mt-3 space-y-2">
                   {labs.map((lab) => (
                     <Card key={lab.id} className="border-[#E4E7EC]">
@@ -370,9 +378,9 @@ export default function AnalysisPage({ params }: Props) {
                                 ? "bg-[#12B76A] hover:bg-[#0E9B58]"
                                 : "bg-[#1677FF] hover:bg-[#0969E8]"
                             }
-                            onClick={handleToggle}
+                            onClick={handleSelectLab}
                           >
-                            {inCart ? "В корзине" : "В корзину"}
+                            {inCart ? "В корзине" : "Выбрать"}
                           </Button>
                         </div>
                       </CardContent>
@@ -426,9 +434,7 @@ export default function AnalysisPage({ params }: Props) {
                     }`}
                   >
                     <Heart
-                      className={`h-4 w-4 ${
-                        isFavorite ? "fill-[#F04438]" : ""
-                      }`}
+                      className={`h-4 w-4 ${isFavorite ? "fill-[#F04438]" : ""}`}
                     />
                     {isFavorite ? "В избранном" : "В избранное"}
                   </button>
