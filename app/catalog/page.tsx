@@ -18,19 +18,24 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
 
+type Category = "all" | "biochemistry" | "hormones" | "vitamins" | "general" | "immunology" | "allergy";
+
 const categories = [
   {
     title: "Анализы",
     items: [
-      { label: "Все анализы", count: 7 },
-      { label: "Биохимические исследования", count: 4, active: true },
-      { label: "Гормональные исследования", count: 1 },
-      { label: "Витамины", count: 1 },
+      { id: "all" as Category, label: "Все анализы" },
+      { id: "biochemistry" as Category, label: "Биохимические исследования" },
+      { id: "hormones" as Category, label: "Гормональные исследования" },
+      { id: "vitamins" as Category, label: "Витамины" },
+      { id: "general" as Category, label: "Общие анализы" },
+      { id: "immunology" as Category, label: "Иммунология" },
+      { id: "allergy" as Category, label: "Аллергология" },
     ],
   },
   {
     title: "Чекапы и комплексы",
-    items: [{ label: "Все комплексы", count: 2 }],
+    items: [{ id: "complexes" as any, label: "Все комплексы" }],
   },
 ];
 
@@ -52,16 +57,22 @@ export default function CatalogPage() {
   const [selectedSort, setSelectedSort] = useState("popular");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [openChip, setOpenChip] = useState<OpenChip>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const { toggleItem, isInCart } = useCart();
 
   const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
   const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
 
-  // СОРТИРОВКА
+  // ФИЛЬТРАЦИЯ + СОРТИРОВКА
   const sortedAnalyses = useMemo(() => {
-    const list = [...analyses];
+    // 1. Фильтр по категории
+    let list = [...analyses];
+    if (selectedCategory !== "all") {
+      list = list.filter((a) => a.category === selectedCategory);
+    }
 
+    // 2. Сортировка
     switch (selectedSort) {
       case "price":
         return list.sort((a, b) => a.priceFrom - b.priceFrom);
@@ -80,7 +91,7 @@ export default function CatalogPage() {
       default:
         return list;
     }
-  }, [selectedSort]);
+  }, [selectedSort, selectedCategory]);
 
   const toggleFilter = (
     value: string,
@@ -106,6 +117,12 @@ export default function CatalogPage() {
   const currentSortLabel =
     sortOptions.find((o) => o.value === selectedSort)?.label ||
     "По популярности";
+
+  // Считаем количество анализов по каждой категории
+  const countByCategory = (catId: Category) => {
+    if (catId === "all") return analyses.length;
+    return analyses.filter((a) => a.category === catId).length;
+  };
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
@@ -197,15 +214,18 @@ export default function CatalogPage() {
                     {cat.items.map((item) => (
                       <li key={item.label}>
                         <button
-                          className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm ${
-                            item.active
+                          onClick={() =>
+                            setSelectedCategory(item.id as Category)
+                          }
+                          className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm transition ${
+                            selectedCategory === item.id
                               ? "bg-[#EFF6FF] text-[#1677FF] font-medium"
                               : "text-[#475467] hover:bg-[#F2F4F7]"
                           }`}
                         >
                           <span>{item.label}</span>
                           <span className="text-xs text-[#98A2B3]">
-                            {item.count}
+                            {countByCategory(item.id as Category)}
                           </span>
                         </button>
                       </li>
@@ -364,6 +384,20 @@ export default function CatalogPage() {
             </div>
 
             <div className="space-y-3">
+              {sortedAnalyses.length === 0 && (
+                <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-white p-12 text-center">
+                  <div className="text-[#667085]">
+                    В этой категории пока нет анализов
+                  </div>
+                  <button
+                    onClick={() => setSelectedCategory("all")}
+                    className="mt-3 text-sm text-[#1677FF] hover:underline"
+                  >
+                    Показать все анализы
+                  </button>
+                </div>
+              )}
+
               {sortedAnalyses.map((a) => {
                 const inCart = isInCart(a.id);
 

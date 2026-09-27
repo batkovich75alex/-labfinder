@@ -1,5 +1,23 @@
+// LabFinder Mock Data
+
+export const cities = [
+  { id: "msk", name: "Москва" },
+  { id: "spb", name: "Санкт-Петербург" },
+  { id: "kzn", name: "Казань" },
+  { id: "ekb", name: "Екатеринбург" },
+  { id: "nsk", name: "Новосибирск" },
+];
+
+export const directions = [
+  { id: "blood", name: "Анализы крови" },
+  { id: "hormones", name: "Гормоны" },
+  { id: "vitamins", name: "Витамины" },
+  { id: "allergy", name: "Аллергология" },
+  { id: "infection", name: "Инфекции" },
+  { id: "genetics", name: "Генетика" },
+];
+
 export const analyses = [
-  // БИОХИМИЯ
   {
     id: "cholesterol-total",
     slug: "holesterol-obshchiy",
@@ -180,8 +198,6 @@ export const analyses = [
     code: "N03.05.021",
     available: true,
   },
-
-  // ГОРМОНЫ
   {
     id: "ttg",
     slug: "ttg",
@@ -287,8 +303,6 @@ export const analyses = [
     code: "N03.07.021",
     available: true,
   },
-
-  // ВИТАМИНЫ
   {
     id: "vitamin-d",
     slug: "vitamin-d-25-oh",
@@ -334,8 +348,6 @@ export const analyses = [
     code: "N03.06.003",
     available: true,
   },
-
-  // ОБЩИЕ АНАЛИЗЫ
   {
     id: "cbc",
     slug: "obshchiy-analiz-krovi",
@@ -381,8 +393,6 @@ export const analyses = [
     code: "N03.02.001",
     available: true,
   },
-
-  // ИММУНОЛОГИЯ
   {
     id: "crp",
     slug: "srp",
@@ -413,8 +423,6 @@ export const analyses = [
     code: "N03.08.010",
     available: true,
   },
-
-  // ИНФЕКЦИИ
   {
     id: "hiv",
     slug: "vih",
@@ -460,8 +468,6 @@ export const analyses = [
     code: "N03.09.003",
     available: true,
   },
-
-  // АЛЛЕРГОЛОГИЯ
   {
     id: "ige-total",
     slug: "ige-obshchiy",
@@ -491,5 +497,114 @@ export const analyses = [
     method: "Иммуноферментный анализ",
     code: "N03.10.010",
     available: true,
+  },
+];
+
+export const complexes = [
+  {
+    id: "healthy-heart",
+    slug: "zdorovoe-serdce",
+    name: "Здоровое сердце",
+    short: "Комплексное обследование для оценки состояния сердечно-сосудистой системы",
+    priceFrom: 3990,
+    duration: "1–2 дня",
+    analysesCount: 12,
+    includes: ["cholesterol-total", "cholesterol-ldl", "cholesterol-hdl", "triglycerides"],
+    available: true,
+  },
+  {
+    id: "vitamin-check",
+    slug: "proverka-vitaminov",
+    name: "Проверка витаминов",
+    short: "Комплекс для оценки уровня ключевых витаминов",
+    priceFrom: 2990,
+    duration: "1–2 дня",
+    analysesCount: 8,
+    includes: ["vitamin-d", "vitamin-b12"],
+    available: true,
+  },
+];
+
+export const labs = [
+  {
+    id: "gemotest",
+    slug: "gemotest",
+    name: "ГЕМОТЕСТ",
+    rating: 4.8,
+    reviews: 230,
+    offices: 120,
+    cities: "Москва, СПб, Казань и ещё 45 городов",
+    homeVisit: true,
+    priceFrom: 1800,
+    actualOn: "27.09.2026",
+  },
+  {
+    id: "invitro",
+    slug: "invitro",
+    name: "ИНВИТРО",
+    rating: 4.7,
+    reviews: 180,
+    offices: 95,
+    cities: "Москва, СПб, Екатеринбург и ещё 38 городов",
+    homeVisit: true,
+    priceFrom: 1600,
+    actualOn: "27.09.2026",
+  },
+  {
+    id: "kdl",
+    slug: "kdl",
+    name: "KDL",
+    rating: 4.5,
+    reviews: 120,
+    offices: 78,
+    cities: "Москва, СПб, Новосибирск и ещё 25 городов",
+    homeVisit: false,
+    priceFrom: 1200,
+    actualOn: "26.09.2026",
+  },
+  {
+    id: "cmd",
+    slug: "cmd",
+    name: "CMD",
+    rating: 4.6,
+    reviews: 95,
+    offices: 45,
+    cities: "Москва, МО, Тверь и ещё 18 городов",
+    homeVisit: true,
+    priceFrom: 1000,
+    actualOn: "27.09.2026",
+  },
+];
+
+export const articles = [
+  {
+    id: "cholesterol-what",
+    slug: "chto-takoe-holesterol",
+    title: "Что такое холестерин и как его контролировать",
+    excerpt: "Холестерин — это важное вещество, которое участвует в работе организма",
+    category: "Анализы",
+    date: "15.08.2026",
+    readingTime: "8 мин",
+    relatedAnalysis: "cholesterol-total",
+  },
+  {
+    id: "vitamin-d-why",
+    slug: "vitamin-d-zachem",
+    title: "Витамин D: зачем сдавать и как расшифровать",
+    excerpt: "Витамин D — один из важнейших витаминов для организма",
+    category: "Расшифровка",
+    date: "10.09.2026",
+    readingTime: "9 мин",
+    relatedAnalysis: "vitamin-d",
+  },
+  {
+    id: "glucose-norms",
+    slug: "glyukoza-normy",
+    title: "Глюкоза в крови: нормы, причины отклонений",
+    excerpt: "Показатель глюкозы помогает оценить состояние углеводного обмена",
+    category: "Заболевания",
+    date: "05.09.2026",
+    readingTime: "8 мин",
+    relatedAnalysis: "glucose",
   },
 ];
