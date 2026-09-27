@@ -10,7 +10,6 @@ import {
   ExternalLink,
   CheckCircle2,
   AlertCircle,
-  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +21,6 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-// Моковые отделения (одни и те же для всех лабораторий — пока)
 const offices = [
   {
     id: 1,
@@ -251,15 +249,16 @@ export default function LabPage({ params }: Props) {
                   Цены и наличие услуг обновлены лабораторией
                 </div>
 
-                <Button
-                  className="mt-4 w-full bg-[#1677FF] hover:bg-[#0969E8]"
-                  asChild
+                {/* Кнопка «Перейти на сайт» — исправлено (без asChild) */}
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#1677FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#0969E8]"
                 >
-                  <a href="#" target="_blank" rel="noopener noreferrer">
-                    Перейти на сайт
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
+                  Перейти на сайт
+                  <ExternalLink className="h-4 w-4" />
+                </a>
 
                 <div className="mt-4 space-y-2 border-t border-[#E4E7EC] pt-4 text-sm">
                   <div className="flex justify-between">
