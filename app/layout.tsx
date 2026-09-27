@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CartProvider } from "@/lib/cart-context";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${inter.className} bg-[#F8FAFC]`}>
-        <Header />
-        {children}
-        <Footer />
+        <CartProvider>
+          <Header />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
