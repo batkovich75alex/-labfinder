@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Search as SearchIcon,
@@ -19,10 +20,17 @@ import { analyses, complexes, articles } from "@/data/mock";
 type Tab = "all" | "analyses" | "complexes" | "articles";
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("холес");
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams.get("q") || "";
+
+  const [query, setQuery] = useState(urlQuery);
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
-  // Ищем во всех данных (регистронезависимо)
+  // Если urlQuery меняется (переход из шапки) — обновляем input
+  useEffect(() => {
+    setQuery(urlQuery);
+  }, [urlQuery]);
+
   const q = query.toLowerCase().trim();
 
   const foundAnalyses = q
@@ -49,7 +57,8 @@ export default function SearchPage() {
       )
     : [];
 
-  const total = foundAnalyses.length + foundComplexes.length + foundArticles.length;
+  const total =
+    foundAnalyses.length + foundComplexes.length + foundArticles.length;
   const isEmpty = q && total === 0;
   const isIdle = !q;
 
@@ -63,7 +72,6 @@ export default function SearchPage() {
           ]}
         />
 
-        {/* Поисковая строка */}
         <div className="mt-6 max-w-2xl">
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
@@ -84,14 +92,12 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Заголовок + табы */}
         {!isIdle && (
           <>
             <h1 className="mt-6 text-2xl font-bold text-[#101828]">
               Результаты поиска: «{query}»
             </h1>
 
-            {/* ТАБЫ-СЧЁТЧИКИ */}
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveTab("all")}
@@ -137,7 +143,6 @@ export default function SearchPage() {
           </>
         )}
 
-        {/* ПУСТАЯ ВЫДАЧА */}
         {isEmpty && (
           <div className="mt-16 flex flex-col items-center justify-center text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#EFF6FF]">
@@ -151,10 +156,7 @@ export default function SearchPage() {
             </p>
 
             <div className="mt-6 flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setQuery("")}
-              >
+              <Button variant="outline" onClick={() => setQuery("")}>
                 Очистить запрос
               </Button>
               <Link href="/catalog">
@@ -185,10 +187,8 @@ export default function SearchPage() {
           </div>
         )}
 
-        {/* РЕЗУЛЬТАТЫ */}
         {!isIdle && !isEmpty && (
           <div className="mt-8 space-y-10">
-            {/* АНАЛИЗЫ */}
             {(activeTab === "all" || activeTab === "analyses") &&
               foundAnalyses.length > 0 && (
                 <section>
@@ -246,7 +246,6 @@ export default function SearchPage() {
                 </section>
               )}
 
-            {/* КОМПЛЕКСЫ */}
             {(activeTab === "all" || activeTab === "complexes") &&
               foundComplexes.length > 0 && (
                 <section>
@@ -297,7 +296,6 @@ export default function SearchPage() {
                 </section>
               )}
 
-            {/* СТАТЬИ */}
             {(activeTab === "all" || activeTab === "articles") &&
               foundArticles.length > 0 && (
                 <section>

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, FormEvent } from "react";
 import { MapPin, Search, Heart, ShoppingCart, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,11 +17,23 @@ const navItems = [
 
 export function Header() {
   const { count } = useCart();
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#E4E7EC] bg-white">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-6 px-6">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-[#1677FF]">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-xl font-bold text-[#1677FF]"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1677FF] text-white">
             L
           </div>
@@ -44,15 +58,17 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex-1">
+        <form onSubmit={handleSubmit} className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
             <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Найдите анализ, комплекс или статью"
               className="pl-9"
             />
           </div>
-        </div>
+        </form>
 
         <button className="rounded-md p-2 hover:bg-[#F2F4F7]">
           <Heart className="h-5 w-5 text-[#475467]" />
