@@ -3,10 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
-import { MapPin, Search, Heart, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
+import {
+  MapPin,
+  Search,
+  Heart,
+  ShoppingCart,
+  ChevronDown,
+  Menu,
+  X,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/lib/cart-context";
+import { cities } from "@/data/mock";
 
 const navItems = [
   { label: "Анализы", href: "/catalog" },
@@ -15,18 +25,14 @@ const navItems = [
   { label: "Библиотека", href: "/library" },
 ];
 
-const futureNavItems = [
-  { label: "Диагностика", href: "/diagnostics" },
-  { label: "Услуги на дому", href: "/home" },
-  { label: "Корпоративные программы", href: "/corporate" },
-  { label: "Отзывы", href: "/reviews" },
-];
-
 export function Header() {
   const { count } = useCart();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [mobileCityOpen, setMobileCityOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("Москва");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -36,11 +42,16 @@ export function Header() {
     }
   };
 
+  const handleCitySelect = (cityName: string) => {
+    setSelectedCity(cityName);
+    setCityOpen(false);
+    setMobileCityOpen(false);
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-[#E4E7EC] bg-white">
         <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-4 md:gap-6 md:px-6">
-          {/* Бургер — только mobile */}
           <button
             onClick={() => setMobileMenuOpen(true)}
             className="rounded-md p-2 hover:bg-[#F2F4F7] lg:hidden"
@@ -49,7 +60,6 @@ export function Header() {
             <Menu className="h-5 w-5 text-[#101828]" />
           </button>
 
-          {/* Логотип */}
           <Link
             href="/"
             className="flex items-center gap-2 text-lg font-bold text-[#1677FF] md:text-xl"
@@ -60,14 +70,44 @@ export function Header() {
             <span className="hidden sm:inline">LabFinder</span>
           </Link>
 
-          {/* Город — только desktop */}
-          <button className="hidden items-center gap-1 rounded-md px-3 py-2 text-sm text-[#101828] hover:bg-[#F2F4F7] lg:flex">
-            <MapPin className="h-4 w-4 text-[#1677FF]" />
-            Москва
-            <ChevronDown className="h-4 w-4 text-[#667085]" />
-          </button>
+          {/* ГОРОД Desktop */}
+          <div className="relative hidden lg:block">
+            <button
+              onClick={() => setCityOpen(!cityOpen)}
+              className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-[#101828] hover:bg-[#F2F4F7]"
+            >
+              <MapPin className="h-4 w-4 text-[#1677FF]" />
+              {selectedCity}
+              <ChevronDown className="h-4 w-4 text-[#667085]" />
+            </button>
 
-          {/* Навигация — только desktop */}
+            {cityOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setCityOpen(false)}
+                />
+                <div className="absolute left-0 top-full z-50 mt-2 w-64 rounded-lg border border-[#E4E7EC] bg-white p-2 shadow-lg">
+                  <div className="px-2 py-1.5 text-xs font-medium uppercase text-[#98A2B3]">
+                    Выберите город
+                  </div>
+                  {cities.map((city) => (
+                    <button
+                      key={city.id}
+                      onClick={() => handleCitySelect(city.name)}
+                      className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-[#101828] hover:bg-[#F2F4F7]"
+                    >
+                      {city.name}
+                      {selectedCity === city.name && (
+                        <Check className="h-4 w-4 text-[#1677FF]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
           <nav className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => (
               <Link
@@ -80,7 +120,6 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Поиск — скрыт на самых маленьких */}
           <form onSubmit={handleSubmit} className="hidden flex-1 md:block">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
@@ -93,9 +132,7 @@ export function Header() {
             </div>
           </form>
 
-          {/* Иконки — прижаты вправо на mobile */}
           <div className="ml-auto flex items-center gap-1 md:ml-0">
-            {/* Иконка поиска — только mobile */}
             <Link
               href="/search"
               className="rounded-md p-2 hover:bg-[#F2F4F7] md:hidden"
@@ -133,13 +170,11 @@ export function Header() {
       {/* МОБИЛЬНОЕ МЕНЮ */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
-          {/* Затемнение */}
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Выдвижное меню */}
           <div className="absolute left-0 top-0 h-full w-[300px] bg-white shadow-xl">
             <div className="flex h-16 items-center justify-between border-b border-[#E4E7EC] px-4">
               <Link
@@ -162,7 +197,41 @@ export function Header() {
             </div>
 
             <div className="overflow-y-auto p-4">
-              {/* Основные разделы */}
+              {/* ГОРОД в мобильном меню — раскрывается в список */}
+              <div className="mb-4 rounded-md border border-[#E4E7EC]">
+                <button
+                  onClick={() => setMobileCityOpen(!mobileCityOpen)}
+                  className="flex w-full items-center justify-between px-3 py-2.5 text-sm"
+                >
+                  <span className="flex items-center gap-2 text-[#101828]">
+                    <MapPin className="h-4 w-4 text-[#1677FF]" />
+                    {selectedCity}
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-[#667085] transition-transform ${
+                      mobileCityOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {mobileCityOpen && (
+                  <div className="border-t border-[#E4E7EC] p-1">
+                    {cities.map((city) => (
+                      <button
+                        key={city.id}
+                        onClick={() => handleCitySelect(city.name)}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-[#101828] hover:bg-[#F2F4F7]"
+                      >
+                        {city.name}
+                        {selectedCity === city.name && (
+                          <Check className="h-4 w-4 text-[#1677FF]" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <nav className="space-y-1">
                 {navItems.map((item) => (
                   <Link
@@ -176,26 +245,6 @@ export function Header() {
                 ))}
               </nav>
 
-              {/* Будущие разделы */}
-              <div className="mt-6 border-t border-[#E4E7EC] pt-6">
-                <div className="mb-2 px-3 text-xs font-medium uppercase text-[#98A2B3]">
-                  Другие разделы
-                </div>
-                <nav className="space-y-1">
-                  {futureNavItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block rounded-md px-3 py-2.5 text-sm text-[#475467] hover:bg-[#F2F4F7]"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </nav>
-              </div>
-
-              {/* Вход */}
               <div className="mt-6 border-t border-[#E4E7EC] pt-6">
                 <Button
                   variant="outline"
