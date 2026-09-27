@@ -9,6 +9,7 @@ import {
   Droplet,
   Clock,
   Heart,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,14 +35,47 @@ const categories = [
 
 const sortOptions = ["По популярности", "По цене", "По сроку", "По алфавиту"];
 
+const durationOptions = ["До 1 дня", "1–2 дня", "2–3 дня", "Более 3 дней"];
+const biomaterialOptions = ["Кровь из вены", "Капиллярная кровь", "Моча", "Слюна"];
+const methodOptions = ["Биохимический", "Иммунохемилюминесцентный", "ПЦР"];
+
 export default function CatalogPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("По популярности");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const { toggleItem, isInCart } = useCart();
+
+  // Выбранные фильтры
+  const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
+  const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
+
+  const toggleFilter = (
+    value: string,
+    list: string[],
+    setList: (v: string[]) => void
+  ) => {
+    setList(
+      list.includes(value)
+        ? list.filter((x) => x !== value)
+        : [...list, value]
+    );
+  };
+
+  const resetFilters = () => {
+    setSelectedDuration([]);
+    setSelectedBiomaterial([]);
+    setSelectedMethod([]);
+  };
+
+  const activeFiltersCount =
+    selectedDuration.length +
+    selectedBiomaterial.length +
+    selectedMethod.length;
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
-      <div className="mx-auto max-w-[1280px] px-6 py-6">
+      <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
@@ -52,16 +86,28 @@ export default function CatalogPage() {
 
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#101828]">Анализы</h1>
+            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+              Анализы
+            </h1>
             <p className="mt-1 text-sm text-[#667085]">
               Найдено {analyses.length} исследований
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            {/* Кнопка «Фильтры» — на mobile открывает bottom sheet */}
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setMobileFiltersOpen(true)}
+            >
               <SlidersHorizontal className="h-4 w-4" />
               Фильтры
+              {activeFiltersCount > 0 && (
+                <span className="ml-1 rounded-full bg-[#1677FF] px-2 py-0.5 text-xs text-white">
+                  {activeFiltersCount}
+                </span>
+              )}
             </Button>
 
             <div className="relative">
@@ -80,7 +126,9 @@ export default function CatalogPage() {
                     <button
                       key={option}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
-                        selectedSort === option ? "text-[#1677FF]" : "text-[#101828]"
+                        selectedSort === option
+                          ? "text-[#1677FF]"
+                          : "text-[#101828]"
                       }`}
                       onClick={() => {
                         setSelectedSort(option);
@@ -97,11 +145,15 @@ export default function CatalogPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
+          {/* САЙДБАР — только desktop */}
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
-                <Input placeholder="Поиск анализов" className="pl-9 h-9 text-sm" />
+                <Input
+                  placeholder="Поиск анализов"
+                  className="pl-9 h-9 text-sm"
+                />
               </div>
 
               {categories.map((cat) => (
@@ -133,7 +185,8 @@ export default function CatalogPage() {
           </aside>
 
           <div>
-            <div className="mb-4 flex flex-wrap gap-2">
+            {/* CHIPS-фильтры — только desktop */}
+            <div className="mb-4 hidden flex-wrap gap-2 lg:flex">
               {["Цена", "Срок выполнения", "Биоматериал", "Метод"].map((f) => (
                 <button
                   key={f}
@@ -154,7 +207,7 @@ export default function CatalogPage() {
                     key={a.id}
                     className="border-[#E4E7EC] transition hover:shadow-md"
                   >
-                    <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center">
+                    <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:p-5">
                       <div className="h-20 w-20 flex-shrink-0 rounded-lg bg-[#EFF6FF]" />
 
                       <div className="flex-1">
@@ -179,8 +232,8 @@ export default function CatalogPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 md:flex-col md:items-end">
-                        <div className="text-right">
+                      <div className="flex items-center justify-between gap-4 md:flex-col md:items-end">
+                        <div className="text-left md:text-right">
                           <div className="text-xs text-[#667085]">от</div>
                           <div className="text-lg font-bold text-[#101828]">
                             {a.priceFrom} ₽
@@ -220,6 +273,153 @@ export default function CatalogPage() {
           </div>
         </div>
       </div>
+
+      {/* МОБИЛЬНЫЙ BOTTOM SHEET С ФИЛЬТРАМИ */}
+      {mobileFiltersOpen && (
+        <div className="fixed inset-0 z-[100] lg:hidden">
+          {/* Затемнение */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileFiltersOpen(false)}
+          />
+
+          {/* Bottom sheet */}
+          <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white">
+            {/* Заголовок */}
+            <div className="sticky top-0 flex items-center justify-between border-b border-[#E4E7EC] bg-white px-4 py-4">
+              <div className="flex items-center gap-2 text-base font-semibold">
+                Фильтры
+                {activeFiltersCount > 0 && (
+                  <span className="rounded-full bg-[#1677FF] px-2 py-0.5 text-xs text-white">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setMobileFiltersOpen(false)}
+                className="rounded-md p-1.5 hover:bg-[#F2F4F7]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Контент */}
+            <div className="space-y-6 p-4">
+              {/* Цена */}
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Цена
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input placeholder="от 0 ₽" className="h-10" />
+                  <span className="text-[#667085]">—</span>
+                  <Input placeholder="до 5 500 ₽" className="h-10" />
+                </div>
+              </div>
+
+              {/* Срок выполнения */}
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Срок выполнения
+                </div>
+                <div className="space-y-2">
+                  {durationOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="flex cursor-pointer items-center gap-3 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-[#D0D5DD]"
+                        checked={selectedDuration.includes(opt)}
+                        onChange={() =>
+                          toggleFilter(
+                            opt,
+                            selectedDuration,
+                            setSelectedDuration
+                          )
+                        }
+                      />
+                      <span className="text-[#475467]">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Биоматериал */}
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Биоматериал
+                </div>
+                <div className="space-y-2">
+                  {biomaterialOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="flex cursor-pointer items-center gap-3 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-[#D0D5DD]"
+                        checked={selectedBiomaterial.includes(opt)}
+                        onChange={() =>
+                          toggleFilter(
+                            opt,
+                            selectedBiomaterial,
+                            setSelectedBiomaterial
+                          )
+                        }
+                      />
+                      <span className="text-[#475467]">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Метод */}
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Метод
+                </div>
+                <div className="space-y-2">
+                  {methodOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="flex cursor-pointer items-center gap-3 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-[#D0D5DD]"
+                        checked={selectedMethod.includes(opt)}
+                        onChange={() =>
+                          toggleFilter(opt, selectedMethod, setSelectedMethod)
+                        }
+                      />
+                      <span className="text-[#475467]">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Кнопки внизу */}
+            <div className="sticky bottom-0 flex gap-3 border-t border-[#E4E7EC] bg-white p-4">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={resetFilters}
+              >
+                Сбросить все
+              </Button>
+              <Button
+                className="flex-1 bg-[#1677FF] hover:bg-[#0969E8]"
+                onClick={() => setMobileFiltersOpen(false)}
+              >
+                Применить ({analyses.length})
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
