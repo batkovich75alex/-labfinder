@@ -15,13 +15,6 @@ const navItems = [
   { label: "Библиотека", href: "/library" },
 ];
 
-const mobileNavItems = [
-  { label: "Анализы", href: "/catalog" },
-  { label: "Чекапы и комплексы", href: "/complexes" },
-  { label: "Лаборатории", href: "/labs" },
-  { label: "Библиотека", href: "/library" },
-];
-
 const futureNavItems = [
   { label: "Диагностика", href: "/diagnostics" },
   { label: "Услуги на дому", href: "/home" },
@@ -102,7 +95,7 @@ export function Header() {
 
           {/* Иконки — прижаты вправо на mobile */}
           <div className="ml-auto flex items-center gap-1 md:ml-0">
-            {/* Иконка поиска — только mobile (открывает /search) */}
+            {/* Иконка поиска — только mobile */}
             <Link
               href="/search"
               className="rounded-md p-2 hover:bg-[#F2F4F7] md:hidden"
@@ -171,7 +164,7 @@ export function Header() {
             <div className="overflow-y-auto p-4">
               {/* Основные разделы */}
               <nav className="space-y-1">
-                {mobileNavItems.map((item) => (
+                {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
