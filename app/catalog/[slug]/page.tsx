@@ -1,3 +1,6 @@
+"use client";
+
+import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -17,25 +20,37 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses, labs, articles } from "@/data/mock";
+import { useCart } from "@/lib/cart-context";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function AnalysisPage({ params }: Props) {
-  const { slug } = await params;
+export default function AnalysisPage({ params }: Props) {
+  const { slug } = use(params);
   const analysis = analyses.find((a) => a.slug === slug);
+  const { toggleItem, isInCart } = useCart();
 
   if (!analysis) {
     notFound();
   }
 
+  const inCart = isInCart(analysis.id);
   const relatedArticle = articles.find((a) => a.relatedAnalysis === analysis.id);
+
+  const handleToggle = () => {
+    toggleItem({
+      id: analysis.id,
+      type: "analysis",
+      name: analysis.name,
+      price: analysis.priceFrom,
+      duration: analysis.duration,
+    });
+  };
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
       <div className="mx-auto max-w-[1280px] px-6 py-6">
-        {/* Хлебные крошки */}
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
@@ -46,7 +61,6 @@ export default async function AnalysisPage({ params }: Props) {
           ]}
         />
 
-        {/* ПЕРВЫЙ ЭКРАН */}
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
           {/* ЛЕВАЯ ЧАСТЬ */}
           <div>
@@ -61,7 +75,6 @@ export default async function AnalysisPage({ params }: Props) {
 
             <p className="mt-4 text-[#475467]">{analysis.short}</p>
 
-            {/* МЕТА */}
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-5">
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
@@ -114,7 +127,6 @@ export default async function AnalysisPage({ params }: Props) {
               </div>
             </div>
 
-            {/* СИНОНИМЫ + СТАТЬЯ */}
             <div className="mt-4 space-y-2 text-sm">
               <div className="text-[#667085]">
                 <span className="font-medium text-[#101828]">Синонимы:</span>{" "}
@@ -134,7 +146,6 @@ export default async function AnalysisPage({ params }: Props) {
               )}
             </div>
 
-            {/* НАВИГАЦИЯ ПО РАЗДЕЛАМ */}
             <div className="mt-8 overflow-x-auto border-b border-[#E4E7EC]">
               <div className="flex gap-6 whitespace-nowrap text-sm">
                 {[
@@ -159,9 +170,7 @@ export default async function AnalysisPage({ params }: Props) {
               </div>
             </div>
 
-            {/* БЛОКИ */}
             <div className="mt-8 space-y-8">
-              {/* Коротко об анализе */}
               <section>
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Коротко об анализе
@@ -173,7 +182,6 @@ export default async function AnalysisPage({ params }: Props) {
                 </p>
               </section>
 
-              {/* Подготовка */}
               <section>
                 <h2 className="text-xl font-semibold text-[#101828]">Подготовка</h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
@@ -192,7 +200,6 @@ export default async function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              {/* Показания */}
               <section>
                 <h2 className="text-xl font-semibold text-[#101828]">Показания</h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
@@ -211,7 +218,6 @@ export default async function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              {/* Как читать результаты */}
               <section>
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Как читать результаты
@@ -222,7 +228,6 @@ export default async function AnalysisPage({ params }: Props) {
                 </p>
               </section>
 
-              {/* Что важно сообщить врачу */}
               <section>
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Что важно сообщить врачу
@@ -243,7 +248,6 @@ export default async function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              {/* Предложения лабораторий */}
               <section>
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Предложения лабораторий
@@ -261,8 +265,7 @@ export default async function AnalysisPage({ params }: Props) {
                               {lab.name}
                             </div>
                             <div className="text-xs text-[#667085]">
-                              ★ {lab.rating} · {lab.reviews} отзывов ·{" "}
-                              {lab.cities}
+                              ★ {lab.rating} · {lab.reviews} отзывов
                             </div>
                           </div>
                         </div>
@@ -310,9 +313,17 @@ export default async function AnalysisPage({ params }: Props) {
                   Стоимость исследования
                 </div>
 
-                <Button className="mt-4 w-full bg-[#1677FF] hover:bg-[#0969E8]">
+                {/* КНОПКА — ТЕПЕРЬ РАБОТАЕТ */}
+                <Button
+                  onClick={handleToggle}
+                  className={`mt-4 w-full ${
+                    inCart
+                      ? "bg-[#12B76A] hover:bg-[#0E9B58]"
+                      : "bg-[#1677FF] hover:bg-[#0969E8]"
+                  }`}
+                >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  В корзину
+                  {inCart ? "В корзине" : "В корзину"}
                 </Button>
 
                 <button className="mt-2 flex w-full items-center justify-center gap-2 rounded-md border border-[#E4E7EC] py-2 text-sm text-[#475467] hover:bg-[#F2F4F7]">
