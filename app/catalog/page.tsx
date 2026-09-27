@@ -18,7 +18,14 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
 
-type Category = "all" | "biochemistry" | "hormones" | "vitamins" | "general" | "immunology" | "allergy";
+type Category =
+  | "all"
+  | "biochemistry"
+  | "hormones"
+  | "vitamins"
+  | "general"
+  | "immunology"
+  | "allergy";
 
 const categories = [
   {
@@ -58,6 +65,7 @@ export default function CatalogPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [openChip, setOpenChip] = useState<OpenChip>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const { toggleItem, isInCart } = useCart();
 
   const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
@@ -66,13 +74,26 @@ export default function CatalogPage() {
 
   // ФИЛЬТРАЦИЯ + СОРТИРОВКА
   const sortedAnalyses = useMemo(() => {
-    // 1. Фильтр по категории
     let list = [...analyses];
+
+    // 1. Фильтр по категории
     if (selectedCategory !== "all") {
       list = list.filter((a) => a.category === selectedCategory);
     }
 
-    // 2. Сортировка
+    // 2. Поиск по названию/описанию/синонимам
+    const q = searchQuery.toLowerCase().trim();
+    if (q) {
+      list = list.filter(
+        (a) =>
+          a.name.toLowerCase().includes(q) ||
+          a.short.toLowerCase().includes(q) ||
+          (a.synonyms && a.synonyms.toLowerCase().includes(q)) ||
+          (a.code && a.code.toLowerCase().includes(q))
+      );
+    }
+
+    // 3. Сортировка
     switch (selectedSort) {
       case "price":
         return list.sort((a, b) => a.priceFrom - b.priceFrom);
@@ -91,7 +112,7 @@ export default function CatalogPage() {
       default:
         return list;
     }
-  }, [selectedSort, selectedCategory]);
+  }, [selectedSort, selectedCategory, searchQuery]);
 
   const toggleFilter = (
     value: string,
@@ -118,7 +139,6 @@ export default function CatalogPage() {
     sortOptions.find((o) => o.value === selectedSort)?.label ||
     "По популярности";
 
-  // Считаем количество анализов по каждой категории
   const countByCategory = (catId: Category) => {
     if (catId === "all") return analyses.length;
     return analyses.filter((a) => a.category === catId).length;
@@ -197,12 +217,24 @@ export default function CatalogPage() {
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
+              {/* ПОИСК — теперь рабочий */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                 <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Поиск анализов"
                   className="pl-9 h-9 text-sm"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#667085] hover:text-[#101828]"
+                    aria-label="Очистить поиск"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
 
               {categories.map((cat) => (
@@ -387,13 +419,18 @@ export default function CatalogPage() {
               {sortedAnalyses.length === 0 && (
                 <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-white p-12 text-center">
                   <div className="text-[#667085]">
-                    В этой категории пока нет анализов
+                    {searchQuery
+                      ? `По запросу «${searchQuery}» ничего не найдено`
+                      : "В этой категории пока нет анализов"}
                   </div>
                   <button
-                    onClick={() => setSelectedCategory("all")}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedCategory("all");
+                    }}
                     className="mt-3 text-sm text-[#1677FF] hover:underline"
                   >
-                    Показать все анализы
+                    Сбросить фильтры
                   </button>
                 </div>
               )}
@@ -502,6 +539,21 @@ export default function CatalogPage() {
             </div>
 
             <div className="space-y-6 p-4">
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Поиск
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Название анализа"
+                    className="pl-9 h-10"
+                  />
+                </div>
+              </div>
+
               <div>
                 <div className="mb-3 text-sm font-medium text-[#101828]">
                   Цена
