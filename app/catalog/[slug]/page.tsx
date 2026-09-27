@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { useState, use, useEffect } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -14,6 +14,8 @@ import {
   AlertCircle,
   CheckCircle2,
   ExternalLink,
+  Share2,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +28,55 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+const sections = [
+  { id: "short", label: "Коротко об анализе" },
+  { id: "preparation", label: "Подготовка" },
+  { id: "indications", label: "Показания" },
+  { id: "results", label: "Как читать результаты" },
+  { id: "doctor", label: "Что важно сообщить врачу" },
+  { id: "labs", label: "Предложения лабораторий" },
+];
+
 export default function AnalysisPage({ params }: Props) {
   const { slug } = use(params);
   const analysis = analyses.find((a) => a.slug === slug);
   const { toggleItem, isInCart } = useCart();
+
+  const [activeSection, setActiveSection] = useState("short");
+  const [shareCopied, setShareCopied] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Активный якорь при скролле
+  useEffect(() => {
+    const handleScroll = () => {
+      // Собираем все секции
+      const sectionData = sections
+        .map((s) => {
+          const el = document.getElementById(s.id);
+          if (!el) return null;
+          const rect = el.getBoundingClientRect();
+          return { id: s.id, top: rect.top };
+        })
+        .filter((s): s is { id: string; top: number } => s !== null);
+
+      // Находим секцию, которая ближе всего сверху (но не ниже 200px)
+      // 150 — примерно высота шапки + крошек
+      let current = sectionData[0]?.id || "short";
+      for (const s of sectionData) {
+        if (s.top <= 150) {
+          current = s.id;
+        } else {
+          break;
+        }
+      }
+
+      setActiveSection(current);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // при монтировании
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   if (!analysis) {
     notFound();
@@ -48,15 +95,44 @@ export default function AnalysisPage({ params }: Props) {
     });
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: analysis.name,
+          text: analysis.short,
+          url: url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      }
+    } catch (e) {
+      // Пользователь отменил — ничего не делаем
+    }
+  };
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const top = window.scrollY + rect.top - 130; // 130 — высота шапки + отступ
+      window.scrollTo({ top, behavior: "smooth" });
+      setActiveSection(id);
+    }
+  };
+
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
-      <div className="mx-auto max-w-[1280px] px-6 py-6">
+      <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
             { label: "Москва", href: "/?city=msk" },
             { label: "Анализы", href: "/catalog" },
-            { label: analysis.categoryName, href: `/catalog/${analysis.category}` },
+            { label: analysis.categoryName },
             { label: analysis.name },
           ]}
         />
@@ -64,17 +140,22 @@ export default function AnalysisPage({ params }: Props) {
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
           {/* ЛЕВАЯ ЧАСТЬ */}
           <div>
-            <h1 className="text-3xl font-bold text-[#101828]">
+            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
               {analysis.name}
             </h1>
 
             <div className="mt-2 flex flex-wrap gap-2">
-              <Badge variant="secondary" className="text-xs">Анализ</Badge>
-              <Badge variant="secondary" className="text-xs">{analysis.categoryName}</Badge>
+              <Badge variant="secondary" className="text-xs">
+                Анализ
+              </Badge>
+              <Badge variant="secondary" className="text-xs">
+                {analysis.categoryName}
+              </Badge>
             </div>
 
             <p className="mt-4 text-[#475467]">{analysis.short}</p>
 
+            {/* МЕТА */}
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-5">
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
@@ -135,7 +216,9 @@ export default function AnalysisPage({ params }: Props) {
 
               {relatedArticle && (
                 <div className="text-[#667085]">
-                  <span className="font-medium text-[#101828]">Связанная статья:</span>{" "}
+                  <span className="font-medium text-[#101828]">
+                    Связанная статья:
+                  </span>{" "}
                   <Link
                     href={`/library/${relatedArticle.slug}`}
                     className="text-[#1677FF] hover:underline"
@@ -146,32 +229,28 @@ export default function AnalysisPage({ params }: Props) {
               )}
             </div>
 
-            <div className="mt-8 overflow-x-auto border-b border-[#E4E7EC]">
+            {/* НАВИГАЦИЯ ПО РАЗДЕЛАМ — рабочая */}
+            <div className="mt-8 sticky top-16 z-30 -mx-4 overflow-x-auto border-b border-[#E4E7EC] bg-[#F8FAFC] px-4 md:-mx-6 md:px-6">
               <div className="flex gap-6 whitespace-nowrap text-sm">
-                {[
-                  "Коротко об анализе",
-                  "Подготовка",
-                  "Показания",
-                  "Как читать результаты",
-                  "Что важно сообщить врачу",
-                  "Предложения лабораторий",
-                ].map((tab, i) => (
+                {sections.map((section) => (
                   <button
-                    key={tab}
-                    className={`pb-3 ${
-                      i === 0
+                    key={section.id}
+                    onClick={() => scrollToSection(section.id)}
+                    className={`pb-3 transition ${
+                      activeSection === section.id
                         ? "border-b-2 border-[#1677FF] font-medium text-[#1677FF]"
                         : "text-[#667085] hover:text-[#101828]"
                     }`}
                   >
-                    {tab}
+                    {section.label}
                   </button>
                 ))}
               </div>
             </div>
 
+            {/* БЛОКИ */}
             <div className="mt-8 space-y-8">
-              <section>
+              <section id="short" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Коротко об анализе
                 </h2>
@@ -182,8 +261,10 @@ export default function AnalysisPage({ params }: Props) {
                 </p>
               </section>
 
-              <section>
-                <h2 className="text-xl font-semibold text-[#101828]">Подготовка</h2>
+              <section id="preparation" className="scroll-mt-32">
+                <h2 className="text-xl font-semibold text-[#101828]">
+                  Подготовка
+                </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
@@ -200,8 +281,10 @@ export default function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              <section>
-                <h2 className="text-xl font-semibold text-[#101828]">Показания</h2>
+              <section id="indications" className="scroll-mt-32">
+                <h2 className="text-xl font-semibold text-[#101828]">
+                  Показания
+                </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
@@ -218,7 +301,7 @@ export default function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              <section>
+              <section id="results" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Как читать результаты
                 </h2>
@@ -228,7 +311,7 @@ export default function AnalysisPage({ params }: Props) {
                 </p>
               </section>
 
-              <section>
+              <section id="doctor" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Что важно сообщить врачу
                 </h2>
@@ -248,7 +331,7 @@ export default function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              <section>
+              <section id="labs" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Предложения лабораторий
                 </h2>
@@ -280,8 +363,16 @@ export default function AnalysisPage({ params }: Props) {
                             </div>
                           </div>
 
-                          <Button className="bg-[#1677FF] hover:bg-[#0969E8]">
-                            В корзину
+                          <Button
+                            size="sm"
+                            className={
+                              inCart
+                                ? "bg-[#12B76A] hover:bg-[#0E9B58]"
+                                : "bg-[#1677FF] hover:bg-[#0969E8]"
+                            }
+                            onClick={handleToggle}
+                          >
+                            {inCart ? "В корзине" : "В корзину"}
                           </Button>
                         </div>
                       </CardContent>
@@ -299,7 +390,7 @@ export default function AnalysisPage({ params }: Props) {
             </div>
           </div>
 
-          {/* ПРАВАЯ ЧАСТЬ — ЗАКРЕПЛЁННАЯ КАРТОЧКА */}
+          {/* ПРАВАЯ ЧАСТЬ */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
@@ -313,7 +404,6 @@ export default function AnalysisPage({ params }: Props) {
                   Стоимость исследования
                 </div>
 
-                {/* КНОПКА — ТЕПЕРЬ РАБОТАЕТ */}
                 <Button
                   onClick={handleToggle}
                   className={`mt-4 w-full ${
@@ -326,10 +416,40 @@ export default function AnalysisPage({ params }: Props) {
                   {inCart ? "В корзине" : "В корзину"}
                 </Button>
 
-                <button className="mt-2 flex w-full items-center justify-center gap-2 rounded-md border border-[#E4E7EC] py-2 text-sm text-[#475467] hover:bg-[#F2F4F7]">
-                  <Heart className="h-4 w-4" />
-                  В избранное
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className={`flex flex-1 items-center justify-center gap-2 rounded-md border py-2 text-sm transition ${
+                      isFavorite
+                        ? "border-[#F04438] bg-[#FEF3F2] text-[#F04438]"
+                        : "border-[#E4E7EC] text-[#475467] hover:bg-[#F2F4F7]"
+                    }`}
+                  >
+                    <Heart
+                      className={`h-4 w-4 ${
+                        isFavorite ? "fill-[#F04438]" : ""
+                      }`}
+                    />
+                    {isFavorite ? "В избранном" : "В избранное"}
+                  </button>
+
+                  <button
+                    onClick={handleShare}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[#E4E7EC] py-2 text-sm text-[#475467] transition hover:bg-[#F2F4F7]"
+                  >
+                    {shareCopied ? (
+                      <>
+                        <Check className="h-4 w-4 text-[#12B76A]" />
+                        Скопировано
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="h-4 w-4" />
+                        Поделиться
+                      </>
+                    )}
+                  </button>
+                </div>
 
                 <div className="mt-4 space-y-2 border-t border-[#E4E7EC] pt-4 text-sm">
                   <div className="flex justify-between">
