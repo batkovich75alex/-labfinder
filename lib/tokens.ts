@@ -1,32 +1,17 @@
-// LabFinder Design Tokens
-
+/** Shared design values. Components use CSS variables so themes remain consistent. */
 export const colors = {
-  primary500: "#1677FF",
-  primary600: "#0969E8",
-  accent500: "#18B98B",
-  textPrimary: "#101828",
-  textSecondary: "#475467",
-  textTertiary: "#667085",
-  bgPage: "#F8FAFC",
-  bgSurface: "#FFFFFF",
-  borderDefault: "#E4E7EC",
-  success: "#12B76A",
-  warning: "#F79009",
-  error: "#F04438",
-  priceExact: "#101828",
-  priceFrom: "#475467",
-  priceUnavailable: "#98A2B3",
+  primary: "var(--primary)", primaryHover: "var(--primary-hover)",
+  primaryActive: "var(--primary-active)", brand: "var(--brand)",
+  primaryLight: "var(--primary-light)", accent: "var(--accent)",
+  successText: "var(--success-text)", successBg: "var(--success-bg)",
+  warningText: "var(--warning-text)", warningBg: "var(--warning-bg)",
+  errorText: "var(--error-text)", errorBg: "var(--error-bg)",
+  text: "var(--foreground)", textSecondary: "var(--text-secondary)",
+  caption: "var(--muted-foreground)", background: "var(--background)",
+  surface: "var(--card)", border: "var(--border)",
 } as const;
 
-export const spacing = {
-  1: "4px", 2: "8px", 3: "12px", 4: "16px", 5: "20px",
-  6: "24px", 8: "32px", 10: "40px", 12: "48px", 16: "64px",
-} as const;
-
-export const radius = {
-  xs: "4px", sm: "8px", md: "12px", lg: "16px", xl: "24px", full: "999px",
-} as const;
-
-export const breakpoints = {
-  mobile: "375px", tablet: "1024px", desktop: "1440px",
-} as const;
+export const spacing = [4, 8, 12, 16, 24, 32, 48, 64] as const;
+export const radius = { card: 16, button: 12 } as const;
+export const buttonHeight = { default: 48, large: 52 } as const;
+export const breakpoints = { mobile: "375px", tablet: "1024px", desktop: "1440px" } as const;

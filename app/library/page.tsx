@@ -89,7 +89,7 @@ function LibraryContent() {
         />
 
         {/* HERO */}
-        <div className="mt-6 rounded-2xl bg-gradient-to-r from-[#EFF6FF] to-[#F2F4F7] p-6 md:p-10">
+        <div className="mt-6 rounded-2xl bg-gradient-to-r from-[var(--primary-light)] to-[#F2F4F7] p-6 md:p-10">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-[#101828] md:text-4xl">
@@ -101,7 +101,7 @@ function LibraryContent() {
               </p>
             </div>
             <div className="hidden h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-sm md:flex">
-              <BookOpen className="h-12 w-12 text-[#1677FF]" />
+              <BookOpen className="h-12 w-12 text-[var(--primary)]" />
             </div>
           </div>
 
@@ -142,25 +142,25 @@ function LibraryContent() {
                   }}
                   className={`flex flex-col gap-3 rounded-xl p-4 text-left shadow-sm transition md:p-5 ${
                     isActive
-                      ? "bg-[#EFF6FF] ring-2 ring-[#1677FF]"
+                      ? "bg-[var(--primary-light)] ring-2 ring-[var(--primary)]"
                       : "bg-white hover:shadow-md"
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-full md:h-12 md:w-12 ${
-                      isActive ? "bg-[#1677FF]" : "bg-[#EFF6FF]"
+                      isActive ? "bg-[var(--primary)]" : "bg-[var(--primary-light)]"
                     }`}
                   >
                     <Icon
                       className={`h-5 w-5 md:h-6 md:w-6 ${
-                        isActive ? "text-white" : "text-[#1677FF]"
+                        isActive ? "text-white" : "text-[var(--primary)]"
                       }`}
                     />
                   </div>
                   <div>
                     <div
                       className={`font-semibold ${
-                        isActive ? "text-[#1677FF]" : "text-[#101828]"
+                        isActive ? "text-[var(--primary)]" : "text-[#101828]"
                       }`}
                     >
                       {cat.name}
@@ -202,7 +202,7 @@ function LibraryContent() {
                   setSearchQuery("");
                   handleCategoryClick("all");
                 }}
-                className="mt-3 text-sm text-[#1677FF] hover:underline"
+                className="mt-3 text-sm text-[var(--primary)] hover:underline"
               >
                 Показать все статьи
               </button>
@@ -217,12 +217,12 @@ function LibraryContent() {
               >
                 <CardContent className="p-0">
                   <Link href={`/library/${art.slug}`}>
-                    <div className="h-40 rounded-t-xl bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]" />
+                    <div className="h-40 rounded-t-xl bg-gradient-to-br from-[var(--primary-light)] to-[#F2F4F7]" />
                     <div className="p-5">
                       <Badge variant="secondary" className="mb-3 text-xs">
                         {art.category}
                       </Badge>
-                      <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                      <h3 className="font-semibold text-[#101828] hover:text-[var(--primary)]">
                         {art.title}
                       </h3>
                       <p className="mt-2 line-clamp-2 text-sm text-[#667085]">

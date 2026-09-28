@@ -45,8 +45,8 @@ export default function CartPage() {
           />
 
           <div className="mt-16 flex flex-col items-center justify-center text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#EFF6FF]">
-              <ShoppingCart className="h-10 w-10 text-[#1677FF]" />
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--primary-light)]">
+              <ShoppingCart className="h-10 w-10 text-[var(--primary)]" />
             </div>
 
             <h1 className="mt-6 text-2xl font-bold text-[#101828]">
@@ -59,7 +59,7 @@ export default function CartPage() {
 
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link href="/catalog">
-                <Button className="bg-[#1677FF] hover:bg-[#0969E8]">
+                <Button className="bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
                   Перейти в каталог
                 </Button>
               </Link>
@@ -139,7 +139,7 @@ export default function CartPage() {
                 <Card
                   key={item.id}
                   className={`border-[#E4E7EC] transition ${
-                    isSelected ? "ring-2 ring-[#1677FF]" : ""
+                    isSelected ? "ring-2 ring-[var(--primary)]" : ""
                   }`}
                 >
                   <CardContent className="flex items-center gap-4 p-4">
@@ -147,13 +147,13 @@ export default function CartPage() {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelect(item.id)}
-                      className="h-4 w-4 cursor-pointer rounded border-[#D0D5DD] text-[#1677FF] focus:ring-[#1677FF]"
+                      className="h-4 w-4 cursor-pointer rounded border-[#D0D5DD] text-[var(--primary)] focus:ring-[var(--primary)]"
                       aria-label={`Выбрать ${item.name}`}
                     />
 
                     <Link
                       href={href}
-                      className="h-16 w-16 flex-shrink-0 rounded-lg bg-[#EFF6FF]"
+                      className="h-16 w-16 flex-shrink-0 rounded-lg bg-[var(--primary-light)]"
                     />
 
                     <div className="flex-1">
@@ -162,7 +162,7 @@ export default function CartPage() {
                       </div>
                       <Link
                         href={href}
-                        className="font-medium text-[#101828] hover:text-[#1677FF]"
+                        className="font-medium text-[#101828] hover:text-[var(--primary)]"
                       >
                         {item.name}
                       </Link>
@@ -222,7 +222,7 @@ export default function CartPage() {
                 </div>
 
                 <Link href="/cart/compare">
-                  <Button className="mt-4 w-full bg-[#1677FF] hover:bg-[#0969E8]">
+                  <Button className="mt-4 w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
                     Сравнить лаборатории
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

@@ -123,8 +123,8 @@ export default function ComparePage() {
           />
 
           <div className="mt-16 flex flex-col items-center justify-center text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#EFF6FF]">
-              <ShoppingCart className="h-10 w-10 text-[#1677FF]" />
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--primary-light)]">
+              <ShoppingCart className="h-10 w-10 text-[var(--primary)]" />
             </div>
 
             <h1 className="mt-6 text-2xl font-bold text-[#101828]">
@@ -137,7 +137,7 @@ export default function ComparePage() {
 
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link href="/catalog">
-                <Button className="bg-[#1677FF] hover:bg-[#0969E8]">
+                <Button className="bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
                   Перейти в каталог
                 </Button>
               </Link>
@@ -182,8 +182,8 @@ export default function ComparePage() {
               onClick={() => setActiveFilter(f.key)}
               className={`rounded-full border px-4 py-2 text-sm transition ${
                 activeFilter === f.key
-                  ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF] font-medium"
-                  : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF]"
+                  ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)] font-medium"
+                  : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)]"
               }`}
             >
               {f.label}
@@ -199,7 +199,7 @@ export default function ComparePage() {
             </div>
             <button
               onClick={() => setActiveFilter("all")}
-              className="mt-3 text-sm text-[#1677FF] hover:underline"
+              className="mt-3 text-sm text-[var(--primary)] hover:underline"
             >
               Сбросить фильтр
             </button>
@@ -299,7 +299,7 @@ export default function ComparePage() {
                       </td>
                       {offers.map((o) => (
                         <td key={o.lab.id} className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center gap-1 text-sm text-[#12B76A]">
+                          <span className="inline-flex items-center gap-1 text-sm text-[var(--success-text)]">
                             <Check className="h-4 w-4" />
                             Все позиции
                           </span>
@@ -344,8 +344,8 @@ export default function ComparePage() {
                             <Button
                               className={
                                 isSelected
-                                  ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                                  : "bg-[#1677FF] hover:bg-[#0969E8]"
+                                  ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                                  : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                               }
                               onClick={() => setSelectedLabId(o.lab.id)}
                             >
@@ -371,10 +371,10 @@ export default function ComparePage() {
 
         {/* ИТОГОВАЯ ПЛАШКА */}
         {selectedOffer && (
-          <Card className="mt-6 border-[#E4E7EC] bg-[#EFF6FF]">
+          <Card className="mt-6 border-[#E4E7EC] bg-[var(--primary-light)]">
             <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
               <div>
-                <div className="text-xs font-medium uppercase text-[#1677FF]">
+                <div className="text-xs font-medium uppercase text-[var(--primary)]">
                   Выбрана лаборатория
                 </div>
                 <div className="mt-1 text-xl font-bold text-[#101828]">
@@ -389,7 +389,7 @@ export default function ComparePage() {
                 href={labWebsite[selectedOffer.lab.slug] || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#1677FF] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#0969E8]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[var(--primary)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--primary-hover)]"
               >
                 Перейти к оформлению
                 <ExternalLink className="h-4 w-4" />

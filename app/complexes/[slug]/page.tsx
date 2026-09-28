@@ -122,7 +122,7 @@ export default function ComplexPage({ params }: Props) {
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-3">
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <CheckCircle2 className="h-3 w-3 text-[#1677FF]" />
+                  <CheckCircle2 className="h-3 w-3 text-[var(--primary)]" />
                   Исследований
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -132,7 +132,7 @@ export default function ComplexPage({ params }: Props) {
 
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <Clock className="h-3 w-3 text-[#1677FF]" />
+                  <Clock className="h-3 w-3 text-[var(--primary)]" />
                   Срок готовности
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -142,7 +142,7 @@ export default function ComplexPage({ params }: Props) {
 
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <AlertCircle className="h-3 w-3 text-[#1677FF]" />
+                  <AlertCircle className="h-3 w-3 text-[var(--primary)]" />
                   Подготовка
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -180,14 +180,14 @@ export default function ComplexPage({ params }: Props) {
                         </div>
                         <Link
                           href={`/catalog/${a.slug}`}
-                          className="font-medium text-[#101828] hover:text-[#1677FF]"
+                          className="font-medium text-[#101828] hover:text-[var(--primary)]"
                         >
                           {a.name}
                         </Link>
                       </div>
                       <Badge
                         variant="secondary"
-                        className="self-start text-xs text-[#12B76A] md:self-center"
+                        className="self-start text-xs text-[var(--success-text)] md:self-center"
                       >
                         Входит в комплекс
                       </Badge>
@@ -204,11 +204,11 @@ export default function ComplexPage({ params }: Props) {
               </h2>
               <ul className="mt-3 space-y-2 text-[#475467]">
                 <li className="flex gap-2">
-                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                   Кровь сдаётся натощак (8–12 часов голода).
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                   За сутки исключить алкоголь и жирную пищу.
                 </li>
               </ul>
@@ -225,7 +225,7 @@ export default function ComplexPage({ params }: Props) {
                   <Card key={lab.id} className="border-[#E4E7EC]">
                     <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#EFF6FF] text-xl font-bold text-[#1677FF]">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--primary-light)] text-xl font-bold text-[var(--primary)]">
                           {lab.name[0]}
                         </div>
                         <div>
@@ -252,8 +252,8 @@ export default function ComplexPage({ params }: Props) {
                           size="sm"
                           className={
                             inCart
-                              ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                              : "bg-[#1677FF] hover:bg-[#0969E8]"
+                              ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                              : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                           }
                           onClick={handleSelectLab}
                         >
@@ -267,7 +267,7 @@ export default function ComplexPage({ params }: Props) {
 
               <Link
                 href="/labs"
-                className="mt-4 inline-flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+                className="mt-4 inline-flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
               >
                 Все лаборатории <ChevronRight className="h-4 w-4" />
               </Link>
@@ -292,8 +292,8 @@ export default function ComplexPage({ params }: Props) {
                   onClick={handleToggle}
                   className={`mt-4 w-full ${
                     inCart
-                      ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                      : "bg-[#1677FF] hover:bg-[#0969E8]"
+                      ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                      : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                   }`}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
@@ -321,7 +321,7 @@ export default function ComplexPage({ params }: Props) {
                   >
                     {shareCopied ? (
                       <>
-                        <Check className="h-4 w-4 text-[#12B76A]" />
+                        <Check className="h-4 w-4 text-[var(--success-text)]" />
                         Скопировано
                       </>
                     ) : (

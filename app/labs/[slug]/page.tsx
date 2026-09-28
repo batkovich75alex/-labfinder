@@ -166,7 +166,7 @@ export default function LabPage({ params }: Props) {
                   {lab.homeVisit && (
                     <Badge
                       variant="secondary"
-                      className="text-xs text-[#12B76A]"
+                      className="text-xs text-[var(--success-text)]"
                     >
                       Выезд на дом
                     </Badge>
@@ -200,7 +200,7 @@ export default function LabPage({ params }: Props) {
                       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#1677FF]" />
+                            <MapPin className="h-4 w-4 text-[var(--primary)]" />
                             <span className="font-medium text-[#101828]">
                               {o.address}
                             </span>
@@ -221,7 +221,7 @@ export default function LabPage({ params }: Props) {
                             </div>
 
                             <div className="flex items-start gap-2">
-                              <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#1677FF]" />
+                              <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--primary)]" />
                               <div>
                                 <div className="text-[#101828]">
                                   Время приёма биоматериала
@@ -237,7 +237,7 @@ export default function LabPage({ params }: Props) {
                             {o.homeVisit && (
                               <Badge
                                 variant="secondary"
-                                className="text-xs text-[#12B76A]"
+                                className="text-xs text-[var(--success-text)]"
                               >
                                 Выезд на дом
                               </Badge>
@@ -245,7 +245,7 @@ export default function LabPage({ params }: Props) {
                             {o.open ? (
                               <Badge
                                 variant="secondary"
-                                className="text-xs text-[#12B76A]"
+                                className="text-xs text-[var(--success-text)]"
                               >
                                 <CheckCircle2 className="mr-1 h-3 w-3" />
                                 Открыто
@@ -276,7 +276,7 @@ export default function LabPage({ params }: Props) {
                             href={website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[#1677FF] bg-white px-3 py-2 text-sm text-[#1677FF] transition hover:bg-[#EFF6FF] md:flex-none"
+                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--primary)] bg-white px-3 py-2 text-sm text-[var(--primary)] transition hover:bg-[var(--primary-light)] md:flex-none"
                           >
                             <Calendar className="h-4 w-4" />
                             Записаться
@@ -288,7 +288,7 @@ export default function LabPage({ params }: Props) {
                 ))}
               </div>
 
-              <button className="mt-4 text-sm text-[#1677FF] hover:underline">
+              <button className="mt-4 text-sm text-[var(--primary)] hover:underline">
                 Показать все {lab.offices} отделений →
               </button>
             </section>
@@ -298,7 +298,7 @@ export default function LabPage({ params }: Props) {
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
-                <div className="flex items-center gap-2 text-sm text-[#12B76A]">
+                <div className="flex items-center gap-2 text-sm text-[var(--success-text)]">
                   <CheckCircle2 className="h-4 w-4" />
                   <span>Актуально на {lab.actualOn}</span>
                 </div>
@@ -311,7 +311,7 @@ export default function LabPage({ params }: Props) {
                   href={website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#1677FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#0969E8]"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[var(--primary-hover)]"
                 >
                   Перейти на сайт
                   <ExternalLink className="h-4 w-4" />

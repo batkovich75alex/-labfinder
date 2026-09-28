@@ -71,14 +71,14 @@ export default function HomePage() {
     <main className="bg-[#F8FAFC]">
       {/* HERO — двухколоночный с фото */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-10">
-        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-[#EFF6FF] via-white to-[#F2F4F7]">
+        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--primary-light)] via-white to-[#F2F4F7]">
           <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
             {/* ЛЕВАЯ — текст и поиск */}
             <div className="p-6 md:p-10 lg:p-12">
               <h1 className="text-2xl font-bold leading-tight text-[#101828] md:text-4xl lg:text-5xl">
                 Анализы и обследования
                 <br />
-                <span className="text-[#1677FF]">в лабораториях</span> вашего
+                <span className="text-[var(--primary)]">в лабораториях</span> вашего
                 города
               </h1>
 
@@ -99,7 +99,7 @@ export default function HomePage() {
                 </div>
                 <Button
                   type="submit"
-                  className="h-11 bg-[#1677FF] px-6 hover:bg-[#0969E8]"
+                  className="h-11 bg-[var(--primary)] px-6 hover:bg-[var(--primary-hover)]"
                 >
                   Найти
                 </Button>
@@ -112,7 +112,7 @@ export default function HomePage() {
                     <button
                       key={q}
                       onClick={() => handleQuickSearch(q)}
-                      className="text-[#1677FF] hover:underline"
+                      className="text-[var(--primary)] hover:underline"
                     >
                       {q}
                     </button>
@@ -128,7 +128,7 @@ export default function HomePage() {
                   { num: "24/7", label: "поддержка" },
                 ].map((b) => (
                   <div key={b.label} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 text-[var(--success-text)]" />
                     <div>
                       <div className="text-sm font-bold text-[#101828]">
                         {b.num}
@@ -147,7 +147,7 @@ export default function HomePage() {
                 alt="Медицинская лаборатория"
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#EFF6FF]/40 to-transparent md:bg-gradient-to-l" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-light)]/40 to-transparent md:bg-gradient-to-l" />
             </div>
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/catalog"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все направления <ArrowRight className="h-4 w-4" />
           </Link>
@@ -175,8 +175,8 @@ export default function HomePage() {
                 href="/catalog"
                 className="group flex flex-col items-center gap-3 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EFF6FF] transition group-hover:bg-[#1677FF]">
-                  <Icon className="h-6 w-6 text-[#1677FF] transition group-hover:text-white" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary-light)] transition group-hover:bg-[var(--primary)]">
+                  <Icon className="h-6 w-6 text-[var(--primary)] transition group-hover:text-white" />
                 </div>
                 <div className="text-center text-sm font-medium text-[#101828]">
                   {d.name}
@@ -195,7 +195,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/catalog"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все анализы <ArrowRight className="h-4 w-4" />
           </Link>
@@ -221,7 +221,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                    <h3 className="font-semibold text-[#101828] hover:text-[var(--primary)]">
                       {a.name}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -251,7 +251,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/complexes"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все комплексы <ArrowRight className="h-4 w-4" />
           </Link>
@@ -271,13 +271,13 @@ export default function HomePage() {
                       className="h-full w-full object-cover transition hover:scale-105"
                     />
                     <div className="absolute left-3 top-3">
-                      <Badge className="bg-[#1677FF] text-xs text-white hover:bg-[#1677FF]">
+                      <Badge className="bg-[var(--primary)] text-xs text-white hover:bg-[var(--primary)]">
                         {c.analysesCount} исследований
                       </Badge>
                     </div>
                   </div>
                   <div className="p-5">
-                    <h3 className="text-lg font-semibold text-[#101828] hover:text-[#1677FF]">
+                    <h3 className="text-lg font-semibold text-[#101828] hover:text-[var(--primary)]">
                       {c.name}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -308,7 +308,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/labs"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все лаборатории <ArrowRight className="h-4 w-4" />
           </Link>
@@ -342,7 +342,7 @@ export default function HomePage() {
                     {l.homeVisit && (
                       <Badge
                         variant="secondary"
-                        className="mt-2 text-xs text-[#12B76A]"
+                        className="mt-2 text-xs text-[var(--success-text)]"
                       >
                         Выезд на дом
                       </Badge>
@@ -363,7 +363,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/library"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все статьи <ArrowRight className="h-4 w-4" />
           </Link>
@@ -387,7 +387,7 @@ export default function HomePage() {
                     <Badge variant="secondary" className="mb-2 text-xs">
                       {art.category}
                     </Badge>
-                    <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                    <h3 className="font-semibold text-[#101828] hover:text-[var(--primary)]">
                       {art.title}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -431,8 +431,8 @@ export default function HomePage() {
           ].map((s) => (
             <Card key={s.title} className="border-[#E4E7EC]">
               <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#EFF6FF]">
-                  <s.icon className="h-6 w-6 text-[#1677FF]" />
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[var(--primary-light)]">
+                  <s.icon className="h-6 w-6 text-[var(--primary)]" />
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-[#101828]">{s.title}</div>

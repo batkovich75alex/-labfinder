@@ -62,9 +62,9 @@ export function Header() {
 
           <Link
             href="/"
-            className="flex items-center gap-2 text-lg font-bold text-[#1677FF] md:text-xl"
+            className="flex items-center gap-2 text-lg font-bold text-[var(--primary)] md:text-xl"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1677FF] text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand)] text-white">
               L
             </div>
             <span className="hidden sm:inline">LabFinder</span>
@@ -76,7 +76,7 @@ export function Header() {
               onClick={() => setCityOpen(!cityOpen)}
               className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-[#101828] hover:bg-[#F2F4F7]"
             >
-              <MapPin className="h-4 w-4 text-[#1677FF]" />
+              <MapPin className="h-4 w-4 text-[var(--primary)]" />
               {selectedCity}
               <ChevronDown className="h-4 w-4 text-[#667085]" />
             </button>
@@ -99,7 +99,7 @@ export function Header() {
                     >
                       {city.name}
                       {selectedCity === city.name && (
-                        <Check className="h-4 w-4 text-[#1677FF]" />
+                        <Check className="h-4 w-4 text-[var(--primary)]" />
                       )}
                     </button>
                   ))}
@@ -188,10 +188,10 @@ export function Header() {
             <div className="flex h-16 items-center justify-between border-b border-[#E4E7EC] px-4">
               <Link
                 href="/"
-                className="flex items-center gap-2 text-lg font-bold text-[#1677FF]"
+                className="flex items-center gap-2 text-lg font-bold text-[var(--primary)]"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1677FF] text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand)] text-white">
                   L
                 </div>
                 LabFinder
@@ -213,7 +213,7 @@ export function Header() {
                   className="flex w-full items-center justify-between px-3 py-2.5 text-sm"
                 >
                   <span className="flex items-center gap-2 text-[#101828]">
-                    <MapPin className="h-4 w-4 text-[#1677FF]" />
+                    <MapPin className="h-4 w-4 text-[var(--primary)]" />
                     {selectedCity}
                   </span>
                   <ChevronDown
@@ -233,7 +233,7 @@ export function Header() {
                       >
                         {city.name}
                         {selectedCity === city.name && (
-                          <Check className="h-4 w-4 text-[#1677FF]" />
+                          <Check className="h-4 w-4 text-[var(--primary)]" />
                         )}
                       </button>
                     ))}

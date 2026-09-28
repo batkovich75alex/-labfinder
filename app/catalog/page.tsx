@@ -225,7 +225,7 @@ export default function CatalogPage() {
               {activeFiltersCount > 0 ? (
                 <>
                   Найдено{" "}
-                  <span className="font-semibold text-[#1677FF]">
+                  <span className="font-semibold text-[var(--primary)]">
                     {sortedAnalyses.length}
                   </span>{" "}
                   из {baseList.length} исследований
@@ -245,7 +245,7 @@ export default function CatalogPage() {
               <SlidersHorizontal className="h-4 w-4" />
               Фильтры
               {activeFiltersCount > 0 && (
-                <span className="ml-1 rounded-full bg-[#1677FF] px-2 py-0.5 text-xs text-white">
+                <span className="ml-1 rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
                   {activeFiltersCount}
                 </span>
               )}
@@ -268,7 +268,7 @@ export default function CatalogPage() {
                       key={option.value}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
                         selectedSort === option.value
-                          ? "text-[#1677FF] font-medium"
+                          ? "text-[var(--primary)] font-medium"
                           : "text-[#101828]"
                       }`}
                       onClick={() => {
@@ -319,7 +319,7 @@ export default function CatalogPage() {
                           onClick={() => setSelectedCategory(item.id as Category)}
                           className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm transition ${
                             selectedCategory === item.id
-                              ? "bg-[#EFF6FF] text-[#1677FF] font-medium"
+                              ? "bg-[var(--primary-light)] text-[var(--primary)] font-medium"
                               : "text-[#475467] hover:bg-[#F2F4F7]"
                           }`}
                         >
@@ -345,13 +345,13 @@ export default function CatalogPage() {
                   }
                   className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
                     selectedDuration.length > 0
-                      ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
-                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                      ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]"
+                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
                   }`}
                 >
                   Срок выполнения
                   {selectedDuration.length > 0 && (
-                    <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                    <span className="rounded-full bg-[var(--primary)] px-1.5 text-xs text-white">
                       {selectedDuration.length}
                     </span>
                   )}
@@ -396,13 +396,13 @@ export default function CatalogPage() {
                   }
                   className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
                     selectedBiomaterial.length > 0
-                      ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
-                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                      ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]"
+                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
                   }`}
                 >
                   Биоматериал
                   {selectedBiomaterial.length > 0 && (
-                    <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                    <span className="rounded-full bg-[var(--primary)] px-1.5 text-xs text-white">
                       {selectedBiomaterial.length}
                     </span>
                   )}
@@ -447,13 +447,13 @@ export default function CatalogPage() {
                   }
                   className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
                     selectedMethod.length > 0
-                      ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
-                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                      ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]"
+                      : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
                   }`}
                 >
                   Метод
                   {selectedMethod.length > 0 && (
-                    <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                    <span className="rounded-full bg-[var(--primary)] px-1.5 text-xs text-white">
                       {selectedMethod.length}
                     </span>
                   )}
@@ -490,7 +490,7 @@ export default function CatalogPage() {
               {activeFiltersCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-sm text-[#1677FF] hover:underline"
+                  className="text-sm text-[var(--primary)] hover:underline"
                 >
                   Сбросить
                 </button>
@@ -509,7 +509,7 @@ export default function CatalogPage() {
                       setSelectedCategory("all");
                       resetFilters();
                     }}
-                    className="mt-3 text-sm text-[#1677FF] hover:underline"
+                    className="mt-3 text-sm text-[var(--primary)] hover:underline"
                   >
                     Сбросить всё
                   </button>
@@ -528,13 +528,13 @@ export default function CatalogPage() {
                     <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:p-5">
                       <Link
                         href={`/catalog/${a.slug}`}
-                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-[#EFF6FF]"
+                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-[var(--primary-light)]"
                       />
 
                       <div className="flex-1">
                         <Link
                           href={`/catalog/${a.slug}`}
-                          className="text-base font-semibold text-[#101828] hover:text-[#1677FF]"
+                          className="text-base font-semibold text-[#101828] hover:text-[var(--primary)]"
                         >
                           {a.name}
                         </Link>
@@ -543,11 +543,11 @@ export default function CatalogPage() {
                         </p>
                         <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#667085]">
                           <span className="flex items-center gap-1">
-                            <Droplet className="h-3 w-3 text-[#1677FF]" />
+                            <Droplet className="h-3 w-3 text-[var(--primary)]" />
                             {a.biomaterial}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-[#1677FF]" />
+                            <Clock className="h-3 w-3 text-[var(--primary)]" />
                             {a.duration}
                           </span>
                         </div>
@@ -581,8 +581,8 @@ export default function CatalogPage() {
                             size="sm"
                             className={
                               inCart
-                                ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                                : "bg-[#1677FF] hover:bg-[#0969E8]"
+                                ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                                : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                             }
                             onClick={() =>
                               toggleItem({
@@ -620,7 +620,7 @@ export default function CatalogPage() {
               <div className="flex items-center gap-2 text-base font-semibold">
                 Фильтры
                 {activeFiltersCount > 0 && (
-                  <span className="rounded-full bg-[#1677FF] px-2 py-0.5 text-xs text-white">
+                  <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
                     {activeFiltersCount}
                   </span>
                 )}
@@ -731,7 +731,7 @@ export default function CatalogPage() {
                 Сбросить все
               </Button>
               <Button
-                className="flex-1 bg-[#1677FF] hover:bg-[#0969E8]"
+                className="flex-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                 onClick={() => setMobileFiltersOpen(false)}
               >
                 Применить ({sortedAnalyses.length})

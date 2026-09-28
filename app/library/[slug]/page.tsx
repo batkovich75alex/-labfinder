@@ -191,7 +191,7 @@ export default function ArticlePage({ params }: Props) {
 
         <Link
           href="/library"
-          className="mt-6 inline-flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+          className="mt-6 inline-flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
           Все статьи
@@ -228,7 +228,7 @@ export default function ArticlePage({ params }: Props) {
             </div>
 
             {/* Картинка */}
-            <div className="mt-6 h-64 rounded-xl bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]" />
+            <div className="mt-6 h-64 rounded-xl bg-gradient-to-br from-[var(--primary-light)] to-[#F2F4F7]" />
 
             {/* ОГЛАВЛЕНИЕ — mobile */}
             <div className="mt-6 rounded-xl border border-[#E4E7EC] bg-white p-4 lg:hidden">
@@ -240,7 +240,7 @@ export default function ArticlePage({ params }: Props) {
                   <li key={item}>
                     <a
                       href={`#section-${i + 1}`}
-                      className="flex gap-2 text-[#1677FF] hover:underline"
+                      className="flex gap-2 text-[var(--primary)] hover:underline"
                     >
                       <span className="text-[#667085]">{i + 1}.</span>
                       {item}
@@ -264,15 +264,15 @@ export default function ArticlePage({ params }: Props) {
 
             {/* СВЯЗАННОЕ ИССЛЕДОВАНИЕ */}
             {relatedAnalysis && (
-              <Card className="mt-10 border-[#E4E7EC] bg-[#EFF6FF]">
+              <Card className="mt-10 border-[#E4E7EC] bg-[var(--primary-light)]">
                 <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <div className="text-xs font-medium uppercase text-[#1677FF]">
+                    <div className="text-xs font-medium uppercase text-[var(--primary)]">
                       Связанное исследование
                     </div>
                     <Link
                       href={`/catalog/${relatedAnalysis.slug}`}
-                      className="mt-2 block text-lg font-semibold text-[#101828] hover:text-[#1677FF]"
+                      className="mt-2 block text-lg font-semibold text-[#101828] hover:text-[var(--primary)]"
                     >
                       {relatedAnalysis.name}
                     </Link>
@@ -283,7 +283,7 @@ export default function ArticlePage({ params }: Props) {
                   </div>
 
                   <Link href={`/catalog/${relatedAnalysis.slug}`}>
-                    <Button className="bg-[#1677FF] hover:bg-[#0969E8]">
+                    <Button className="bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
                       Перейти к исследованию
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -301,7 +301,7 @@ export default function ArticlePage({ params }: Props) {
               >
                 {shareCopied ? (
                   <>
-                    <Check className="h-4 w-4 text-[#12B76A]" />
+                    <Check className="h-4 w-4 text-[var(--success-text)]" />
                     Скопировано
                   </>
                 ) : (
@@ -324,7 +324,7 @@ export default function ArticlePage({ params }: Props) {
                     <Card key={a.id} className="border-[#E4E7EC]">
                       <CardContent className="p-4">
                         <Link href={`/library/${a.slug}`}>
-                          <div className="font-medium text-[#101828] hover:text-[#1677FF]">
+                          <div className="font-medium text-[#101828] hover:text-[var(--primary)]">
                             {a.title}
                           </div>
                           <div className="mt-1 text-xs text-[#667085]">
@@ -351,7 +351,7 @@ export default function ArticlePage({ params }: Props) {
                     <li key={item}>
                       <a
                         href={`#section-${i + 1}`}
-                        className="flex gap-2 text-[#1677FF] hover:underline"
+                        className="flex gap-2 text-[var(--primary)] hover:underline"
                       >
                         <span className="text-[#667085]">{i + 1}.</span>
                         {item}
@@ -365,7 +365,7 @@ export default function ArticlePage({ params }: Props) {
             {relatedAnalysis && (
               <Card className="mt-4 border-[#E4E7EC]">
                 <CardContent className="p-5">
-                  <div className="text-xs font-medium uppercase text-[#1677FF]">
+                  <div className="text-xs font-medium uppercase text-[var(--primary)]">
                     Связанное исследование
                   </div>
                   <div className="mt-2 font-semibold text-[#101828]">
@@ -378,7 +378,7 @@ export default function ArticlePage({ params }: Props) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="mt-3 w-full border-[#1677FF] text-[#1677FF] hover:bg-[#EFF6FF]"
+                      className="mt-3 w-full border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-light)]"
                     >
                       Перейти
                     </Button>

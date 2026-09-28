@@ -22,7 +22,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
               {item.href && !isLast ? (
                 <Link
                   href={item.href}
-                  className="hover:text-[#1677FF] hover:underline"
+                  className="hover:text-[var(--primary)] hover:underline"
                 >
                   {item.label}
                 </Link>

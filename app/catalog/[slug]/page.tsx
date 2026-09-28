@@ -169,7 +169,7 @@ export default function AnalysisPage({ params }: Props) {
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-5">
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <Droplet className="h-3 w-3 text-[#1677FF]" />
+                  <Droplet className="h-3 w-3 text-[var(--primary)]" />
                   Биоматериал
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -179,7 +179,7 @@ export default function AnalysisPage({ params }: Props) {
 
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <Clock className="h-3 w-3 text-[#1677FF]" />
+                  <Clock className="h-3 w-3 text-[var(--primary)]" />
                   Срок готовности
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -189,7 +189,7 @@ export default function AnalysisPage({ params }: Props) {
 
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <FlaskConical className="h-3 w-3 text-[#1677FF]" />
+                  <FlaskConical className="h-3 w-3 text-[var(--primary)]" />
                   Метод
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -199,7 +199,7 @@ export default function AnalysisPage({ params }: Props) {
 
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <Hash className="h-3 w-3 text-[#1677FF]" />
+                  <Hash className="h-3 w-3 text-[var(--primary)]" />
                   Код
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -209,7 +209,7 @@ export default function AnalysisPage({ params }: Props) {
 
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
-                  <AlertCircle className="h-3 w-3 text-[#1677FF]" />
+                  <AlertCircle className="h-3 w-3 text-[var(--primary)]" />
                   Подготовка
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
@@ -231,7 +231,7 @@ export default function AnalysisPage({ params }: Props) {
                   </span>{" "}
                   <Link
                     href={`/library/${relatedArticle.slug}`}
-                    className="text-[#1677FF] hover:underline"
+                    className="text-[var(--primary)] hover:underline"
                   >
                     {relatedArticle.title} →
                   </Link>
@@ -247,7 +247,7 @@ export default function AnalysisPage({ params }: Props) {
                     onClick={() => scrollToSection(section.id)}
                     className={`pb-3 transition ${
                       activeSection === section.id
-                        ? "border-b-2 border-[#1677FF] font-medium text-[#1677FF]"
+                        ? "border-b-2 border-[var(--primary)] font-medium text-[var(--primary)]"
                         : "text-[#667085] hover:text-[#101828]"
                     }`}
                   >
@@ -275,15 +275,15 @@ export default function AnalysisPage({ params }: Props) {
                 </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
                   <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                     Кровь сдаётся натощак (8–12 часов голода).
                   </li>
                   <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                     За сутки исключить алкоголь и жирную пищу.
                   </li>
                   <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                     Утром можно пить воду.
                   </li>
                 </ul>
@@ -295,15 +295,15 @@ export default function AnalysisPage({ params }: Props) {
                 </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
                   <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                     Профилактические осмотры.
                   </li>
                   <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                     Оценка сердечно-сосудистых рисков.
                   </li>
                   <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
                     Контроль лечения.
                   </li>
                 </ul>
@@ -349,7 +349,7 @@ export default function AnalysisPage({ params }: Props) {
                     <Card key={lab.id} className="border-[#E4E7EC]">
                       <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#EFF6FF] text-xl font-bold text-[#1677FF]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--primary-light)] text-xl font-bold text-[var(--primary)]">
                             {lab.name[0]}
                           </div>
                           <div>
@@ -376,8 +376,8 @@ export default function AnalysisPage({ params }: Props) {
                             size="sm"
                             className={
                               inCart
-                                ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                                : "bg-[#1677FF] hover:bg-[#0969E8]"
+                                ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                                : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                             }
                             onClick={handleSelectLab}
                           >
@@ -391,7 +391,7 @@ export default function AnalysisPage({ params }: Props) {
 
                 <Link
                   href="/labs"
-                  className="mt-4 inline-flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+                  className="mt-4 inline-flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
                 >
                   Все лаборатории <ChevronRight className="h-4 w-4" />
                 </Link>
@@ -416,8 +416,8 @@ export default function AnalysisPage({ params }: Props) {
                   onClick={handleToggle}
                   className={`mt-4 w-full ${
                     inCart
-                      ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                      : "bg-[#1677FF] hover:bg-[#0969E8]"
+                      ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                      : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                   }`}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
@@ -445,7 +445,7 @@ export default function AnalysisPage({ params }: Props) {
                   >
                     {shareCopied ? (
                       <>
-                        <Check className="h-4 w-4 text-[#12B76A]" />
+                        <Check className="h-4 w-4 text-[var(--success-text)]" />
                         Скопировано
                       </>
                     ) : (
@@ -477,7 +477,7 @@ export default function AnalysisPage({ params }: Props) {
                 {relatedArticle && (
                   <Link
                     href={`/library/${relatedArticle.slug}`}
-                    className="mt-4 flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+                    className="mt-4 flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
                   >
                     Связанная статья <ExternalLink className="h-3 w-3" />
                   </Link>

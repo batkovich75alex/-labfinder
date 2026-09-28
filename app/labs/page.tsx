@@ -125,7 +125,7 @@ export default function LabsPage() {
               <SlidersHorizontal className="h-4 w-4" />
               Фильтры
               {activeFiltersCount > 0 && (
-                <span className="ml-1 rounded-full bg-[#1677FF] px-2 py-0.5 text-xs text-white">
+                <span className="ml-1 rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
                   {activeFiltersCount}
                 </span>
               )}
@@ -148,7 +148,7 @@ export default function LabsPage() {
                       key={option.value}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
                         selectedSort === option.value
-                          ? "text-[#1677FF] font-medium"
+                          ? "text-[var(--primary)] font-medium"
                           : "text-[#101828]"
                       }`}
                       onClick={() => {
@@ -168,7 +168,7 @@ export default function LabsPage() {
                 onClick={() => setView("list")}
                 className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm ${
                   view === "list"
-                    ? "bg-[#1677FF] text-white"
+                    ? "bg-[var(--primary)] text-white"
                     : "text-[#475467]"
                 }`}
               >
@@ -179,7 +179,7 @@ export default function LabsPage() {
                 onClick={() => setView("map")}
                 className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm ${
                   view === "map"
-                    ? "bg-[#1677FF] text-white"
+                    ? "bg-[var(--primary)] text-white"
                     : "text-[#475467]"
                 }`}
               >
@@ -200,13 +200,13 @@ export default function LabsPage() {
               }
               className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
                 selectedRating !== "Любой"
-                  ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
-                  : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                  ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]"
+                  : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
               }`}
             >
               Рейтинг
               {selectedRating !== "Любой" && (
-                <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                <span className="rounded-full bg-[var(--primary)] px-1.5 text-xs text-white">
                   {selectedRating}
                 </span>
               )}
@@ -223,7 +223,7 @@ export default function LabsPage() {
                       setOpenChip(null);
                     }}
                     className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
-                      selectedRating === opt ? "text-[#1677FF]" : "text-[#101828]"
+                      selectedRating === opt ? "text-[var(--primary)]" : "text-[#101828]"
                     }`}
                   >
                     {opt}
@@ -239,8 +239,8 @@ export default function LabsPage() {
             onClick={() => setOnlyHomeVisit(!onlyHomeVisit)}
             className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
               onlyHomeVisit
-                ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
-                : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]"
+                : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
             }`}
           >
             {onlyHomeVisit && <Check className="h-3 w-3" />}
@@ -255,13 +255,13 @@ export default function LabsPage() {
               }
               className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm ${
                 selectedOffices !== "Любое"
-                  ? "border-[#1677FF] bg-[#EFF6FF] text-[#1677FF]"
-                  : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                  ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]"
+                  : "border-[#E4E7EC] bg-white text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
               }`}
             >
               Количество отделений
               {selectedOffices !== "Любое" && (
-                <span className="rounded-full bg-[#1677FF] px-1.5 text-xs text-white">
+                <span className="rounded-full bg-[var(--primary)] px-1.5 text-xs text-white">
                   {selectedOffices}
                 </span>
               )}
@@ -278,7 +278,7 @@ export default function LabsPage() {
                       setOpenChip(null);
                     }}
                     className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
-                      selectedOffices === opt ? "text-[#1677FF]" : "text-[#101828]"
+                      selectedOffices === opt ? "text-[var(--primary)]" : "text-[#101828]"
                     }`}
                   >
                     {opt}
@@ -293,7 +293,7 @@ export default function LabsPage() {
           {activeFiltersCount > 0 && (
             <button
               onClick={resetFilters}
-              className="text-sm text-[#1677FF] hover:underline"
+              className="text-sm text-[var(--primary)] hover:underline"
             >
               Сбросить
             </button>
@@ -310,7 +310,7 @@ export default function LabsPage() {
                 </div>
                 <button
                   onClick={resetFilters}
-                  className="mt-3 text-sm text-[#1677FF] hover:underline"
+                  className="mt-3 text-sm text-[var(--primary)] hover:underline"
                 >
                   Сбросить фильтры
                 </button>
@@ -327,7 +327,7 @@ export default function LabsPage() {
                     href={`/labs/${lab.slug}`}
                     className="flex flex-1 items-center gap-4"
                   >
-                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-2xl font-bold text-[#1677FF]">
+                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--primary-light)] text-2xl font-bold text-[var(--primary)]">
                       {lab.name[0]}
                     </div>
                     <div className="flex-1">
@@ -338,7 +338,7 @@ export default function LabsPage() {
                         {lab.homeVisit && (
                           <Badge
                             variant="secondary"
-                            className="text-xs text-[#12B76A]"
+                            className="text-xs text-[var(--success-text)]"
                           >
                             Выезд на дом
                           </Badge>

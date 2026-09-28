@@ -132,7 +132,7 @@ export default function ComplexesPage() {
                       key={option.value}
                       className={`block w-full px-3 py-2 text-left text-sm hover:bg-[#F2F4F7] ${
                         selectedSort === option.value
-                          ? "text-[#1677FF] font-medium"
+                          ? "text-[var(--primary)] font-medium"
                           : "text-[#101828]"
                       }`}
                       onClick={() => {
@@ -173,7 +173,7 @@ export default function ComplexesPage() {
                         <button
                           className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm ${
                             item.active
-                              ? "bg-[#EFF6FF] text-[#1677FF] font-medium"
+                              ? "bg-[var(--primary-light)] text-[var(--primary)] font-medium"
                               : "text-[#475467] hover:bg-[#F2F4F7]"
                           }`}
                         >
@@ -196,7 +196,7 @@ export default function ComplexesPage() {
                 (f) => (
                   <button
                     key={f}
-                    className="flex items-center gap-1 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm text-[#475467] hover:border-[#1677FF] hover:text-[#1677FF]"
+                    className="flex items-center gap-1 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
                   >
                     {f}
                     <ChevronDown className="h-3 w-3" />
@@ -215,7 +215,7 @@ export default function ComplexesPage() {
                   </div>
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="mt-3 text-sm text-[#1677FF] hover:underline"
+                    className="mt-3 text-sm text-[var(--primary)] hover:underline"
                   >
                     Сбросить поиск
                   </button>
@@ -234,13 +234,13 @@ export default function ComplexesPage() {
                     <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:p-5">
                       <Link
                         href={`/complexes/${c.slug}`}
-                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]"
+                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-[var(--primary-light)] to-[#F2F4F7]"
                       />
 
                       <div className="flex-1">
                         <Link
                           href={`/complexes/${c.slug}`}
-                          className="text-base font-semibold text-[#101828] hover:text-[#1677FF]"
+                          className="text-base font-semibold text-[#101828] hover:text-[var(--primary)]"
                         >
                           {c.name}
                         </Link>
@@ -249,11 +249,11 @@ export default function ComplexesPage() {
                         </p>
                         <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#667085]">
                           <span className="flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3 text-[#1677FF]" />
+                            <CheckCircle2 className="h-3 w-3 text-[var(--primary)]" />
                             {c.analysesCount} исследований
                           </span>
                           <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-[#1677FF]" />
+                            <Clock className="h-3 w-3 text-[var(--primary)]" />
                             {c.duration}
                           </span>
                         </div>
@@ -287,8 +287,8 @@ export default function ComplexesPage() {
                             size="sm"
                             className={
                               inCart
-                                ? "bg-[#12B76A] hover:bg-[#0E9B58]"
-                                : "bg-[#1677FF] hover:bg-[#0969E8]"
+                                ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
+                                : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                             }
                             onClick={() =>
                               toggleItem({
