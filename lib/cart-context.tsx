@@ -9,6 +9,8 @@ export type CartItem = {
   name: string;
   price: number;
   duration: string;
+  selectedLabId?: string;
+  selectedLabName?: string;
 };
 
 type CartContextType = {
@@ -18,6 +20,7 @@ type CartContextType = {
   clearCart: () => void;
   toggleItem: (item: CartItem) => void;
   isInCart: (id: string) => boolean;
+  selectLab: (itemId: string, labId: string, labName: string) => void;
   total: number;
   count: number;
 };
@@ -74,6 +77,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const isInCart = (id: string) => items.some((x) => x.id === id);
 
+  const selectLab = (itemId: string, labId: string, labName: string) => {
+    setItems((prev) => prev.map((item) => item.id === itemId
+      ? { ...item, selectedLabId: labId, selectedLabName: labName }
+      : item));
+  };
+
   const total = items.reduce((sum, item) => sum + item.price, 0);
   const count = items.length;
 
@@ -86,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         toggleItem,
         isInCart,
+        selectLab,
         total,
         count,
       }}

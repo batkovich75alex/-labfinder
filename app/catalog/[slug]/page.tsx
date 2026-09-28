@@ -24,26 +24,56 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses, labs, articles } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
 import { useFavorites } from "@/lib/favorites-context";
+import { useCity } from "@/lib/use-city";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 const sections = [
-  { id: "short", label: "Коротко об анализе" },
-  { id: "preparation", label: "Подготовка" },
-  { id: "indications", label: "Показания" },
-  { id: "results", label: "Как читать результаты" },
-  { id: "doctor", label: "Что важно сообщить врачу" },
+  { id: "short", label: "Что показывает" },
+  { id: "indications", label: "Когда назначают" },
+  { id: "preparation", label: "Как подготовиться" },
+  { id: "collection", label: "Как проходит сдача" },
+  { id: "results", label: "О результате" },
   { id: "labs", label: "Предложения лабораторий" },
 ];
+
+function getGuidance(analysis: (typeof analyses)[number]) {
+  const isUrine = analysis.biomaterial.toLowerCase().includes("моч");
+  const preparation = isUrine
+    ? [
+        "Уточните в лаборатории, какой контейнер нужен для этого исследования.",
+        "Следуйте инструкции лаборатории по сбору и хранению материала.",
+        "Сообщите о лекарствах и особенностях здоровья, которые могут повлиять на результат.",
+      ]
+    : [
+        "Уточните у выбранной лаборатории, требуется ли сдача натощак именно для этого исследования.",
+        "Перед процедурой избегайте интенсивной нагрузки и спокойно посидите 10–15 минут.",
+        "Не отменяйте лекарства самостоятельно; сообщите о них врачу или лаборатории.",
+      ];
+  const collection = isUrine
+    ? "Материал собирают самостоятельно по инструкции выбранной лаборатории и передают в указанное время. Требования к порции и контейнеру могут различаться."
+    : `В лаборатории сотрудник берёт материал «${analysis.biomaterial.toLowerCase()}». После процедуры уточните, когда и каким способом будет доступен результат.`;
+  const indicationByCategory: Record<string, string> = {
+    biochemistry: "Исследование используют для оценки обменных процессов и контроля показателей в динамике по назначению врача.",
+    hormones: "Исследование может назначаться при оценке гормональной регуляции, симптомах или для контроля лечения.",
+    vitamins: "Исследование помогает оценить уровень конкретного витамина при симптомах, факторах риска или контроле терапии.",
+    general: "Исследование используют как часть общей оценки состояния здоровья и при наличии соответствующих симптомов.",
+    immunology: "Исследование применяют для оценки отдельных показателей иммунной системы по клиническим показаниям.",
+    allergy: "Исследование может быть частью уточнения аллергической реакции вместе с анамнезом и осмотром врача.",
+    infection: "Исследование используют для лабораторного поиска признаков конкретной инфекции с учётом сроков и симптомов.",
+  };
+  return { preparation, collection, indication: indicationByCategory[analysis.category] || "Исследование назначают по симптомам, факторам риска или для контроля показателя в динамике." };
+}
 
 export default function AnalysisPage({ params }: Props) {
   const { slug } = use(params);
   const analysis = analyses.find((a) => a.slug === slug);
-  const { toggleItem, isInCart } = useCart();
+  const { toggleItem, addItem, isInCart, selectLab } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const router = useRouter();
+  const [city] = useCity();
 
   const [activeSection, setActiveSection] = useState("short");
   const [shareCopied, setShareCopied] = useState(false);
@@ -83,8 +113,13 @@ export default function AnalysisPage({ params }: Props) {
   const inCart = isInCart(analysis.id);
   const inFav = isFavorite(analysis.id);
   const relatedArticle = articles.find((a) => a.relatedAnalysis === analysis.id);
+  const guidance = getGuidance(analysis);
 
   const handleToggle = () => {
+    if (inCart) {
+      router.push("/cart");
+      return;
+    }
     toggleItem({
       id: analysis.id,
       slug: analysis.slug,
@@ -95,9 +130,9 @@ export default function AnalysisPage({ params }: Props) {
     });
   };
 
-  const handleSelectLab = () => {
+  const handleSelectLab = (lab: (typeof labs)[number]) => {
     if (!inCart) {
-      toggleItem({
+      addItem({
         id: analysis.id,
         slug: analysis.slug,
         type: "analysis",
@@ -106,6 +141,7 @@ export default function AnalysisPage({ params }: Props) {
         duration: analysis.duration,
       });
     }
+    selectLab(analysis.id, lab.id, lab.name);
     router.push("/cart");
   };
 
@@ -142,7 +178,7 @@ export default function AnalysisPage({ params }: Props) {
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
-            { label: "Москва", href: "/?city=msk" },
+            { label: city, href: "/" },
             { label: "Анализы", href: "/catalog" },
             { label: analysis.categoryName },
             { label: analysis.name },
@@ -165,6 +201,7 @@ export default function AnalysisPage({ params }: Props) {
             </div>
 
             <p className="mt-4 text-[#475467]">{analysis.short}</p>
+            {analysis.synonyms && <p className="mt-2 text-sm text-[#667085]"><span className="font-medium text-[#101828]">Также ищут:</span> {analysis.synonyms}</p>}
 
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-5">
               <div>
@@ -210,20 +247,15 @@ export default function AnalysisPage({ params }: Props) {
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
                   <AlertCircle className="h-3 w-3 text-[var(--primary)]" />
-                  Подготовка
+                  Цена
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
-                  8–12 часов
+                  от {analysis.priceFrom.toLocaleString("ru-RU")} ₽
                 </div>
               </div>
             </div>
 
             <div className="mt-4 space-y-2 text-sm">
-              <div className="text-[#667085]">
-                <span className="font-medium text-[#101828]">Синонимы:</span>{" "}
-                {analysis.synonyms || "—"}
-              </div>
-
               {relatedArticle && (
                 <div className="text-[#667085]">
                   <span className="font-medium text-[#101828]">
@@ -260,83 +292,53 @@ export default function AnalysisPage({ params }: Props) {
             <div className="mt-8 space-y-8">
               <section id="short" className="scroll-mt-32">
                 <h2 className="type-h2 text-[#101828]">
-                  Коротко об анализе
+                  Что показывает исследование
                 </h2>
                 <p className="mt-3 text-[#475467]">
-                  {analysis.name} — это показатель, который помогает оценить
-                  состояние организма и выявить отклонения. Исследование
-                  проводится для диагностики и контроля лечения.
+                  {analysis.short}. Результат помогает оценить конкретный
+                  показатель, но сам по себе не устанавливает диагноз.
                 </p>
-              </section>
-
-              <section id="preparation" className="scroll-mt-32">
-                <h2 className="type-h2 text-[#101828]">
-                  Подготовка
-                </h2>
-                <ul className="mt-3 space-y-2 text-[#475467]">
-                  <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                    Кровь сдаётся натощак (8–12 часов голода).
-                  </li>
-                  <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                    За сутки исключить алкоголь и жирную пищу.
-                  </li>
-                  <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                    Утром можно пить воду.
-                  </li>
-                </ul>
               </section>
 
               <section id="indications" className="scroll-mt-32">
                 <h2 className="type-h2 text-[#101828]">
-                  Показания
+                  В каких случаях назначают
+                </h2>
+                <p className="mt-3 text-[#475467]">{guidance.indication}</p>
+              </section>
+
+              <section id="preparation" className="scroll-mt-32">
+                <h2 className="type-h2 text-[#101828]">
+                  Как подготовиться
                 </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
-                  <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                    Профилактические осмотры.
-                  </li>
-                  <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                    Оценка сердечно-сосудистых рисков.
-                  </li>
-                  <li className="flex gap-2">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                    Контроль лечения.
-                  </li>
+                  {guidance.preparation.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
+                      {item}
+                    </li>
+                  ))}
                 </ul>
+              </section>
+
+              <section id="collection" className="scroll-mt-32">
+                <h2 className="type-h2 text-[#101828]">Как проходит сдача</h2>
+                <p className="mt-3 text-[#475467]">{guidance.collection}</p>
               </section>
 
               <section id="results" className="scroll-mt-32">
                 <h2 className="type-h2 text-[#101828]">
-                  Как читать результаты
+                  Что важно знать о результате
                 </h2>
                 <p className="mt-3 text-[#475467]">
-                  Результаты оценивает врач с учётом вашего возраста, пола,
-                  симптомов и других показателей.
+                  Референсные значения могут различаться между лабораториями.
+                  Оценивайте результат по диапазону из выданного бланка и
+                  обсуждайте отклонения с врачом с учётом симптомов, лекарств
+                  и других исследований.
                 </p>
-              </section>
-
-              <section id="doctor" className="scroll-mt-32">
-                <h2 className="type-h2 text-[#101828]">
-                  Что важно сообщить врачу
-                </h2>
-                <ul className="mt-3 space-y-2 text-[#475467]">
-                  <li className="flex gap-2">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 text-[#F79009]" />
-                    Приём лекарственных препаратов.
-                  </li>
-                  <li className="flex gap-2">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 text-[#F79009]" />
-                    Наличие хронических заболеваний.
-                  </li>
-                  <li className="flex gap-2">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 text-[#F79009]" />
-                    Беременность и период грудного вскармливания.
-                  </li>
-                </ul>
+                <div className="mt-4 rounded-xl bg-[var(--warning-bg)] p-4 text-sm text-[var(--warning-text)]">
+                  Интерпретация на странице носит справочный характер и не заменяет консультацию врача.
+                </div>
               </section>
 
               <section id="labs" className="scroll-mt-32">
@@ -379,9 +381,9 @@ export default function AnalysisPage({ params }: Props) {
                                 ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
                                 : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                             }
-                            onClick={handleSelectLab}
+                            onClick={() => handleSelectLab(lab)}
                           >
-                            {inCart ? "В корзине" : "Выбрать"}
+                            Выбрать лабораторию
                           </Button>
                         </div>
                       </CardContent>
@@ -409,8 +411,9 @@ export default function AnalysisPage({ params }: Props) {
                   </span>
                 </div>
                 <div className="mt-1 text-xs text-[#667085]">
-                  Стоимость исследования
+                  Предварительная стоимость исследования
                 </div>
+                <p className="mt-2 text-xs leading-5 text-[#667085]">Взятие биоматериала и другие услуги могут оплачиваться отдельно.</p>
 
                 <Button
                   onClick={handleToggle}
@@ -421,7 +424,7 @@ export default function AnalysisPage({ params }: Props) {
                   }`}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  {inCart ? "В корзине" : "В корзину"}
+                  {inCart ? "Открыть корзину" : "Добавить в корзину"}
                 </Button>
 
                 <div className="mt-2 flex gap-2">
@@ -463,7 +466,7 @@ export default function AnalysisPage({ params }: Props) {
                     <span className="font-medium text-[#101828]">+250 ₽</span>
                   </div>
                   <div className="flex justify-between border-t border-[#E4E7EC] pt-2">
-                    <span className="text-[#667085]">Итого</span>
+                    <span className="text-[#667085]">Ориентировочно</span>
                     <span className="font-semibold text-[#101828]">
                       от {analysis.priceFrom + 250} ₽
                     </span>
@@ -471,7 +474,7 @@ export default function AnalysisPage({ params }: Props) {
                 </div>
 
                 <div className="mt-4 text-xs text-[#667085]">
-                  Цены в Москве, актуальны на 27.09.2026
+                  Демонстрационные цены для города {city}. Уточняйте стоимость и подготовку в выбранной лаборатории.
                 </div>
 
                 {relatedArticle && (
