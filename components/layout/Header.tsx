@@ -51,10 +51,10 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-[#E4E7EC] bg-white">
-        <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-4 md:gap-6 md:px-6">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-2 px-4 md:gap-6 md:px-6">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="rounded-md p-2 hover:bg-[#F2F4F7] lg:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-[#F2F4F7] lg:hidden"
             aria-label="Меню"
           >
             <Menu className="h-5 w-5 text-[#101828]" />
@@ -132,31 +132,40 @@ export function Header() {
             </div>
           </form>
 
-          <div className="ml-auto flex items-center gap-1 md:ml-0">
+          {/* ИКОНКИ — прижаты вправо на mobile */}
+          <div className="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
+            {/* Поиск — mobile */}
             <Link
               href="/search"
-              className="rounded-md p-2 hover:bg-[#F2F4F7] md:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-[#F2F4F7] md:hidden"
               aria-label="Поиск"
             >
               <Search className="h-5 w-5 text-[#475467]" />
             </Link>
 
-            <button className="hidden rounded-md p-2 hover:bg-[#F2F4F7] sm:block">
+            {/* Сердце — desktop */}
+            <button
+              className="hidden h-11 w-11 items-center justify-center rounded-md hover:bg-[#F2F4F7] sm:flex"
+              aria-label="Избранное"
+            >
               <Heart className="h-5 w-5 text-[#475467]" />
             </button>
 
+            {/* КОРЗИНА — теперь с увеличенным тап-таргетом */}
             <Link
               href="/cart"
-              className="relative rounded-md p-2 hover:bg-[#F2F4F7]"
+              className="relative flex h-11 w-11 items-center justify-center rounded-md transition hover:bg-[#F2F4F7]"
+              aria-label="Корзина"
             >
               <ShoppingCart className="h-5 w-5 text-[#475467]" />
               {count > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#F04438] text-xs font-medium text-white">
+                <span className="pointer-events-none absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#F04438] text-xs font-medium text-white">
                   {count}
                 </span>
               )}
             </Link>
 
+            {/* Войти — desktop */}
             <Button
               variant="ghost"
               className="hidden text-sm lg:inline-flex"
@@ -189,7 +198,7 @@ export function Header() {
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="rounded-md p-2 hover:bg-[#F2F4F7]"
+                className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-[#F2F4F7]"
                 aria-label="Закрыть"
               >
                 <X className="h-5 w-5" />
@@ -197,7 +206,7 @@ export function Header() {
             </div>
 
             <div className="overflow-y-auto p-4">
-              {/* ГОРОД в мобильном меню — раскрывается в список */}
+              {/* ГОРОД в мобильном меню */}
               <div className="mb-4 rounded-md border border-[#E4E7EC]">
                 <button
                   onClick={() => setMobileCityOpen(!mobileCityOpen)}

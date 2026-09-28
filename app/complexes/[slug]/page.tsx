@@ -101,7 +101,7 @@ export default function ComplexPage({ params }: Props) {
           ]}
         />
 
-        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="mt-6 grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
           <div>
             <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
               {complex.name}
@@ -275,7 +275,7 @@ export default function ComplexPage({ params }: Props) {
           </div>
 
           {/* ЗАКРЕПЛЁННАЯ КАРТОЧКА СПРАВА */}
-          <aside className="lg:sticky lg:top-24 lg:self-start">
+          <aside className="xl:sticky xl:top-24 xl:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
                 <div className="flex items-baseline gap-2">
