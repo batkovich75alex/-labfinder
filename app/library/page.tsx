@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { articles } from "@/data/mock";
+import { getArticleImage } from "@/lib/images";
 
 const categories = [
   { id: "all", name: "Все рубрики", icon: Grid3x3 },
@@ -26,7 +27,7 @@ const categories = [
   { id: "Заболевания", name: "Заболевания", icon: Heart },
   { id: "Подготовка", name: "Подготовка", icon: FileText },
   { id: "Расшифровка", name: "Расшифровка", icon: BarChart3 },
-];
+].filter((category) => category.id === "all" || articles.some((article) => article.category === category.id));
 
 function LibraryContent() {
   const searchParams = useSearchParams();
@@ -96,8 +97,8 @@ function LibraryContent() {
                 Медицинская библиотека
               </h1>
               <p className="mt-2 max-w-xl text-[#475467]">
-                Проверенные статьи об анализах, заболеваниях, подготовке и
-                расшифровке результатов
+                Понятные материалы об анализах и результатах с датой проверки
+                и ссылками на официальные медицинские источники
               </p>
             </div>
             <div className="hidden h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-sm md:flex">
@@ -217,7 +218,13 @@ function LibraryContent() {
               >
                 <CardContent className="p-0">
                   <Link href={`/library/${art.slug}`}>
-                    <div className="h-40 rounded-t-xl bg-gradient-to-br from-[var(--primary-light)] to-[#F2F4F7]" />
+                    <div className="h-40 overflow-hidden rounded-t-xl bg-[#E4E7EC]">
+                      <img
+                        src={getArticleImage(art.id)}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                     <div className="p-5">
                       <Badge variant="secondary" className="mb-3 text-xs">
                         {art.category}
