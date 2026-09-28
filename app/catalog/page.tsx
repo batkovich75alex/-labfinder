@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
+import { useFavorites } from "@/lib/favorites-context";
 
 type Category =
   | "all"
@@ -82,12 +83,13 @@ export default function CatalogPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { toggleItem, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
   const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
 
-  // БАЗА для подсчёта: только категория + поиск (без чипов)
+  // БАЗА для подсчёта: категория + поиск (без чипов)
   const baseList = useMemo(() => {
     let list = [...analyses];
 
@@ -109,7 +111,7 @@ export default function CatalogPage() {
     return list;
   }, [selectedCategory, searchQuery]);
 
-  // СТАТИЧНЫЕ счётчики — считаются от baseList, НЕ зависят от выбора
+  // СТАТИЧНЫЕ счётчики для чипов
   const durationCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     durationOptions.forEach((opt) => {
@@ -337,7 +339,7 @@ export default function CatalogPage() {
 
           <div>
             <div className="mb-4 hidden flex-wrap gap-2 lg:flex">
-              {/* СРОК — статичные счётчики */}
+              {/* СРОК */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -389,7 +391,7 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* БИОМАТЕРИАЛ — статичные счётчики */}
+              {/* БИОМАТЕРИАЛ */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -441,7 +443,7 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* МЕТОД — статичные счётчики */}
+              {/* МЕТОД */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -520,6 +522,7 @@ export default function CatalogPage() {
 
               {sortedAnalyses.map((a) => {
                 const inCart = isInCart(a.id);
+                const inFav = isFavorite(a.id);
 
                 return (
                   <Card
@@ -563,8 +566,20 @@ export default function CatalogPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <button className="rounded-md p-2 text-[#667085] hover:bg-[#F2F4F7]">
-                            <Heart className="h-4 w-4" />
+                          <button
+                            onClick={() => toggleFavorite(a.id)}
+                            className={`rounded-md p-2 transition ${
+                              inFav
+                                ? "text-[#F04438] hover:bg-[#FEF3F2]"
+                                : "text-[#667085] hover:bg-[#F2F4F7]"
+                            }`}
+                            aria-label="В избранное"
+                          >
+                            <Heart
+                              className={`h-4 w-4 ${
+                                inFav ? "fill-[#F04438]" : ""
+                              }`}
+                            />
                           </button>
                           <Button
                             size="sm"
@@ -595,6 +610,140 @@ export default function CatalogPage() {
           </div>
         </div>
       </div>
+
+      {/* МОБИЛЬНЫЕ ФИЛЬТРЫ */}
+      {mobileFiltersOpen && (
+        <div className="fixed inset-0 z-[100] lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileFiltersOpen(false)}
+          />
+
+          <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white">
+            <div className="sticky top-0 flex items-center justify-between border-b border-[#E4E7EC] bg-white px-4 py-4">
+              <div className="flex items-center gap-2 text-base font-semibold">
+                Фильтры
+                {activeFiltersCount > 0 && (
+                  <span className="rounded-full bg-[#1677FF] px-2 py-0.5 text-xs text-white">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setMobileFiltersOpen(false)}
+                className="rounded-md p-1.5 hover:bg-[#F2F4F7]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-6 p-4">
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Поиск
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Название анализа"
+                    className="pl-9 h-10"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Срок выполнения
+                </div>
+                <div className="space-y-2">
+                  {durationOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="flex cursor-pointer items-center gap-3 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-[#D0D5DD]"
+                        checked={selectedDuration.includes(opt)}
+                        onChange={() =>
+                          toggleFilter(opt, selectedDuration, setSelectedDuration)
+                        }
+                      />
+                      <span className="text-[#475467]">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Биоматериал
+                </div>
+                <div className="space-y-2">
+                  {biomaterialOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="flex cursor-pointer items-center gap-3 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-[#D0D5DD]"
+                        checked={selectedBiomaterial.includes(opt)}
+                        onChange={() =>
+                          toggleFilter(
+                            opt,
+                            selectedBiomaterial,
+                            setSelectedBiomaterial
+                          )
+                        }
+                      />
+                      <span className="text-[#475467]">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-3 text-sm font-medium text-[#101828]">
+                  Метод
+                </div>
+                <div className="space-y-2">
+                  {methodOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="flex cursor-pointer items-center gap-3 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-[#D0D5DD]"
+                        checked={selectedMethod.includes(opt)}
+                        onChange={() =>
+                          toggleFilter(opt, selectedMethod, setSelectedMethod)
+                        }
+                      />
+                      <span className="text-[#475467]">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 flex gap-3 border-t border-[#E4E7EC] bg-white p-4">
+              <Button variant="outline" className="flex-1" onClick={resetFilters}>
+                Сбросить все
+              </Button>
+              <Button
+                className="flex-1 bg-[#1677FF] hover:bg-[#0969E8]"
+                onClick={() => setMobileFiltersOpen(false)}
+              >
+                Применить ({sortedAnalyses.length})
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
