@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/lib/cart-context";
+import { useCity } from "@/lib/use-city";
 import { cities } from "@/data/mock";
 
 const navItems = [
@@ -32,7 +33,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [mobileCityOpen, setMobileCityOpen] = useState(false);
-  const [selectedCity, setSelectedCity] = useState("Москва");
+  const [selectedCity, setSelectedCity] = useCity();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
