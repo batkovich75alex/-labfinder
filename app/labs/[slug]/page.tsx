@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { labs } from "@/data/mock";
 import { getLabColor } from "@/lib/images";
+import { cityIn, useCity } from "@/lib/use-city";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -114,8 +115,37 @@ const labOffices: Record<string, Array<{
   ],
 };
 
+const cityLocations: Record<string, Array<{ address: string; nearby: string }>> = {
+  Москва: [
+    { address: "ул. Тверская, 12", nearby: "Тверская · 200 м" },
+    { address: "ул. Большая Дмитровка, 5", nearby: "Охотный Ряд · 350 м" },
+    { address: "пр-т Мира, 28", nearby: "Проспект Мира · 400 м" },
+  ],
+  "Санкт-Петербург": [
+    { address: "Невский пр-т, 54", nearby: "Гостиный двор · 250 м" },
+    { address: "Литейный пр-т, 32", nearby: "Маяковская · 600 м" },
+    { address: "Московский пр-т, 73", nearby: "Фрунзенская · 350 м" },
+  ],
+  Казань: [
+    { address: "ул. Баумана, 35", nearby: "Площадь Тукая · 300 м" },
+    { address: "ул. Пушкина, 17", nearby: "Площадь Тукая · 450 м" },
+    { address: "пр-т Ямашева, 46", nearby: "Козья слобода · 1,2 км" },
+  ],
+  Екатеринбург: [
+    { address: "ул. Малышева, 42", nearby: "Площадь 1905 года · 500 м" },
+    { address: "ул. Белинского, 86", nearby: "Геологическая · 700 м" },
+    { address: "пр-т Ленина, 50", nearby: "Динамо · 1 км" },
+  ],
+  Новосибирск: [
+    { address: "Красный пр-т, 39", nearby: "Площадь Ленина · 300 м" },
+    { address: "ул. Фрунзе, 18", nearby: "Красный проспект · 550 м" },
+    { address: "ул. Кирова, 44", nearby: "Октябрьская · 400 м" },
+  ],
+};
+
 export default function LabPage({ params }: Props) {
   const { slug } = use(params);
+  const [city] = useCity();
   const lab = labs.find((l) => l.slug === slug);
 
   if (!lab) {
@@ -123,12 +153,17 @@ export default function LabPage({ params }: Props) {
   }
 
   const website = labWebsites[lab.slug] || "#";
-  const offices = labOffices[lab.slug] || [];
+  const locations = cityLocations[city] ?? cityLocations.Москва;
+  const offices = (labOffices[lab.slug] || []).map((office, index) => ({
+    ...office,
+    address: locations[index % locations.length].address,
+    metro: locations[index % locations.length].nearby,
+  }));
   const brandColor = getLabColor(lab.slug);
 
   // Ссылка на Яндекс.Карты с адресом
   const mapUrl = (address: string) =>
-    `https://yandex.ru/maps/?text=${encodeURIComponent("Москва, " + address)}`;
+    `https://yandex.ru/maps/?text=${encodeURIComponent(city + ", " + address)}`;
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
@@ -187,10 +222,15 @@ export default function LabPage({ params }: Props) {
               </p>
             </section>
 
+            <div className="mt-6 rounded-lg border border-[#B2DDFF] bg-[#EFF8FF] px-4 py-3 text-sm text-[#175CD3]">
+              Адреса и графики ниже — демонстрационный пример интерфейса для города {city}.
+              Перед визитом проверьте отделение и условия на официальном сайте {lab.name}.
+            </div>
+
             {/* Отделения */}
             <section className="mt-8">
               <h2 className="type-h2 text-[#101828]">
-                Отделения в Москве
+                Отделения в {cityIn(city)}
               </h2>
 
               <div className="mt-4 space-y-3">
@@ -279,7 +319,7 @@ export default function LabPage({ params }: Props) {
                             className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--primary)] bg-white px-3 py-2 text-sm text-[var(--primary)] transition hover:bg-[var(--primary-light)] md:flex-none"
                           >
                             <Calendar className="h-4 w-4" />
-                            Записаться
+                            Уточнить условия
                           </a>
                         </div>
                       </div>
@@ -288,9 +328,10 @@ export default function LabPage({ params }: Props) {
                 ))}
               </div>
 
-              <button className="mt-4 text-sm text-[var(--primary)] hover:underline">
-                Показать все {lab.offices} отделений →
-              </button>
+              <a href={website} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--primary)] hover:underline">
+                Все отделения на официальном сайте
+                <ExternalLink className="h-4 w-4" />
+              </a>
             </section>
           </div>
 
@@ -304,7 +345,7 @@ export default function LabPage({ params }: Props) {
                 </div>
 
                 <div className="mt-3 text-xs text-[#667085]">
-                  Цены и наличие услуг обновлены лабораторией
+                  Демонстрационные данные интерфейса
                 </div>
 
                 <a
@@ -313,7 +354,7 @@ export default function LabPage({ params }: Props) {
                   rel="noopener noreferrer"
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[var(--primary-hover)]"
                 >
-                  Перейти на сайт
+                  Официальный сайт
                   <ExternalLink className="h-4 w-4" />
                 </a>
 

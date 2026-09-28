@@ -26,3 +26,15 @@ export function useCity() {
   }
   return [city, setCity] as const;
 }
+
+const cityPrepositional: Record<string, string> = {
+  Москва: "Москве",
+  "Санкт-Петербург": "Санкт-Петербурге",
+  Казань: "Казани",
+  Екатеринбург: "Екатеринбурге",
+  Новосибирск: "Новосибирске",
+};
+
+export function cityIn(name: string) {
+  return cityPrepositional[name] ?? name;
+}
