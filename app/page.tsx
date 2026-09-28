@@ -4,6 +4,7 @@ import { useCity } from "@/lib/use-city";
 import { useCart } from "@/lib/cart-context";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import {
@@ -149,10 +150,13 @@ export default function HomePage() {
 
             {/* ПРАВАЯ — фото медработника */}
             <div className="relative hidden min-h-80 md:block">
-              <img
+              <Image
                 src={heroImage}
                 alt="Медицинская лаборатория"
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                priority
+                sizes="(min-width: 768px) 50vw, 0px"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-light)]/40 to-transparent md:bg-gradient-to-l" />
             </div>
@@ -253,10 +257,12 @@ export default function HomePage() {
               <CardContent className="p-0">
                 <Link href={`/complexes/${c.slug}`}>
                   <div className="relative h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={getComplexImage(c.id)}
                       alt={c.name}
-                      className="h-full w-full object-cover transition hover:scale-105"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition hover:scale-105"
                     />
                     <div className="absolute left-3 top-3">
                       <Badge className="bg-[var(--primary)] text-xs text-white hover:bg-[var(--primary)]">
@@ -364,11 +370,13 @@ export default function HomePage() {
             >
               <CardContent className="p-0">
                 <Link href={`/library/${art.slug}`}>
-                  <div className="h-40 overflow-hidden">
-                    <img
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
                       src={getArticleImage(art.id)}
                       alt={art.title}
-                      className="h-full w-full object-cover transition hover:scale-105"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition hover:scale-105"
                     />
                   </div>
                   <div className="p-5">

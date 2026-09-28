@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, notFound } from "next/navigation";
 import {
   Clock,
@@ -137,8 +138,8 @@ export default function ComplexPage({ params }: Props) {
             </div>
 
             <p className="mt-4 text-[#475467]">{complex.short}</p>
-            <div className="mt-6 overflow-hidden rounded-2xl">
-              <img src={getComplexImage(complex.id)} alt="" className="h-52 w-full object-cover md:h-64" />
+            <div className="relative mt-6 h-52 overflow-hidden rounded-2xl md:h-64">
+              <Image src={getComplexImage(complex.id)} alt="" fill sizes="(min-width: 1024px) 760px, 100vw" className="object-cover" />
             </div>
 
             {/* МЕТА */}

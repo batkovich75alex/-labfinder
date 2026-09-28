@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   Calendar,
@@ -245,8 +246,8 @@ export default function ArticlePage({ params }: Props) {
             </div>
 
             {/* Картинка */}
-            <div className="mt-6 h-64 overflow-hidden rounded-xl bg-[#E4E7EC]">
-              <img src={getArticleImage(article.id)} alt="" className="h-full w-full object-cover" />
+            <div className="relative mt-6 h-64 overflow-hidden rounded-xl bg-[#E4E7EC]">
+              <Image src={getArticleImage(article.id)} alt="" fill sizes="(min-width: 1024px) 800px, 100vw" className="object-cover" />
             </div>
 
             {/* ОГЛАВЛЕНИЕ — mobile */}

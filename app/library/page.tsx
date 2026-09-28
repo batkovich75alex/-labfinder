@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Droplet,
@@ -218,11 +219,13 @@ function LibraryContent() {
               >
                 <CardContent className="p-0">
                   <Link href={`/library/${art.slug}`}>
-                    <div className="h-40 overflow-hidden rounded-t-xl bg-[#E4E7EC]">
-                      <img
+                    <div className="relative h-40 overflow-hidden rounded-t-xl bg-[#E4E7EC]">
+                      <Image
                         src={getArticleImage(art.id)}
                         alt=""
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                        className="object-cover"
                       />
                     </div>
                     <div className="p-5">

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   SlidersHorizontal,
@@ -208,8 +209,8 @@ export default function ComplexesPage() {
                     <CardContent className="grid gap-4 p-4 md:grid-cols-[160px_1fr_auto] md:items-center md:p-5">
                       <Link
                         href={`/complexes/${c.slug}`}
-                        className="h-32 overflow-hidden rounded-xl"
-                      ><img src={getComplexImage(c.id)} alt="" className="h-full w-full object-cover" /></Link>
+                        className="relative h-32 overflow-hidden rounded-xl"
+                      ><Image src={getComplexImage(c.id)} alt="" fill sizes="(min-width: 768px) 160px, 100vw" className="object-cover" /></Link>
 
                       <div className="flex-1">
                         <Link
