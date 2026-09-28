@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart-context";
+import { FavoritesProvider } from "@/lib/favorites-context";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -21,9 +22,11 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${inter.className} bg-[#F8FAFC]`}>
         <CartProvider>
-          <Header />
-          {children}
-          <Footer />
+          <FavoritesProvider>
+            <Header />
+            {children}
+            <Footer />
+          </FavoritesProvider>
         </CartProvider>
       </body>
     </html>
