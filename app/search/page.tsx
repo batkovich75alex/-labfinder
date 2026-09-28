@@ -165,6 +165,9 @@ function SearchContent() {
                 Статьи {foundArticles.length}
               </button>
             </div>
+            <p className="mt-3 text-xs text-[#667085]">
+              Цены предварительные и могут не включать взятие биоматериала и другие обязательные сборы.
+            </p>
           </>
         )}
 

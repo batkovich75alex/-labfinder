@@ -341,7 +341,7 @@ export default function LabPage({ params }: Props) {
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 text-sm text-[var(--success-text)]">
                   <CheckCircle2 className="h-4 w-4" />
-                  <span>Актуально на {lab.actualOn}</span>
+                  <span>Демо-данные от {lab.actualOn}</span>
                 </div>
 
                 <div className="mt-3 text-xs text-[#667085]">

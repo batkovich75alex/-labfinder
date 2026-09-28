@@ -364,12 +364,12 @@ export default function ComplexPage({ params }: Props) {
                 <div className="mt-4 space-y-2 border-t border-[#E4E7EC] pt-4 text-sm">
                   <div className="flex justify-between">
                     <span className="text-[#667085]">Взятие биоматериала</span>
-                    <span className="font-medium text-[#101828]">+300 ₽</span>
+                    <span className="text-right font-medium text-[#101828]">По тарифу лаборатории</span>
                   </div>
                   <div className="flex justify-between border-t border-[#E4E7EC] pt-2">
-                    <span className="text-[#667085]">Ориентировочно</span>
+                    <span className="text-[#667085]">Комплекс</span>
                     <span className="font-semibold text-[#101828]">
-                      от {complex.priceFrom + 300} ₽
+                      от {complex.priceFrom} ₽
                     </span>
                   </div>
                 </div>

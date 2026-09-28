@@ -388,7 +388,7 @@ export default function LabsPage() {
                         {lab.priceFrom} ₽
                       </div>
                       <div className="text-xs text-[#667085]">
-                        Актуально: {lab.actualOn}
+                        Дата демо-данных: {lab.actualOn}
                       </div>
                     </div>
                     <Link href={`/labs/${lab.slug}`}>

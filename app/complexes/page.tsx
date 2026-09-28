@@ -49,6 +49,12 @@ const sortOptions = [
   { value: "alpha", label: "По алфавиту" },
 ];
 
+function complexWord(count: number) {
+  if (count % 10 === 1 && count % 100 !== 11) return "комплекс";
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return "комплекса";
+  return "комплексов";
+}
+
 export default function ComplexesPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("popular");
@@ -114,7 +120,7 @@ export default function ComplexesPage() {
               Чекапы и комплексы
             </h1>
             <p className="mt-1 text-sm text-[#667085]">
-              Найдено {sortedComplexes.length} комплекса
+              Найдено {sortedComplexes.length} {complexWord(sortedComplexes.length)}
             </p>
           </div>
 
@@ -152,6 +158,10 @@ export default function ComplexesPage() {
             </div>
           </div>
         </div>
+
+        <p className="mt-4 text-sm text-[#667085]">
+          Цены предварительные и могут не включать взятие биоматериала и другие обязательные сборы.
+        </p>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
           <aside>

@@ -179,8 +179,10 @@ export function Header() {
 
             {/* Сердце — desktop */}
             <button
-              className="hidden h-11 w-11 items-center justify-center rounded-md hover:bg-[#F2F4F7] sm:flex"
-              aria-label="Избранное"
+              className="hidden h-11 w-11 items-center justify-center rounded-md opacity-50 sm:flex"
+              aria-label="Избранное — раздел пока недоступен"
+              title="Раздел избранного появится позже"
+              disabled
             >
               <Heart className="h-5 w-5 text-[#475467]" />
             </button>
@@ -203,8 +205,10 @@ export function Header() {
             <Button
               variant="ghost"
               className="hidden text-sm lg:inline-flex"
+              disabled
+              title="Личный кабинет появится позже"
             >
-              Войти
+              Вход — скоро
             </Button>
           </div>
         </div>
@@ -295,9 +299,9 @@ export function Header() {
                 <Button
                   variant="outline"
                   className="w-full justify-center"
-                  onClick={() => setMobileMenuOpen(false)}
+                  disabled
                 >
-                  Войти
+                  Вход — скоро
                 </Button>
               </div>
             </div>

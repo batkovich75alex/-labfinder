@@ -146,7 +146,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/60 md:flex-row md:items-center md:justify-between">
-          <div>© 2024 LabFinder. Все права защищены.</div>
+          <div>© 2026 LabFinder. Демонстрационный проект.</div>
           <div className="flex gap-6">
             <span className="flex items-center gap-1 text-white/40">
               Карта сайта
