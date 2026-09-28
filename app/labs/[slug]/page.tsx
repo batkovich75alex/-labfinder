@@ -10,46 +10,109 @@ import {
   ExternalLink,
   CheckCircle2,
   AlertCircle,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { labs } from "@/data/mock";
+import { getLabColor } from "@/lib/images";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-const offices = [
-  {
-    id: 1,
-    address: "ул. Тверская, 12",
-    metro: "Тверская · 200 м",
-    hours: "Пн–Пт: 7:00–20:00 · Сб: 8:00–18:00 · Вс: выходной",
-    biomaterial: "Пн–Пт: 7:00–18:00 · Сб: 8:00–16:00",
-    homeVisit: true,
-    open: true,
-  },
-  {
-    id: 2,
-    address: "ул. Ленина, 5",
-    metro: "Охотный Ряд · 350 м",
-    hours: "Пн–Пт: 8:00–20:00 · Сб: 9:00–17:00 · Вс: выходной",
-    biomaterial: "Пн–Пт: 8:00–17:00 · Сб: 9:00–15:00",
-    homeVisit: false,
-    open: true,
-  },
-  {
-    id: 3,
-    address: "ул. Мира, 28",
-    metro: "Алексеевская · 400 м",
-    hours: "Пн–Пт: 8:00–21:00 · Сб: 9:00–18:00 · Вс: 9:00–15:00",
-    biomaterial: "Пн–Пт: 8:00–18:00 · Сб: 9:00–16:00",
-    homeVisit: true,
-    open: false,
-  },
-];
+// Реальные сайты лабораторий
+const labWebsites: Record<string, string> = {
+  gemotest: "https://gemotest.ru",
+  invitro: "https://www.invitro.ru",
+  kdl: "https://www.kdl.ru",
+  cmd: "https://www.cmd-online.ru",
+};
+
+// Отделения по лабораториям
+const labOffices: Record<string, Array<{
+  id: number;
+  address: string;
+  metro: string;
+  hours: string;
+  biomaterial: string;
+  homeVisit: boolean;
+  open: boolean;
+}>> = {
+  gemotest: [
+    {
+      id: 1,
+      address: "ул. Тверская, 12",
+      metro: "Тверская · 200 м",
+      hours: "Пн–Пт: 7:00–20:00 · Сб: 8:00–18:00 · Вс: выходной",
+      biomaterial: "Пн–Пт: 7:00–18:00 · Сб: 8:00–16:00",
+      homeVisit: true,
+      open: true,
+    },
+    {
+      id: 2,
+      address: "ул. Ленина, 5",
+      metro: "Охотный Ряд · 350 м",
+      hours: "Пн–Пт: 8:00–20:00 · Сб: 9:00–17:00 · Вс: выходной",
+      biomaterial: "Пн–Пт: 8:00–17:00 · Сб: 9:00–15:00",
+      homeVisit: false,
+      open: true,
+    },
+    {
+      id: 3,
+      address: "ул. Мира, 28",
+      metro: "Алексеевская · 400 м",
+      hours: "Пн–Пт: 8:00–21:00 · Сб: 9:00–18:00 · Вс: 9:00–15:00",
+      biomaterial: "Пн–Пт: 8:00–18:00 · Сб: 9:00–16:00",
+      homeVisit: true,
+      open: false,
+    },
+  ],
+  invitro: [
+    {
+      id: 1,
+      address: "Ленинский пр-т, 45",
+      metro: "Ленинский пр-т · 300 м",
+      hours: "Пн–Пт: 7:30–20:00 · Сб: 8:00–17:00 · Вс: выходной",
+      biomaterial: "Пн–Пт: 7:30–17:00 · Сб: 8:00–15:00",
+      homeVisit: true,
+      open: true,
+    },
+    {
+      id: 2,
+      address: "ул. Арбат, 10",
+      metro: "Арбатская · 250 м",
+      hours: "Пн–Пт: 8:00–20:00 · Сб: 9:00–18:00 · Вс: 9:00–15:00",
+      biomaterial: "Пн–Пт: 8:00–18:00 · Сб: 9:00–16:00",
+      homeVisit: false,
+      open: true,
+    },
+  ],
+  kdl: [
+    {
+      id: 1,
+      address: "ул. Мира, 76",
+      metro: "Проспект Мира · 400 м",
+      hours: "Пн–Пт: 7:00–20:00 · Сб: 8:00–18:00 · Вс: 8:00–16:00",
+      biomaterial: "Пн–Пт: 7:00–18:00 · Сб: 8:00–16:00",
+      homeVisit: false,
+      open: true,
+    },
+  ],
+  cmd: [
+    {
+      id: 1,
+      address: "ул. Вавилова, 20",
+      metro: "Ленинский пр-т · 500 м",
+      hours: "Пн–Пт: 7:30–20:00 · Сб: 8:00–18:00 · Вс: выходной",
+      biomaterial: "Пн–Пт: 7:30–18:00 · Сб: 8:00–16:00",
+      homeVisit: true,
+      open: true,
+    },
+  ],
+};
 
 export default function LabPage({ params }: Props) {
   const { slug } = use(params);
@@ -59,9 +122,17 @@ export default function LabPage({ params }: Props) {
     notFound();
   }
 
+  const website = labWebsites[lab.slug] || "#";
+  const offices = labOffices[lab.slug] || [];
+  const brandColor = getLabColor(lab.slug);
+
+  // Ссылка на Яндекс.Карты с адресом
+  const mapUrl = (address: string) =>
+    `https://yandex.ru/maps/?text=${encodeURIComponent("Москва, " + address)}`;
+
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
-      <div className="mx-auto max-w-[1280px] px-6 py-6">
+      <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
@@ -71,14 +142,17 @@ export default function LabPage({ params }: Props) {
         />
 
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
-          {/* ЛЕВАЯ ЧАСТЬ */}
           <div>
+            {/* Заголовок */}
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#EFF6FF] text-3xl font-bold text-[#1677FF]">
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-xl text-3xl font-bold text-white"
+                style={{ backgroundColor: brandColor }}
+              >
                 {lab.name[0]}
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-[#101828]">
+                <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
                   {lab.name}
                 </h1>
                 <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[#667085]">
@@ -101,30 +175,7 @@ export default function LabPage({ params }: Props) {
               </div>
             </div>
 
-            {/* ТАБЫ */}
-            <div className="mt-8 overflow-x-auto border-b border-[#E4E7EC]">
-              <div className="flex gap-6 whitespace-nowrap text-sm">
-                {[
-                  "Обзор",
-                  `Отделения (${lab.offices})`,
-                  "Услуги и цены",
-                  `Отзывы (${lab.reviews})`,
-                ].map((tab, i) => (
-                  <button
-                    key={tab}
-                    className={`pb-3 ${
-                      i === 1
-                        ? "border-b-2 border-[#1677FF] font-medium text-[#1677FF]"
-                        : "text-[#667085] hover:text-[#101828]"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* О ЛАБОРАТОРИИ */}
+            {/* О лаборатории */}
             <section className="mt-8">
               <h2 className="text-xl font-semibold text-[#101828]">
                 О лаборатории
@@ -134,12 +185,9 @@ export default function LabPage({ params }: Props) {
                 Широкий спектр исследований, современные технологии и высокие
                 стандарты качества.
               </p>
-              <button className="mt-2 text-sm text-[#1677FF] hover:underline">
-                Читать подробнее →
-              </button>
             </section>
 
-            {/* ОТДЕЛЕНИЯ */}
+            {/* Отделения */}
             <section className="mt-8">
               <h2 className="text-xl font-semibold text-[#101828]">
                 Отделения в Москве
@@ -168,9 +216,7 @@ export default function LabPage({ params }: Props) {
                                 <div className="text-[#101828]">
                                   Часы работы отделения
                                 </div>
-                                <div className="text-[#667085]">
-                                  {o.hours}
-                                </div>
+                                <div className="text-[#667085]">{o.hours}</div>
                               </div>
                             </div>
 
@@ -217,12 +263,24 @@ export default function LabPage({ params }: Props) {
                         </div>
 
                         <div className="flex gap-2 md:flex-col">
-                          <Button variant="outline" size="sm">
-                            Показать на карте
-                          </Button>
-                          <Button variant="outline" size="sm">
+                          <a
+                            href={mapUrl(o.address)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[#E4E7EC] bg-white px-3 py-2 text-sm text-[#475467] transition hover:bg-[#F2F4F7] md:flex-none"
+                          >
+                            <MapPin className="h-4 w-4" />
+                            На карте
+                          </a>
+                          <a
+                            href={website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[#1677FF] bg-white px-3 py-2 text-sm text-[#1677FF] transition hover:bg-[#EFF6FF] md:flex-none"
+                          >
+                            <Calendar className="h-4 w-4" />
                             Записаться
-                          </Button>
+                          </a>
                         </div>
                       </div>
                     </CardContent>
@@ -236,7 +294,7 @@ export default function LabPage({ params }: Props) {
             </section>
           </div>
 
-          {/* ПРАВАЯ ЧАСТЬ — ЗАКРЕПЛЁННАЯ КАРТОЧКА */}
+          {/* Правая колонка */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
@@ -249,9 +307,8 @@ export default function LabPage({ params }: Props) {
                   Цены и наличие услуг обновлены лабораторией
                 </div>
 
-                {/* Кнопка «Перейти на сайт» — исправлено (без asChild) */}
                 <a
-                  href="#"
+                  href={website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#1677FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#0969E8]"
