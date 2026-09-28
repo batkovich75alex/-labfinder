@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
@@ -18,6 +19,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
 import { useFavorites } from "@/lib/favorites-context";
+import { useCity } from "@/lib/use-city";
 
 type Category =
   | "all"
@@ -26,7 +28,9 @@ type Category =
   | "vitamins"
   | "general"
   | "immunology"
-  | "allergy";
+  | "allergy"
+  | "infection"
+  | "genetics";
 
 const categories = [
   {
@@ -39,11 +43,9 @@ const categories = [
       { id: "general" as Category, label: "Общие анализы" },
       { id: "immunology" as Category, label: "Иммунология" },
       { id: "allergy" as Category, label: "Аллергология" },
+      { id: "infection" as Category, label: "Инфекции" },
+      { id: "genetics" as Category, label: "Генетика" },
     ],
-  },
-  {
-    title: "Чекапы и комплексы",
-    items: [{ id: "complexes" as any, label: "Все комплексы" }],
   },
 ];
 
@@ -55,12 +57,9 @@ const sortOptions = [
 ];
 
 const durationOptions = ["До 1 дня", "1–2 дня", "2–3 дня", "Более 3 дней"];
-const biomaterialOptions = ["Кровь из вены", "Капиллярная кровь", "Моча", "Слюна"];
+const biomaterialOptions = [...new Set(analyses.map((a) => a.biomaterial))];
 const methodOptions = [
-  "Ферментативный",
-  "Иммунохемилюминесцентный",
-  "ПЦР",
-  "Автоматический анализатор",
+  ...new Set(analyses.map((a) => a.method).filter((method): method is string => Boolean(method))),
 ];
 
 type OpenChip = "duration" | "biomaterial" | "method" | null;
@@ -75,19 +74,56 @@ function matchesDurationFilter(duration: string, filter: string): boolean {
   return false;
 }
 
-export default function CatalogPage() {
+function splitParam(value: string | null) {
+  return value ? value.split("|").filter(Boolean) : [];
+}
+
+function researchWord(count: number) {
+  const lastTwo = count % 100;
+  const last = count % 10;
+  if (lastTwo >= 11 && lastTwo <= 14) return "исследований";
+  if (last === 1) return "исследование";
+  if (last >= 2 && last <= 4) return "исследования";
+  return "исследований";
+}
+
+function CatalogContent() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("popular");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [openChip, setOpenChip] = useState<OpenChip>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const categoryParam = searchParams.get("category") as Category | null;
+  const [selectedCategory, setSelectedCategory] = useState<Category>(
+    categoryParam && categories[0].items.some((item) => item.id === categoryParam)
+      ? categoryParam
+      : "all"
+  );
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const { toggleItem, isInCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const [city] = useCity();
 
-  const [selectedDuration, setSelectedDuration] = useState<string[]>([]);
-  const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
-  const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
+  const [selectedDuration, setSelectedDuration] = useState<string[]>(() => splitParam(searchParams.get("duration")));
+  const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>(() => splitParam(searchParams.get("biomaterial")));
+  const [selectedMethod, setSelectedMethod] = useState<string[]>(() => splitParam(searchParams.get("method")));
+  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory !== "all") params.set("category", selectedCategory);
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
+    if (minPrice) params.set("minPrice", minPrice);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (selectedDuration.length) params.set("duration", selectedDuration.join("|"));
+    if (selectedBiomaterial.length) params.set("biomaterial", selectedBiomaterial.join("|"));
+    if (selectedMethod.length) params.set("method", selectedMethod.join("|"));
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [pathname, router, selectedCategory, searchQuery, minPrice, maxPrice, selectedDuration, selectedBiomaterial, selectedMethod]);
 
   const baseList = useMemo(() => {
     let list = [...analyses];
@@ -155,6 +191,11 @@ export default function CatalogPage() {
       );
     }
 
+    const min = Number(minPrice);
+    const max = Number(maxPrice);
+    if (minPrice && Number.isFinite(min)) list = list.filter((a) => a.priceFrom >= min);
+    if (maxPrice && Number.isFinite(max)) list = list.filter((a) => a.priceFrom <= max);
+
     switch (selectedSort) {
       case "price":
         return list.sort((a, b) => a.priceFrom - b.priceFrom);
@@ -174,7 +215,7 @@ export default function CatalogPage() {
       default:
         return list;
     }
-  }, [baseList, selectedSort, selectedDuration, selectedBiomaterial, selectedMethod]);
+  }, [baseList, selectedSort, selectedDuration, selectedBiomaterial, selectedMethod, minPrice, maxPrice]);
 
   const toggleFilter = (
     value: string,
@@ -190,12 +231,22 @@ export default function CatalogPage() {
     setSelectedDuration([]);
     setSelectedBiomaterial([]);
     setSelectedMethod([]);
+    setMinPrice("");
+    setMaxPrice("");
+  };
+
+  const resetAllFilters = () => {
+    resetFilters();
+    setSelectedCategory("all");
+    setSearchQuery("");
   };
 
   const activeFiltersCount =
     selectedDuration.length +
     selectedBiomaterial.length +
-    selectedMethod.length;
+    selectedMethod.length +
+    (minPrice || maxPrice ? 1 : 0) +
+    (selectedCategory !== "all" ? 1 : 0);
 
   const currentSortLabel =
     sortOptions.find((o) => o.value === selectedSort)?.label || "По популярности";
@@ -211,7 +262,7 @@ export default function CatalogPage() {
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
-            { label: "Москва", href: "/?city=msk" },
+            { label: city, href: "/" },
             { label: "Анализы" },
           ]}
         />
@@ -285,12 +336,13 @@ export default function CatalogPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
           <aside className="hidden lg:block">
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                 <Input
+                  aria-label="Поиск анализов"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Поиск анализов"
@@ -306,6 +358,15 @@ export default function CatalogPage() {
                   </button>
                 )}
               </div>
+
+              <fieldset className="mb-5">
+                <legend className="mb-2 text-sm font-semibold text-[#101828]">Цена, ₽</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input inputMode="numeric" aria-label="Цена от" placeholder="От" value={minPrice} onChange={(e) => setMinPrice(e.target.value.replace(/\D/g, ""))} />
+                  <Input inputMode="numeric" aria-label="Цена до" placeholder="До" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value.replace(/\D/g, ""))} />
+                </div>
+                <p className="mt-2 text-xs leading-5 text-[#667085]">Цена исследования без платы за взятие биоматериала.</p>
+              </fieldset>
 
               {categories.map((cat) => (
                 <div key={cat.title} className="mb-4">
@@ -337,6 +398,17 @@ export default function CatalogPage() {
           </aside>
 
           <div>
+            {activeFiltersCount > 0 && (
+              <div className="mb-4 flex flex-wrap items-center gap-2" aria-label="Активные фильтры">
+                {selectedCategory !== "all" && <button onClick={() => setSelectedCategory("all")} className="rounded-full bg-[var(--primary-light)] px-3 py-2 text-sm text-[var(--primary)]">{categories[0].items.find((item) => item.id === selectedCategory)?.label} ×</button>}
+                {minPrice && <button onClick={() => setMinPrice("")} className="rounded-full bg-[var(--primary-light)] px-3 py-2 text-sm text-[var(--primary)]">От {Number(minPrice).toLocaleString("ru-RU")} ₽ ×</button>}
+                {maxPrice && <button onClick={() => setMaxPrice("")} className="rounded-full bg-[var(--primary-light)] px-3 py-2 text-sm text-[var(--primary)]">До {Number(maxPrice).toLocaleString("ru-RU")} ₽ ×</button>}
+                {selectedDuration.map((value) => <button key={value} onClick={() => toggleFilter(value, selectedDuration, setSelectedDuration)} className="rounded-full bg-[var(--primary-light)] px-3 py-2 text-sm text-[var(--primary)]">{value} ×</button>)}
+                {selectedBiomaterial.map((value) => <button key={value} onClick={() => toggleFilter(value, selectedBiomaterial, setSelectedBiomaterial)} className="rounded-full bg-[var(--primary-light)] px-3 py-2 text-sm text-[var(--primary)]">{value} ×</button>)}
+                {selectedMethod.map((value) => <button key={value} onClick={() => toggleFilter(value, selectedMethod, setSelectedMethod)} className="rounded-full bg-[var(--primary-light)] px-3 py-2 text-sm text-[var(--primary)]">{value} ×</button>)}
+                <button onClick={resetAllFilters} className="min-h-11 px-2 text-sm font-medium text-[var(--primary)] hover:underline">Сбросить всё</button>
+              </div>
+            )}
             <div className="mb-4 hidden flex-wrap gap-2 lg:flex">
               <div className="relative">
                 <button
@@ -489,7 +561,7 @@ export default function CatalogPage() {
 
               {activeFiltersCount > 0 && (
                 <button
-                  onClick={resetFilters}
+                  onClick={resetAllFilters}
                   className="text-sm text-[var(--primary)] hover:underline"
                 >
                   Сбросить
@@ -501,17 +573,18 @@ export default function CatalogPage() {
               {sortedAnalyses.length === 0 && (
                 <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-white p-12 text-center">
                   <div className="text-[#667085]">
-                    Ничего не найдено. Попробуйте сбросить фильтры.
+                    <strong className="block text-[#101828]">По этим условиям ничего не найдено</strong>
+                    <span className="mt-2 block">Попробуйте увеличить диапазон цены или убрать один из фильтров.</span>
                   </div>
                   <button
                     onClick={() => {
                       setSearchQuery("");
                       setSelectedCategory("all");
-                      resetFilters();
+                      resetAllFilters();
                     }}
                     className="mt-3 text-sm text-[var(--primary)] hover:underline"
                   >
-                    Сбросить всё
+                    Сбросить фильтры
                   </button>
                 </div>
               )}
@@ -569,7 +642,7 @@ export default function CatalogPage() {
                                 ? "text-[#F04438] hover:bg-[#FEF3F2]"
                                 : "text-[#667085] hover:bg-[#F2F4F7]"
                             }`}
-                            aria-label="В избранное"
+                            aria-label={`${inFav ? "Удалить" : "Добавить"} ${a.name} ${inFav ? "из избранного" : "в избранное"}`}
                           >
                             <Heart
                               className={`h-4 w-4 ${
@@ -595,7 +668,7 @@ export default function CatalogPage() {
                               })
                             }
                           >
-                            {inCart ? "В корзине" : "В корзину"}
+                            {inCart ? "В корзине" : "Добавить в корзину"}
                           </Button>
                         </div>
                       </div>
@@ -628,12 +701,27 @@ export default function CatalogPage() {
               <button
                 onClick={() => setMobileFiltersOpen(false)}
                 className="rounded-md p-1.5 hover:bg-[#F2F4F7]"
+                aria-label="Закрыть фильтры"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="space-y-6 p-4">
+              <div>
+                <label htmlFor="mobile-category" className="mb-3 block text-sm font-medium text-[#101828]">Направление</label>
+                <select id="mobile-category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value as Category)} className="min-h-12 w-full rounded-xl border border-[#667085] bg-white px-3">
+                  {categories[0].items.map((item) => <option key={item.id} value={item.id}>{item.label} ({countByCategory(item.id)})</option>)}
+                </select>
+              </div>
+              <fieldset>
+                <legend className="mb-3 text-sm font-medium text-[#101828]">Цена, ₽</legend>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input inputMode="numeric" aria-label="Цена от" placeholder="От" value={minPrice} onChange={(e) => setMinPrice(e.target.value.replace(/\D/g, ""))} />
+                  <Input inputMode="numeric" aria-label="Цена до" placeholder="До" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value.replace(/\D/g, ""))} />
+                </div>
+                <p className="mt-2 text-xs leading-5 text-[#667085]">Без платы за взятие биоматериала.</p>
+              </fieldset>
               <div>
                 <div className="mb-3 text-sm font-medium text-[#101828]">
                   Поиск
@@ -727,19 +815,27 @@ export default function CatalogPage() {
             </div>
 
             <div className="sticky bottom-0 flex gap-3 border-t border-[#E4E7EC] bg-white p-4">
-              <Button variant="outline" className="flex-1" onClick={resetFilters}>
+              <Button variant="outline" className="flex-1" onClick={resetAllFilters}>
                 Сбросить все
               </Button>
               <Button
                 className="flex-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                 onClick={() => setMobileFiltersOpen(false)}
               >
-                Применить ({sortedAnalyses.length})
+                Показать {sortedAnalyses.length} {researchWord(sortedAnalyses.length)}
               </Button>
             </div>
           </div>
         </div>
       )}
     </main>
+  );
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[#F8FAFC]" aria-busy="true" />}>
+      <CatalogContent />
+    </Suspense>
   );
 }
