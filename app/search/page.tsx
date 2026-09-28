@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Search as SearchIcon,
@@ -20,6 +20,7 @@ import { analyses, complexes, articles } from "@/data/mock";
 type Tab = "all" | "analyses" | "complexes" | "articles";
 
 function SearchContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") || "";
 
@@ -28,7 +29,14 @@ function SearchContent() {
 
   useEffect(() => {
     setQuery(urlQuery);
+    setActiveTab("all");
   }, [urlQuery]);
+
+  const updateQuery = (value: string) => {
+    setQuery(value);
+    const normalized = value.trim();
+    router.replace(normalized ? `/search?q=${encodeURIComponent(normalized)}` : "/search", { scroll: false });
+  };
 
   const q = query.toLowerCase().trim();
 
@@ -37,7 +45,8 @@ function SearchContent() {
         (a) =>
           a.name.toLowerCase().includes(q) ||
           a.short.toLowerCase().includes(q) ||
-          (a.synonyms && a.synonyms.toLowerCase().includes(q))
+          (a.synonyms && a.synonyms.toLowerCase().includes(q)) ||
+          a.code.toLowerCase().includes(q)
       )
     : [];
 
@@ -60,6 +69,13 @@ function SearchContent() {
     foundAnalyses.length + foundComplexes.length + foundArticles.length;
   const isEmpty = q && total === 0;
   const isIdle = !q;
+  const activeCount = activeTab === "analyses"
+    ? foundAnalyses.length
+    : activeTab === "complexes"
+      ? foundComplexes.length
+      : activeTab === "articles"
+        ? foundArticles.length
+        : total;
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
@@ -72,17 +88,23 @@ function SearchContent() {
         />
 
         <div className="mt-6 max-w-2xl">
-          <div className="relative">
+          <h1 className="type-h1 text-[#101828]">Поиск по LabFinder</h1>
+          <p className="mt-2 text-sm text-[#667085]">
+            Ищите анализ по названию, синониму или коду, а также комплексы и статьи.
+          </p>
+          <div className="relative mt-4">
             <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
             <Input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => updateQuery(e.target.value)}
               placeholder="Найдите анализ, комплекс или статью"
+              aria-label="Поиск по анализам, комплексам и статьям"
               className="h-12 pl-9 pr-10 text-base"
             />
             {query && (
               <button
-                onClick={() => setQuery("")}
+                onClick={() => updateQuery("")}
+                aria-label="Очистить поиск"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085] hover:text-[#101828]"
               >
                 <X className="h-4 w-4" />
@@ -93,13 +115,14 @@ function SearchContent() {
 
         {!isIdle && (
           <>
-            <h1 className="type-h1 mt-6 text-[#101828]">
+            <h2 className="type-h2 mt-6 text-[#101828]">
               Результаты поиска: «{query}»
-            </h1>
+            </h2>
 
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveTab("all")}
+                aria-pressed={activeTab === "all"}
                 className={`rounded-full px-4 py-2 text-sm transition ${
                   activeTab === "all"
                     ? "bg-[var(--primary)] text-white"
@@ -110,6 +133,7 @@ function SearchContent() {
               </button>
               <button
                 onClick={() => setActiveTab("analyses")}
+                aria-pressed={activeTab === "analyses"}
                 className={`rounded-full px-4 py-2 text-sm transition ${
                   activeTab === "analyses"
                     ? "bg-[var(--primary)] text-white"
@@ -120,6 +144,7 @@ function SearchContent() {
               </button>
               <button
                 onClick={() => setActiveTab("complexes")}
+                aria-pressed={activeTab === "complexes"}
                 className={`rounded-full px-4 py-2 text-sm transition ${
                   activeTab === "complexes"
                     ? "bg-[var(--primary)] text-white"
@@ -130,6 +155,7 @@ function SearchContent() {
               </button>
               <button
                 onClick={() => setActiveTab("articles")}
+                aria-pressed={activeTab === "articles"}
                 className={`rounded-full px-4 py-2 text-sm transition ${
                   activeTab === "articles"
                     ? "bg-[var(--primary)] text-white"
@@ -155,7 +181,7 @@ function SearchContent() {
             </p>
 
             <div className="mt-6 flex gap-3">
-              <Button variant="outline" onClick={() => setQuery("")}>
+              <Button variant="outline" onClick={() => updateQuery("")}>
                 Очистить запрос
               </Button>
               <Link href="/catalog">
@@ -174,7 +200,7 @@ function SearchContent() {
                   (q) => (
                     <button
                       key={q}
-                      onClick={() => setQuery(q)}
+                      onClick={() => updateQuery(q)}
                       className="rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm hover:border-[var(--primary)] hover:text-[var(--primary)]"
                     >
                       {q}
@@ -186,7 +212,22 @@ function SearchContent() {
           </div>
         )}
 
-        {!isIdle && !isEmpty && (
+        {!isIdle && !isEmpty && activeCount === 0 && (
+          <div className="mt-8 rounded-xl border border-dashed border-[#D0D5DD] bg-white p-8 text-center">
+            <SearchIcon className="mx-auto h-8 w-8 text-[#98A2B3]" />
+            <h2 className="mt-3 font-semibold text-[#101828]">
+              В этой вкладке результатов нет
+            </h2>
+            <p className="mt-1 text-sm text-[#667085]">
+              Посмотрите все результаты или выберите другую вкладку.
+            </p>
+            <Button variant="outline" className="mt-4" onClick={() => setActiveTab("all")}>
+              Показать все результаты
+            </Button>
+          </div>
+        )}
+
+        {!isIdle && !isEmpty && activeCount > 0 && (
           <div className="mt-8 space-y-10">
             {(activeTab === "all" || activeTab === "analyses") &&
               foundAnalyses.length > 0 && (
