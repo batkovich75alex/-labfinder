@@ -70,10 +70,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${inter.className} bg-[#F8FAFC]`}>
+        <a href="#main-content" className="skip-link">Перейти к содержанию</a>
         <CartProvider>
           <FavoritesProvider>
             <Header />
-            {children}
+            <div id="main-content" tabIndex={-1}>{children}</div>
             <Footer />
           </FavoritesProvider>
         </CartProvider>

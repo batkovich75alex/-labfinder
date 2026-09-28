@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, useEffect, useRef, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -94,6 +94,9 @@ function CatalogContent() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("popular");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const mobileFilterCloseRef = useRef<HTMLButtonElement>(null);
+  const mobileFilterTriggerRef = useRef<HTMLButtonElement>(null);
+  const mobileFilterPanelRef = useRef<HTMLDivElement>(null);
   const [openChip, setOpenChip] = useState<OpenChip>(null);
   const categoryParam = searchParams.get("category") as Category | null;
   const [selectedCategory, setSelectedCategory] = useState<Category>(
@@ -111,6 +114,31 @@ function CatalogContent() {
   const [selectedMethod, setSelectedMethod] = useState<string[]>(() => splitParam(searchParams.get("method")));
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    mobileFilterCloseRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileFiltersOpen(false);
+      if (event.key === "Tab" && mobileFilterPanelRef.current) {
+        const focusable = Array.from(mobileFilterPanelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      mobileFilterTriggerRef.current?.focus();
+    };
+  }, [mobileFiltersOpen]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -272,7 +300,7 @@ function CatalogContent() {
             <h1 className="type-h1 text-[#101828]">
               Анализы
             </h1>
-            <p className="mt-1 text-sm text-[#667085]">
+            <p className="mt-1 text-sm text-[#667085]" role="status" aria-live="polite">
               {activeFiltersCount > 0 ? (
                 <>
                   Найдено{" "}
@@ -289,6 +317,7 @@ function CatalogContent() {
 
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <Button
+              ref={mobileFilterTriggerRef}
               variant="outline"
               className="gap-2 lg:hidden"
               onClick={() => setMobileFiltersOpen(true)}
@@ -682,15 +711,15 @@ function CatalogContent() {
       </div>
 
       {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div className="fixed inset-0 z-[100] lg:hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileFiltersOpen(false)}
           />
 
-          <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white">
+          <div ref={mobileFilterPanelRef} className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white">
             <div className="sticky top-0 flex items-center justify-between border-b border-[#E4E7EC] bg-white px-4 py-4">
-              <div className="flex items-center gap-2 text-base font-semibold">
+              <div id="mobile-filters-title" className="flex items-center gap-2 text-base font-semibold">
                 Фильтры
                 {activeFiltersCount > 0 && (
                   <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
@@ -699,6 +728,7 @@ function CatalogContent() {
                 )}
               </div>
               <button
+                ref={mobileFilterCloseRef}
                 onClick={() => setMobileFiltersOpen(false)}
                 className="rounded-md p-1.5 hover:bg-[#F2F4F7]"
                 aria-label="Закрыть фильтры"
@@ -723,12 +753,13 @@ function CatalogContent() {
                 <p className="mt-2 text-xs leading-5 text-[#667085]">Без платы за взятие биоматериала.</p>
               </fieldset>
               <div>
-                <div className="mb-3 text-sm font-medium text-[#101828]">
+                <label htmlFor="mobile-analysis-search" className="mb-3 block text-sm font-medium text-[#101828]">
                   Поиск
-                </div>
+                </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                   <Input
+                    id="mobile-analysis-search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Название анализа"

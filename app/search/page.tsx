@@ -115,7 +115,7 @@ function SearchContent() {
 
         {!isIdle && (
           <>
-            <h2 className="type-h2 mt-6 text-[#101828]">
+            <h2 className="type-h2 mt-6 text-[#101828]" role="status" aria-live="polite">
               Результаты поиска: «{query}»
             </h2>
 
