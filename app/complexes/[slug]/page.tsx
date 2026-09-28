@@ -22,18 +22,30 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { complexes, analyses, labs } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
 import { useFavorites } from "@/lib/favorites-context";
+import { useCity } from "@/lib/use-city";
+import { getComplexImage } from "@/lib/images";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
+function researchWord(count: number) {
+  const lastTwo = count % 100;
+  const last = count % 10;
+  if (lastTwo >= 11 && lastTwo <= 14) return "исследований";
+  if (last === 1) return "исследование";
+  if (last >= 2 && last <= 4) return "исследования";
+  return "исследований";
+}
+
 export default function ComplexPage({ params }: Props) {
   const { slug } = use(params);
   const complex = complexes.find((c) => c.slug === slug);
-  const { toggleItem, isInCart } = useCart();
+  const { items, toggleItem, addItem, isInCart, selectLab } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const router = useRouter();
   const [shareCopied, setShareCopied] = useState(false);
+  const [city] = useCity();
 
   if (!complex) {
     notFound();
@@ -46,8 +58,15 @@ export default function ComplexPage({ params }: Props) {
   const includedAnalyses = analyses.filter((a) =>
     complex.includes.includes(a.id)
   );
+  const overlaps = includedAnalyses.filter((analysis) =>
+    items.some((item) => item.id === analysis.id)
+  );
 
   const handleToggle = () => {
+    if (inCart) {
+      router.push("/cart");
+      return;
+    }
     toggleItem({
       id: complex.id,
       slug: complex.slug,
@@ -58,9 +77,9 @@ export default function ComplexPage({ params }: Props) {
     });
   };
 
-  const handleSelectLab = () => {
+  const handleSelectLab = (lab: (typeof labs)[number]) => {
     if (!inCart) {
-      toggleItem({
+      addItem({
         id: complex.id,
         slug: complex.slug,
         type: "complex",
@@ -69,6 +88,7 @@ export default function ComplexPage({ params }: Props) {
         duration: complex.duration,
       });
     }
+    selectLab(complex.id, lab.id, lab.name);
     router.push("/cart");
   };
 
@@ -95,7 +115,7 @@ export default function ComplexPage({ params }: Props) {
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
-            { label: "Москва", href: "/?city=msk" },
+            { label: city, href: "/" },
             { label: "Чекапы и комплексы", href: "/complexes" },
             { label: complex.name },
           ]}
@@ -112,11 +132,14 @@ export default function ComplexPage({ params }: Props) {
                 Комплекс
               </Badge>
               <Badge variant="secondary" className="text-xs">
-                {complex.analysesCount} исследований
+                {includedAnalyses.length} {researchWord(includedAnalyses.length)}
               </Badge>
             </div>
 
             <p className="mt-4 text-[#475467]">{complex.short}</p>
+            <div className="mt-6 overflow-hidden rounded-2xl">
+              <img src={getComplexImage(complex.id)} alt="" className="h-52 w-full object-cover md:h-64" />
+            </div>
 
             {/* МЕТА */}
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-[#E4E7EC] bg-white p-4 md:grid-cols-3">
@@ -126,7 +149,7 @@ export default function ComplexPage({ params }: Props) {
                   Исследований
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
-                  {complex.analysesCount}
+                  {includedAnalyses.length}
                 </div>
               </div>
 
@@ -143,10 +166,10 @@ export default function ComplexPage({ params }: Props) {
               <div>
                 <div className="flex items-center gap-1 text-xs text-[#667085]">
                   <AlertCircle className="h-3 w-3 text-[var(--primary)]" />
-                  Подготовка
+                  Цена
                 </div>
                 <div className="mt-1 text-sm font-medium text-[#101828]">
-                  8–12 часов
+                  от {complex.priceFrom.toLocaleString("ru-RU")} ₽
                 </div>
               </div>
             </div>
@@ -157,17 +180,21 @@ export default function ComplexPage({ params }: Props) {
                 О комплексе
               </h2>
               <p className="mt-3 text-[#475467]">
-                {complex.name} — комплексное обследование для оценки состояния
-                организма и выявления ключевых отклонений. Включает{" "}
-                {includedAnalyses.length} исследований, которые помогают врачу
-                составить полную картину.
+                {complex.short}. В комплекс входят {includedAnalyses.length}
+                {" "}{researchWord(includedAnalyses.length)} из списка ниже. Результаты следует оценивать вместе
+                с врачом и другими клиническими данными.
               </p>
+              {overlaps.length > 0 && (
+                <div className="mt-4 rounded-xl bg-[var(--warning-bg)] p-4 text-sm text-[var(--warning-text)]">
+                  В корзине уже есть {overlaps.length} {overlaps.length === 1 ? "исследование" : "исследования"} из этого комплекса: {overlaps.map((item) => item.name).join(", ")}. Мы не удаляем их автоматически.
+                </div>
+              )}
             </section>
 
             {/* СОСТАВ */}
             <section className="mt-8">
               <h2 className="type-h2 text-[#101828]">
-                Состав комплекса ({includedAnalyses.length} исследований)
+                Состав комплекса ({includedAnalyses.length} {researchWord(includedAnalyses.length)})
               </h2>
 
               <div className="mt-3 space-y-2">
@@ -205,11 +232,11 @@ export default function ComplexPage({ params }: Props) {
               <ul className="mt-3 space-y-2 text-[#475467]">
                 <li className="flex gap-2">
                   <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                  Кровь сдаётся натощак (8–12 часов голода).
+                  Уточните правила подготовки для каждого исследования в выбранной лаборатории.
                 </li>
                 <li className="flex gap-2">
                   <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-[var(--success-text)]" />
-                  За сутки исключить алкоголь и жирную пищу.
+                  Не отменяйте лекарства самостоятельно; сообщите о них врачу или лаборатории.
                 </li>
               </ul>
             </section>
@@ -255,9 +282,9 @@ export default function ComplexPage({ params }: Props) {
                               ? "bg-[var(--success-text)] hover:bg-[var(--accent)]"
                               : "bg-[var(--primary)] hover:bg-[var(--primary-hover)]"
                           }
-                          onClick={handleSelectLab}
+                          onClick={() => handleSelectLab(lab)}
                         >
-                          {inCart ? "В корзине" : "Выбрать"}
+                          Выбрать лабораторию
                         </Button>
                       </div>
                     </CardContent>
@@ -285,7 +312,7 @@ export default function ComplexPage({ params }: Props) {
                   </span>
                 </div>
                 <div className="mt-1 text-xs text-[#667085]">
-                  Стоимость комплекса
+                  Предварительная стоимость комплекса
                 </div>
 
                 <Button
@@ -297,7 +324,7 @@ export default function ComplexPage({ params }: Props) {
                   }`}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  {inCart ? "В корзине" : "В корзину"}
+                  {inCart ? "Открыть корзину" : "Добавить в корзину"}
                 </Button>
 
                 <div className="mt-2 flex gap-2">
@@ -339,7 +366,7 @@ export default function ComplexPage({ params }: Props) {
                     <span className="font-medium text-[#101828]">+300 ₽</span>
                   </div>
                   <div className="flex justify-between border-t border-[#E4E7EC] pt-2">
-                    <span className="text-[#667085]">Итого</span>
+                    <span className="text-[#667085]">Ориентировочно</span>
                     <span className="font-semibold text-[#101828]">
                       от {complex.priceFrom + 300} ₽
                     </span>
@@ -347,7 +374,7 @@ export default function ComplexPage({ params }: Props) {
                 </div>
 
                 <div className="mt-4 text-xs text-[#667085]">
-                  Цены в Москве, актуальны на 27.09.2026
+                  Демонстрационные цены для города {city}. Уточняйте итоговую стоимость в лаборатории.
                 </div>
               </CardContent>
             </Card>

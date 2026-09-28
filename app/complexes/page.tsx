@@ -15,8 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { complexes } from "@/data/mock";
+import { analyses } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
 import { useFavorites } from "@/lib/favorites-context";
+import { useCity } from "@/lib/use-city";
+import { getComplexImage } from "@/lib/images";
 
 const categories = [
   {
@@ -49,8 +52,11 @@ export default function ComplexesPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState("popular");
   const [searchQuery, setSearchQuery] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [minCount, setMinCount] = useState("");
   const { toggleItem, isInCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const [city] = useCity();
 
   const sortedComplexes = useMemo(() => {
     let list = [...complexes];
@@ -63,6 +69,8 @@ export default function ComplexesPage() {
           c.short.toLowerCase().includes(q)
       );
     }
+    if (maxPrice) list = list.filter((c) => c.priceFrom <= Number(maxPrice));
+    if (minCount) list = list.filter((c) => c.includes.length >= Number(minCount));
 
     switch (selectedSort) {
       case "price":
@@ -83,7 +91,7 @@ export default function ComplexesPage() {
       default:
         return list;
     }
-  }, [selectedSort, searchQuery]);
+  }, [selectedSort, searchQuery, maxPrice, minCount]);
 
   const currentSortLabel =
     sortOptions.find((o) => o.value === selectedSort)?.label || "По популярности";
@@ -94,7 +102,7 @@ export default function ComplexesPage() {
         <Breadcrumbs
           items={[
             { label: "Главная", href: "/" },
-            { label: "Москва", href: "/?city=msk" },
+            { label: city, href: "/" },
             { label: "Чекапы и комплексы" },
           ]}
         />
@@ -110,11 +118,6 @@ export default function ComplexesPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <Button variant="outline" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" />
-              Фильтры
-            </Button>
-
             <div className="relative">
               <Button
                 variant="outline"
@@ -149,8 +152,8 @@ export default function ComplexesPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="hidden lg:block">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
+          <aside>
             <div className="rounded-xl border border-[#E4E7EC] bg-white p-4">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
@@ -158,53 +161,24 @@ export default function ComplexesPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Поиск комплексов"
-                  className="pl-9 h-9 text-sm"
+                  aria-label="Поиск комплексов"
+                  className="h-12 pl-9 text-sm"
                 />
               </div>
-
-              {categories.map((cat) => (
-                <div key={cat.title} className="mb-4">
-                  <div className="mb-2 text-sm font-semibold text-[#101828]">
-                    {cat.title}
-                  </div>
-                  <ul className="space-y-1">
-                    {cat.items.map((item) => (
-                      <li key={item.label}>
-                        <button
-                          className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm ${
-                            item.active
-                              ? "bg-[var(--primary-light)] text-[var(--primary)] font-medium"
-                              : "text-[#475467] hover:bg-[#F2F4F7]"
-                          }`}
-                        >
-                          <span>{item.label}</span>
-                          <span className="text-xs text-[#98A2B3]">
-                            {item.count}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              <label className="block text-sm font-medium text-[#101828]">Цена до
+                <select value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-[#667085] bg-white px-3 font-normal">
+                  <option value="">Любая</option><option value="3000">3 000 ₽</option><option value="4000">4 000 ₽</option>
+                </select>
+              </label>
+              <label className="mt-4 block text-sm font-medium text-[#101828]">Количество исследований
+                <select value={minCount} onChange={(e) => setMinCount(e.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-[#667085] bg-white px-3 font-normal">
+                  <option value="">Любое</option><option value="2">От 2</option><option value="4">От 4</option>
+                </select>
+              </label>
             </div>
           </aside>
 
           <div>
-            <div className="mb-4 flex flex-wrap gap-2">
-              {["Цена", "Срок выполнения", "Количество исследований"].map(
-                (f) => (
-                  <button
-                    key={f}
-                    className="flex items-center gap-1 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5 text-sm text-[#475467] hover:border-[var(--primary)] hover:text-[var(--primary)]"
-                  >
-                    {f}
-                    <ChevronDown className="h-3 w-3" />
-                  </button>
-                )
-              )}
-            </div>
-
             <div className="space-y-3">
               {sortedComplexes.length === 0 && (
                 <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-white p-12 text-center">
@@ -231,11 +205,11 @@ export default function ComplexesPage() {
                     key={c.id}
                     className="border-[#E4E7EC] transition hover:shadow-md"
                   >
-                    <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:p-5">
+                    <CardContent className="grid gap-4 p-4 md:grid-cols-[160px_1fr_auto] md:items-center md:p-5">
                       <Link
                         href={`/complexes/${c.slug}`}
-                        className="h-20 w-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-[var(--primary-light)] to-[#F2F4F7]"
-                      />
+                        className="h-32 overflow-hidden rounded-xl"
+                      ><img src={getComplexImage(c.id)} alt="" className="h-full w-full object-cover" /></Link>
 
                       <div className="flex-1">
                         <Link
@@ -250,13 +224,15 @@ export default function ComplexesPage() {
                         <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#667085]">
                           <span className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3 text-[var(--primary)]" />
-                            {c.analysesCount} исследований
+                            {c.includes.length} исследований
                           </span>
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3 text-[var(--primary)]" />
                             {c.duration}
                           </span>
                         </div>
+                        <p className="mt-3 text-sm text-[#475467]">В составе: {c.includes.slice(0, 3).map((id) => analyses.find((a) => a.id === id)?.name).filter(Boolean).join(", ")}{c.includes.length > 3 ? "…" : ""}</p>
+                        <Link href={`/complexes/${c.slug}`} className="mt-3 inline-block text-sm font-medium text-[var(--primary)] hover:underline">Посмотреть весь состав</Link>
                       </div>
 
                       <div className="flex items-center justify-between gap-4 md:flex-col md:items-end">
@@ -275,7 +251,7 @@ export default function ComplexesPage() {
                                 ? "text-[#F04438] hover:bg-[#FEF3F2]"
                                 : "text-[#667085] hover:bg-[#F2F4F7]"
                             }`}
-                            aria-label="В избранное"
+                            aria-label={`${inFav ? "Удалить" : "Добавить"} ${c.name} ${inFav ? "из избранного" : "в избранное"}`}
                           >
                             <Heart
                               className={`h-4 w-4 ${
@@ -301,7 +277,7 @@ export default function ComplexesPage() {
                               })
                             }
                           >
-                            {inCart ? "В корзине" : "В корзину"}
+                            {inCart ? "В корзине" : "Добавить в корзину"}
                           </Button>
                         </div>
                       </div>
