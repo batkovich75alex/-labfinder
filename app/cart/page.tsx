@@ -6,11 +6,15 @@ import { Trash2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { useCart } from "@/lib/cart-context";
+import { useCart, type CartItem } from "@/lib/cart-context";
+import { analyses, complexes } from "@/data/mock";
+import { useCity } from "@/lib/use-city";
 
 export default function CartPage() {
-  const { items, removeItem, clearCart, total, count } = useCart();
+  const { items, addItem, removeItem, clearCart, total, count } = useCart();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [removedItems, setRemovedItems] = useState<CartItem[]>([]);
+  const [city] = useCity();
 
   const allSelected = items.length > 0 && selectedIds.length === items.length;
 
@@ -29,8 +33,20 @@ export default function CartPage() {
   };
 
   const removeSelected = () => {
+    setRemovedItems(items.filter((item) => selectedIds.includes(item.id)));
     selectedIds.forEach((id) => removeItem(id));
     setSelectedIds([]);
+  };
+
+  const removeWithUndo = (removed: CartItem[]) => {
+    setRemovedItems(removed);
+    removed.forEach((item) => removeItem(item.id));
+    setSelectedIds((prev) => prev.filter((id) => !removed.some((item) => item.id === id)));
+  };
+
+  const undoRemoval = () => {
+    removedItems.forEach(addItem);
+    setRemovedItems([]);
   };
 
   if (items.length === 0) {
@@ -50,17 +66,16 @@ export default function CartPage() {
             </div>
 
             <h1 className="type-h1 mt-6 text-[#101828]">
-              Ваша корзина пуста
+              В корзине пока нет исследований
             </h1>
             <p className="mt-2 max-w-md text-[#667085]">
-              Добавьте исследования из каталога, карточек или поиска,
-              чтобы сравнить цены в лабораториях.
+              Добавьте анализы или комплекс, чтобы сравнить предложения лабораторий.
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link href="/catalog">
                 <Button className="bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
-                  Перейти в каталог
+                  Найти анализы
                 </Button>
               </Link>
               <Link href="/catalog">
@@ -68,6 +83,12 @@ export default function CartPage() {
               </Link>
             </div>
           </div>
+          {removedItems.length > 0 && (
+            <div role="status" className="fixed bottom-4 left-4 right-4 z-50 mx-auto flex max-w-md items-center justify-between gap-4 rounded-xl bg-[#101828] p-4 text-sm text-white shadow-xl">
+              <span>{removedItems.length === 1 ? "Позиция удалена" : `Удалено позиций: ${removedItems.length}`}</span>
+              <button onClick={undoRemoval} className="min-h-11 font-semibold text-[#B2DDFF]">Отменить</button>
+            </div>
+          )}
         </div>
       </main>
     );
@@ -117,6 +138,7 @@ export default function CartPage() {
               size="sm"
               className="text-[#F04438] hover:bg-[#FEF3F2] hover:text-[#F04438]"
               onClick={() => {
+                setRemovedItems(items);
                 clearCart();
                 setSelectedIds([]);
               }}
@@ -142,7 +164,7 @@ export default function CartPage() {
                     isSelected ? "ring-2 ring-[var(--primary)]" : ""
                   }`}
                 >
-                  <CardContent className="flex items-center gap-4 p-4">
+                  <CardContent className="grid grid-cols-[auto_1fr_auto] items-start gap-3 p-4 md:grid-cols-[auto_64px_1fr_auto_auto] md:items-center">
                     <input
                       type="checkbox"
                       checked={isSelected}
@@ -153,7 +175,7 @@ export default function CartPage() {
 
                     <Link
                       href={href}
-                      className="h-16 w-16 flex-shrink-0 rounded-lg bg-[var(--primary-light)]"
+                      className="hidden h-16 w-16 flex-shrink-0 rounded-lg bg-[var(--primary-light)] md:block"
                     />
 
                     <div className="flex-1">
@@ -169,20 +191,24 @@ export default function CartPage() {
                       <div className="mt-1 text-xs text-[#667085]">
                         {item.duration}
                       </div>
+                      {item.selectedLabName && <div className="mt-1 text-xs font-medium text-[var(--primary)]">Выбрано: {item.selectedLabName}</div>}
+                      {item.type === "complex" && (() => {
+                        const complex = complexes.find((entry) => entry.id === item.id);
+                        const included = complex?.includes.map((id) => analyses.find((analysis) => analysis.id === id)?.name).filter(Boolean) || [];
+                        return <details className="mt-2 text-sm text-[#475467]"><summary className="cursor-pointer font-medium text-[var(--primary)]">Состав комплекса ({included.length})</summary><ul className="mt-2 list-disc space-y-1 pl-5">{included.map((name) => <li key={name}>{name}</li>)}</ul></details>;
+                      })()}
                     </div>
 
                     <div className="text-right">
-                      <div className="text-lg font-bold text-[#101828]">
+                      <div className="price-m text-[#101828]">
                         {item.price} ₽
                       </div>
+                      <div className="text-xs text-[#667085]">ориентировочно</div>
                     </div>
 
                     <button
                       onClick={() => {
-                        removeItem(item.id);
-                        setSelectedIds((prev) =>
-                          prev.filter((x) => x !== item.id)
-                        );
+                        removeWithUndo([item]);
                       }}
                       className="rounded-md p-2 text-[#667085] transition hover:bg-[#FEF3F2] hover:text-[#F04438]"
                       aria-label={`Удалить ${item.name}`}
@@ -198,7 +224,7 @@ export default function CartPage() {
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
-                <h2 className="type-h2 text-[#101828]">Итого</h2>
+                <h2 className="type-h2 text-[#101828]">Предварительная стоимость исследований</h2>
 
                 <div className="mt-4 space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -207,19 +233,14 @@ export default function CartPage() {
                     </span>
                     <span className="font-medium text-[#101828]">{total} ₽</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#667085]">
-                      Взятие биоматериала
-                    </span>
-                    <span className="font-medium text-[#101828]">+250 ₽</span>
-                  </div>
                   <div className="flex justify-between border-t border-[#E4E7EC] pt-2">
-                    <span className="font-medium text-[#101828]">Итого</span>
+                    <span className="font-medium text-[#101828]">Предварительно</span>
                     <span className="text-xl font-bold text-[#101828]">
-                      {total + 250} ₽
+                      {total.toLocaleString("ru-RU")} ₽
                     </span>
                   </div>
                 </div>
+                <p className="mt-3 text-sm leading-6 text-[#667085]">Точная сумма зависит от лаборатории и платы за взятие биоматериала.</p>
 
                 <Link href="/cart/compare">
                   <Button className="mt-4 w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
@@ -229,13 +250,19 @@ export default function CartPage() {
                 </Link>
 
                 <div className="mt-3 text-center text-xs text-[#667085]">
-                  Цены в Москве, актуальны на 27.09.2026
+                  Демонстрационные цены для города {city}
                 </div>
               </CardContent>
             </Card>
           </aside>
         </div>
       </div>
+      {removedItems.length > 0 && (
+        <div role="status" className="fixed bottom-4 left-4 right-4 z-50 mx-auto flex max-w-md items-center justify-between gap-4 rounded-xl bg-[#101828] p-4 text-sm text-white shadow-xl">
+          <span>{removedItems.length === 1 ? "Позиция удалена" : `Удалено позиций: ${removedItems.length}`}</span>
+          <button onClick={undoRemoval} className="min-h-11 font-semibold text-[#B2DDFF]">Отменить</button>
+        </div>
+      )}
     </main>
   );
 }
