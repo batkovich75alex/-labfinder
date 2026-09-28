@@ -89,7 +89,6 @@ export default function CatalogPage() {
   const [selectedBiomaterial, setSelectedBiomaterial] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string[]>([]);
 
-  // БАЗА для подсчёта: категория + поиск (без чипов)
   const baseList = useMemo(() => {
     let list = [...analyses];
 
@@ -111,7 +110,6 @@ export default function CatalogPage() {
     return list;
   }, [selectedCategory, searchQuery]);
 
-  // СТАТИЧНЫЕ счётчики для чипов
   const durationCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     durationOptions.forEach((opt) => {
@@ -138,7 +136,6 @@ export default function CatalogPage() {
     return counts;
   }, [baseList]);
 
-  // ИТОГОВЫЙ список с фильтрами + сортировкой
   const sortedAnalyses = useMemo(() => {
     let list = [...baseList];
 
@@ -153,7 +150,9 @@ export default function CatalogPage() {
     }
 
     if (selectedMethod.length > 0) {
-      list = list.filter((a) => (a.method ? selectedMethod.includes(a.method) : false));
+      list = list.filter((a) =>
+        a.method ? selectedMethod.includes(a.method) : false
+      );
     }
 
     switch (selectedSort) {
@@ -339,7 +338,6 @@ export default function CatalogPage() {
 
           <div>
             <div className="mb-4 hidden flex-wrap gap-2 lg:flex">
-              {/* СРОК */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -391,7 +389,6 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* БИОМАТЕРИАЛ */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -443,7 +440,6 @@ export default function CatalogPage() {
                 )}
               </div>
 
-              {/* МЕТОД */}
               <div className="relative">
                 <button
                   onClick={() =>
@@ -591,6 +587,7 @@ export default function CatalogPage() {
                             onClick={() =>
                               toggleItem({
                                 id: a.id,
+                                slug: a.slug,
                                 type: "analysis",
                                 name: a.name,
                                 price: a.priceFrom,
@@ -611,7 +608,6 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      {/* МОБИЛЬНЫЕ ФИЛЬТРЫ */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
           <div

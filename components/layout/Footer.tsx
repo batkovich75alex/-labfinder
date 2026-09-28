@@ -2,9 +2,19 @@ import Link from "next/link";
 import { Share2, Send, Globe, Mail, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-const columns = [
+type FooterLink = {
+  label: string;
+  href?: string;
+  active: boolean;
+};
+
+type FooterColumn = {
+  title: string;
+  links: FooterLink[];
+};
+
+const columns: FooterColumn[] = [
   {
     title: "Каталог",
     links: [
@@ -49,7 +59,6 @@ export function Footer() {
     <footer className="mt-16 bg-[#0B1E3F] text-white">
       <div className="mx-auto max-w-[1280px] px-6 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
-          {/* Логотип и описание */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 text-xl font-bold">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1677FF] text-white">
@@ -85,7 +94,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Колонки ссылок */}
           {columns.map((col) => (
             <div key={col.title}>
               <div className="text-sm font-semibold text-white">
@@ -116,12 +124,9 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Подписка */}
         <div className="mt-10 border-t border-white/10 pt-8">
           <div className="text-sm font-semibold">Подписка на новости</div>
-          <p className="mt-1 text-sm text-white/70">
-            Только важные обновления
-          </p>
+          <p className="mt-1 text-sm text-white/70">Только важные обновления</p>
           <div className="mt-3 flex max-w-md gap-2">
             <div className="relative flex-1">
               <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
@@ -133,14 +138,13 @@ export function Footer() {
             </div>
             <Button
               disabled
-              className="bg-[#1677FF] hover:bg-[#0969E8] opacity-60"
+              className="bg-[#1677FF] opacity-60 hover:bg-[#0969E8]"
             >
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* Нижняя строка */}
         <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/60 md:flex-row md:items-center md:justify-between">
           <div>© 2024 LabFinder. Все права защищены.</div>
           <div className="flex gap-6">

@@ -2,8 +2,7 @@
 
 import { useState, use, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { notFound } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import {
   Droplet,
   Clock,
@@ -24,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { analyses, labs, articles } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
+import { useFavorites } from "@/lib/favorites-context";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -42,11 +42,11 @@ export default function AnalysisPage({ params }: Props) {
   const { slug } = use(params);
   const analysis = analyses.find((a) => a.slug === slug);
   const { toggleItem, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const router = useRouter();
 
   const [activeSection, setActiveSection] = useState("short");
   const [shareCopied, setShareCopied] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,11 +81,13 @@ export default function AnalysisPage({ params }: Props) {
   }
 
   const inCart = isInCart(analysis.id);
+  const inFav = isFavorite(analysis.id);
   const relatedArticle = articles.find((a) => a.relatedAnalysis === analysis.id);
 
   const handleToggle = () => {
     toggleItem({
       id: analysis.id,
+      slug: analysis.slug,
       type: "analysis",
       name: analysis.name,
       price: analysis.priceFrom,
@@ -93,11 +95,11 @@ export default function AnalysisPage({ params }: Props) {
     });
   };
 
-  // Выбор лаборатории: добавляем анализ в корзину и переходим в /cart
   const handleSelectLab = () => {
     if (!inCart) {
       toggleItem({
         id: analysis.id,
+        slug: analysis.slug,
         type: "analysis",
         name: analysis.name,
         price: analysis.priceFrom,
@@ -337,7 +339,6 @@ export default function AnalysisPage({ params }: Props) {
                 </ul>
               </section>
 
-              {/* ПРЕДЛОЖЕНИЯ ЛАБОРАТОРИЙ — кнопка «Выбрать» добавляет в корзину и ведёт в /cart */}
               <section id="labs" className="scroll-mt-32">
                 <h2 className="text-xl font-semibold text-[#101828]">
                   Предложения лабораторий
@@ -398,7 +399,6 @@ export default function AnalysisPage({ params }: Props) {
             </div>
           </div>
 
-          {/* ПРАВАЯ ЧАСТЬ */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
@@ -426,17 +426,17 @@ export default function AnalysisPage({ params }: Props) {
 
                 <div className="mt-2 flex gap-2">
                   <button
-                    onClick={() => setIsFavorite(!isFavorite)}
+                    onClick={() => toggleFavorite(analysis.id)}
                     className={`flex flex-1 items-center justify-center gap-2 rounded-md border py-2 text-sm transition ${
-                      isFavorite
+                      inFav
                         ? "border-[#F04438] bg-[#FEF3F2] text-[#F04438]"
                         : "border-[#E4E7EC] text-[#475467] hover:bg-[#F2F4F7]"
                     }`}
                   >
                     <Heart
-                      className={`h-4 w-4 ${isFavorite ? "fill-[#F04438]" : ""}`}
+                      className={`h-4 w-4 ${inFav ? "fill-[#F04438]" : ""}`}
                     />
-                    {isFavorite ? "В избранном" : "В избранное"}
+                    {inFav ? "В избранном" : "В избранное"}
                   </button>
 
                   <button

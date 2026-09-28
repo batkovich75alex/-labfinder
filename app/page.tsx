@@ -14,12 +14,20 @@ import {
   ArrowRight,
   Home,
   Briefcase,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { analyses, complexes, labs, articles, directions } from "@/data/mock";
+import {
+  heroImage,
+  getCategoryImage,
+  getComplexImage,
+  getArticleImage,
+  getLabColor,
+} from "@/lib/images";
 
 const directionIcons: Record<string, any> = {
   blood: Droplet,
@@ -28,6 +36,15 @@ const directionIcons: Record<string, any> = {
   allergy: Shield,
   infection: Bug,
   genetics: Dna,
+};
+
+const directionCategories: Record<string, string> = {
+  blood: "biochemistry",
+  hormones: "hormones",
+  vitamins: "vitamins",
+  allergy: "allergy",
+  infection: "infection",
+  genetics: "genetics",
 };
 
 export default function HomePage() {
@@ -52,23 +69,24 @@ export default function HomePage() {
 
   return (
     <main className="bg-[#F8FAFC]">
-      {/* HERO */}
+      {/* HERO — двухколоночный с фото */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-10">
-        <div className="rounded-2xl bg-gradient-to-r from-[#EFF6FF] to-[#F2F4F7] p-6 md:p-12">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div>
-              <h1 className="text-2xl font-bold text-[#101828] md:text-4xl">
+        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-[#EFF6FF] via-white to-[#F2F4F7]">
+          <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
+            {/* ЛЕВАЯ — текст и поиск */}
+            <div className="p-6 md:p-10 lg:p-12">
+              <h1 className="text-2xl font-bold leading-tight text-[#101828] md:text-4xl lg:text-5xl">
                 Анализы и обследования
                 <br />
-                в лабораториях вашего города
+                <span className="text-[#1677FF]">в лабораториях</span> вашего
+                города
               </h1>
-              <p className="mt-3 text-[#475467]">
-                Сравнивайте предложения лабораторий
-                <br />
-                и выбирайте подходящее место сдачи
+
+              <p className="mt-4 max-w-md text-sm text-[#475467] md:text-base">
+                Сравнивайте предложения лабораторий и выбирайте подходящее
+                место сдачи — удобно, быстро, прозрачно.
               </p>
 
-              {/* Форма поиска */}
               <form onSubmit={handleSearch} className="mt-6 flex gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
@@ -87,45 +105,55 @@ export default function HomePage() {
                 </Button>
               </form>
 
-              {/* Популярные запросы — рабочие ссылки */}
               <div className="mt-4 flex flex-wrap gap-2 text-sm text-[#667085]">
                 <span>Например:</span>
-                {["Общий анализ крови", "ТТГ", "Ферритин", "Витамин D"].map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => handleQuickSearch(q)}
-                    className="text-[#1677FF] hover:underline"
-                  >
-                    {q}
-                  </button>
-                ))}
+                {["Общий анализ крови", "ТТГ", "Ферритин", "Витамин D"].map(
+                  (q) => (
+                    <button
+                      key={q}
+                      onClick={() => handleQuickSearch(q)}
+                      className="text-[#1677FF] hover:underline"
+                    >
+                      {q}
+                    </button>
+                  )
+                )}
               </div>
-            </div>
 
-            <div className="hidden md:flex md:items-center md:justify-end">
-              <div className="space-y-3">
+              {/* Бейджи доверия */}
+              <div className="mt-6 flex flex-wrap gap-4">
                 {[
                   { num: "1000+", label: "анализов" },
                   { num: "50+", label: "лабораторий" },
                   { num: "24/7", label: "поддержка" },
                 ].map((b) => (
-                  <div
-                    key={b.label}
-                    className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm"
-                  >
-                    <div className="text-2xl font-bold text-[#1677FF]">
-                      {b.num}
+                  <div key={b.label} className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-[#12B76A]" />
+                    <div>
+                      <div className="text-sm font-bold text-[#101828]">
+                        {b.num}
+                      </div>
+                      <div className="text-xs text-[#667085]">{b.label}</div>
                     </div>
-                    <div className="text-sm text-[#475467]">{b.label}</div>
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* ПРАВАЯ — фото медработника */}
+            <div className="relative h-64 md:h-auto">
+              <img
+                src={heroImage}
+                alt="Медицинская лаборатория"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#EFF6FF]/40 to-transparent md:bg-gradient-to-l" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* DIRECTIONS — теперь ведут в /catalog */}
+      {/* DIRECTIONS */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
@@ -144,11 +172,11 @@ export default function HomePage() {
             return (
               <Link
                 key={d.id}
-                href={`/catalog?category=${d.id}`}
-                className="flex flex-col items-center gap-3 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
+                href="/catalog"
+                className="group flex flex-col items-center gap-3 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EFF6FF]">
-                  <Icon className="h-6 w-6 text-[#1677FF]" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EFF6FF] transition group-hover:bg-[#1677FF]">
+                  <Icon className="h-6 w-6 text-[#1677FF] transition group-hover:text-white" />
                 </div>
                 <div className="text-center text-sm font-medium text-[#101828]">
                   {d.name}
@@ -159,7 +187,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* POPULAR ANALYSES */}
+      {/* POPULAR ANALYSES — с картинками */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
@@ -178,34 +206,44 @@ export default function HomePage() {
               key={a.id}
               className="overflow-hidden border-[#E4E7EC] transition hover:shadow-md"
             >
-              <CardContent className="p-4">
+              <CardContent className="p-0">
                 <Link href={`/catalog/${a.slug}`}>
-                  <div className="mb-3 h-32 rounded-lg bg-[#EFF6FF]" />
-                  <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
-                    {a.name}
-                  </h3>
-                  <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
-                    {a.short}
-                  </p>
-                </Link>
-                <div className="mt-3 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-[#667085]">от </span>
-                    <span className="text-lg font-bold text-[#101828]">
-                      {a.priceFrom} ₽
-                    </span>
+                  <div className="relative h-40 overflow-hidden">
+                    <img
+                      src={getCategoryImage(a.category)}
+                      alt={a.name}
+                      className="h-full w-full object-cover transition hover:scale-105"
+                    />
+                    <div className="absolute right-2 top-2">
+                      <Badge className="bg-white/95 text-xs text-[#101828] hover:bg-white">
+                        {a.duration}
+                      </Badge>
+                    </div>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {a.duration}
-                  </Badge>
-                </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                      {a.name}
+                    </h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
+                      {a.short}
+                    </p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <div>
+                        <span className="text-xs text-[#667085]">от </span>
+                        <span className="text-lg font-bold text-[#101828]">
+                          {a.priceFrom} ₽
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* POPULAR COMPLEXES */}
+      {/* POPULAR COMPLEXES — с фото */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
@@ -218,45 +256,51 @@ export default function HomePage() {
             Все комплексы <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {popularComplexes.map((c) => (
             <Card
               key={c.id}
-              className="border-[#E4E7EC] transition hover:shadow-md"
+              className="overflow-hidden border-[#E4E7EC] transition hover:shadow-md"
             >
-              <CardContent className="p-5">
+              <CardContent className="p-0">
                 <Link href={`/complexes/${c.slug}`}>
-                  <div className="mb-4 h-40 rounded-lg bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]" />
-                  <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
-                    {c.name}
-                  </h3>
-                </Link>
-                <p className="mt-1 text-sm text-[#667085]">
-                  {c.analysesCount} исследований · {c.duration}
-                </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-[#667085]">от </span>
-                    <span className="text-xl font-bold text-[#101828]">
-                      {c.priceFrom} ₽
-                    </span>
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={getComplexImage(c.id)}
+                      alt={c.name}
+                      className="h-full w-full object-cover transition hover:scale-105"
+                    />
+                    <div className="absolute left-3 top-3">
+                      <Badge className="bg-[#1677FF] text-xs text-white hover:bg-[#1677FF]">
+                        {c.analysesCount} исследований
+                      </Badge>
+                    </div>
                   </div>
-                  <Link href={`/complexes/${c.slug}`}>
-                    <Button
-                      size="sm"
-                      className="bg-[#1677FF] hover:bg-[#0969E8]"
-                    >
-                      Подробнее
-                    </Button>
-                  </Link>
-                </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-[#101828] hover:text-[#1677FF]">
+                      {c.name}
+                    </h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
+                      {c.short}
+                    </p>
+                    <div className="mt-4 flex items-center justify-between">
+                      <div>
+                        <span className="text-xs text-[#667085]">от </span>
+                        <span className="text-xl font-bold text-[#101828]">
+                          {c.priceFrom} ₽
+                        </span>
+                      </div>
+                      <span className="text-sm text-[#667085]">{c.duration}</span>
+                    </div>
+                  </div>
+                </Link>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* LABS — теперь кликабельны */}
+      {/* LABS — с фирменными цветами */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
@@ -270,42 +314,48 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {popularLabs.map((l) => (
-            <Link key={l.id} href={`/labs/${l.slug}`}>
-              <Card className="border-[#E4E7EC] transition hover:shadow-md">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#EFF6FF] text-xl font-bold text-[#1677FF]">
-                      {l.name[0]}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-[#101828]">
-                        {l.name}
+          {popularLabs.map((l) => {
+            const brandColor = getLabColor(l.slug);
+            return (
+              <Link key={l.id} href={`/labs/${l.slug}`}>
+                <Card className="border-[#E4E7EC] transition hover:shadow-md">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg text-xl font-bold text-white"
+                        style={{ backgroundColor: brandColor }}
+                      >
+                        {l.name[0]}
                       </div>
-                      <div className="text-sm text-[#667085]">
-                        ★ {l.rating} · {l.reviews} отзывов
+                      <div>
+                        <div className="font-semibold text-[#101828]">
+                          {l.name}
+                        </div>
+                        <div className="text-sm text-[#667085]">
+                          ★ {l.rating} · {l.reviews} отзывов
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="mt-3 text-sm text-[#667085]">
-                    {l.offices} отделений
-                  </div>
-                  {l.homeVisit && (
-                    <Badge
-                      variant="secondary"
-                      className="mt-2 text-xs text-[#12B76A]"
-                    >
-                      Выезд на дом
-                    </Badge>
-                  )}
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                    <div className="mt-3 text-sm text-[#667085]">
+                      {l.offices} отделений
+                    </div>
+                    {l.homeVisit && (
+                      <Badge
+                        variant="secondary"
+                        className="mt-2 text-xs text-[#12B76A]"
+                      >
+                        Выезд на дом
+                      </Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      {/* LIBRARY */}
+      {/* LIBRARY — с фото статей */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
@@ -318,37 +368,45 @@ export default function HomePage() {
             Все статьи <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {recentArticles.map((art) => (
             <Card
               key={art.id}
-              className="border-[#E4E7EC] transition hover:shadow-md"
+              className="overflow-hidden border-[#E4E7EC] transition hover:shadow-md"
             >
-              <CardContent className="p-4">
+              <CardContent className="p-0">
                 <Link href={`/library/${art.slug}`}>
-                  <div className="mb-3 h-32 rounded-lg bg-[#F2F4F7]" />
-                  <Badge variant="secondary" className="mb-2 text-xs">
-                    {art.category}
-                  </Badge>
-                  <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
-                    {art.title}
-                  </h3>
+                  <div className="h-40 overflow-hidden">
+                    <img
+                      src={getArticleImage(art.id)}
+                      alt={art.title}
+                      className="h-full w-full object-cover transition hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <Badge variant="secondary" className="mb-2 text-xs">
+                      {art.category}
+                    </Badge>
+                    <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                      {art.title}
+                    </h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
+                      {art.excerpt}
+                    </p>
+                    <div className="mt-3 flex gap-3 text-xs text-[#667085]">
+                      <span>{art.date}</span>
+                      <span>·</span>
+                      <span>{art.readingTime}</span>
+                    </div>
+                  </div>
                 </Link>
-                <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
-                  {art.excerpt}
-                </p>
-                <div className="mt-3 flex gap-3 text-xs text-[#667085]">
-                  <span>{art.date}</span>
-                  <span>·</span>
-                  <span>{art.readingTime}</span>
-                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* EXTRA SERVICES — «Скоро» вместо 404 */}
+      {/* EXTRA SERVICES */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 pb-12 md:px-6 md:py-8 md:pb-16">
         <h2 className="mb-4 text-xl font-semibold text-[#101828] md:text-2xl">
           Дополнительные возможности
@@ -377,9 +435,7 @@ export default function HomePage() {
                   <s.icon className="h-6 w-6 text-[#1677FF]" />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#101828]">
-                    {s.title}
-                  </div>
+                  <div className="font-semibold text-[#101828]">{s.title}</div>
                   <div className="text-sm text-[#667085]">{s.desc}</div>
                   <Badge
                     variant="secondary"

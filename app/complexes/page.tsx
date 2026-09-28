@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { complexes } from "@/data/mock";
 import { useCart } from "@/lib/cart-context";
+import { useFavorites } from "@/lib/favorites-context";
 
 const categories = [
   {
@@ -49,12 +50,11 @@ export default function ComplexesPage() {
   const [selectedSort, setSelectedSort] = useState("popular");
   const [searchQuery, setSearchQuery] = useState("");
   const { toggleItem, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
-  // СОРТИРОВКА + ПОИСК
   const sortedComplexes = useMemo(() => {
     let list = [...complexes];
 
-    // Поиск по названию/описанию
     const q = searchQuery.toLowerCase().trim();
     if (q) {
       list = list.filter(
@@ -64,7 +64,6 @@ export default function ComplexesPage() {
       );
     }
 
-    // Сортировка
     switch (selectedSort) {
       case "price":
         return list.sort((a, b) => a.priceFrom - b.priceFrom);
@@ -73,6 +72,7 @@ export default function ComplexesPage() {
           const getDays = (d: string) => {
             if (d.includes("1–2") || d.includes("1-2")) return 2;
             if (d.includes("2–3") || d.includes("2-3")) return 3;
+            if (d.includes("3–5") || d.includes("3-5")) return 5;
             return 1;
           };
           return getDays(a.duration) - getDays(b.duration);
@@ -86,8 +86,7 @@ export default function ComplexesPage() {
   }, [selectedSort, searchQuery]);
 
   const currentSortLabel =
-    sortOptions.find((o) => o.value === selectedSort)?.label ||
-    "По популярности";
+    sortOptions.find((o) => o.value === selectedSort)?.label || "По популярности";
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
@@ -225,6 +224,7 @@ export default function ComplexesPage() {
 
               {sortedComplexes.map((c) => {
                 const inCart = isInCart(c.id);
+                const inFav = isFavorite(c.id);
 
                 return (
                   <Card
@@ -268,8 +268,20 @@ export default function ComplexesPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <button className="rounded-md p-2 text-[#667085] hover:bg-[#F2F4F7]">
-                            <Heart className="h-4 w-4" />
+                          <button
+                            onClick={() => toggleFavorite(c.id)}
+                            className={`rounded-md p-2 transition ${
+                              inFav
+                                ? "text-[#F04438] hover:bg-[#FEF3F2]"
+                                : "text-[#667085] hover:bg-[#F2F4F7]"
+                            }`}
+                            aria-label="В избранное"
+                          >
+                            <Heart
+                              className={`h-4 w-4 ${
+                                inFav ? "fill-[#F04438]" : ""
+                              }`}
+                            />
                           </button>
                           <Button
                             size="sm"
@@ -281,6 +293,7 @@ export default function ComplexesPage() {
                             onClick={() =>
                               toggleItem({
                                 id: c.id,
+                                slug: c.slug,
                                 type: "complex",
                                 name: c.name,
                                 price: c.priceFrom,

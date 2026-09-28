@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Trash2,
-  ShoppingCart,
-  ArrowRight,
-  Check,
-} from "lucide-react";
+import { Trash2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -17,7 +12,6 @@ export default function CartPage() {
   const { items, removeItem, clearCart, total, count } = useCart();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // Все ли выбраны
   const allSelected = items.length > 0 && selectedIds.length === items.length;
 
   const toggleSelect = (id: string) => {
@@ -39,7 +33,6 @@ export default function CartPage() {
     setSelectedIds([]);
   };
 
-  // ПУСТАЯ КОРЗИНА
   if (items.length === 0) {
     return (
       <main className="bg-[#F8FAFC] min-h-screen">
@@ -80,7 +73,6 @@ export default function CartPage() {
     );
   }
 
-  // КОРЗИНА С ТОВАРАМИ
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
       <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
@@ -108,11 +100,7 @@ export default function CartPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleSelectAll}
-            >
+            <Button variant="outline" size="sm" onClick={toggleSelectAll}>
               <Check className="mr-2 h-4 w-4" />
               {allSelected ? "Снять выбор" : "Выбрать все"}
             </Button>
@@ -139,10 +127,13 @@ export default function CartPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
-          {/* СПИСОК ПОЗИЦИЙ */}
           <div className="space-y-3">
             {items.map((item) => {
               const isSelected = selectedIds.includes(item.id);
+              const href =
+                item.type === "complex"
+                  ? `/complexes/${item.slug}`
+                  : `/catalog/${item.slug}`;
 
               return (
                 <Card
@@ -152,7 +143,6 @@ export default function CartPage() {
                   }`}
                 >
                   <CardContent className="flex items-center gap-4 p-4">
-                    {/* Чекбокс */}
                     <input
                       type="checkbox"
                       checked={isSelected}
@@ -161,27 +151,17 @@ export default function CartPage() {
                       aria-label={`Выбрать ${item.name}`}
                     />
 
-                    {/* Картинка */}
                     <Link
-                      href={
-                        item.type === "complex"
-                          ? `/complexes/${item.id}`
-                          : `/catalog/${item.id}`
-                      }
+                      href={href}
                       className="h-16 w-16 flex-shrink-0 rounded-lg bg-[#EFF6FF]"
                     />
 
-                    {/* Инфо */}
                     <div className="flex-1">
                       <div className="text-xs text-[#667085]">
                         {item.type === "complex" ? "Комплекс" : "Анализ"}
                       </div>
                       <Link
-                        href={
-                          item.type === "complex"
-                            ? `/complexes/${item.id}`
-                            : `/catalog/${item.id}`
-                        }
+                        href={href}
                         className="font-medium text-[#101828] hover:text-[#1677FF]"
                       >
                         {item.name}
@@ -191,14 +171,12 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {/* Цена */}
                     <div className="text-right">
                       <div className="text-lg font-bold text-[#101828]">
                         {item.price} ₽
                       </div>
                     </div>
 
-                    {/* Удалить */}
                     <button
                       onClick={() => {
                         removeItem(item.id);
@@ -217,30 +195,23 @@ export default function CartPage() {
             })}
           </div>
 
-          {/* ИТОГОВАЯ КАРТОЧКА */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
-                <h2 className="text-lg font-semibold text-[#101828]">
-                  Итого
-                </h2>
+                <h2 className="text-lg font-semibold text-[#101828]">Итого</h2>
 
                 <div className="mt-4 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-[#667085]">
                       Исследований ({count})
                     </span>
-                    <span className="font-medium text-[#101828]">
-                      {total} ₽
-                    </span>
+                    <span className="font-medium text-[#101828]">{total} ₽</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#667085]">
                       Взятие биоматериала
                     </span>
-                    <span className="font-medium text-[#101828]">
-                      +250 ₽
-                    </span>
+                    <span className="font-medium text-[#101828]">+250 ₽</span>
                   </div>
                   <div className="flex justify-between border-t border-[#E4E7EC] pt-2">
                     <span className="font-medium text-[#101828]">Итого</span>
