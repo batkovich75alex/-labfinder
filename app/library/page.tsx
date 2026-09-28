@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -14,7 +14,6 @@ import {
   BookOpen,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,15 +34,10 @@ function LibraryContent() {
   const router = useRouter();
   const urlCategory = searchParams.get("category") || "all";
 
-  const [activeCategory, setActiveCategory] = useState(urlCategory);
+  const activeCategory = urlCategory;
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    setActiveCategory(urlCategory);
-  }, [urlCategory]);
-
   const handleCategoryClick = (catId: string) => {
-    setActiveCategory(catId);
     if (catId === "all") {
       router.push("/library");
     } else {

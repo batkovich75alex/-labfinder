@@ -188,7 +188,7 @@ export default function ArticlePage({ params }: Props) {
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       }
-    } catch (e) {}
+    } catch {}
   };
 
   return (

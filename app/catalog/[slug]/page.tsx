@@ -159,7 +159,7 @@ export default function AnalysisPage({ params }: Props) {
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       }
-    } catch (e) {}
+    } catch {}
   };
 
   const scrollToSection = (id: string) => {
@@ -370,7 +370,7 @@ export default function AnalysisPage({ params }: Props) {
                               {analysis.priceFrom} ₽
                             </div>
                             <div className="text-xs text-[#667085]">
-                              +250 ₽ взятие
+                              Взятие оплачивается отдельно
                             </div>
                           </div>
 

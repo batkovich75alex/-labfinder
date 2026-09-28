@@ -117,6 +117,7 @@ function CatalogContent() {
 
   useEffect(() => {
     if (!mobileFiltersOpen) return;
+    const trigger = mobileFilterTriggerRef.current;
     mobileFilterCloseRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMobileFiltersOpen(false);
@@ -136,7 +137,7 @@ function CatalogContent() {
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      mobileFilterTriggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [mobileFiltersOpen]);
 

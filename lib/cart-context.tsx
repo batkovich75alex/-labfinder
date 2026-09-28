@@ -33,15 +33,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Загружаем из localStorage после монтирования
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("labfinder_cart");
-      if (saved) {
-        setItems(JSON.parse(saved));
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = localStorage.getItem("labfinder_cart");
+        if (saved) {
+          setItems(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error("Failed to load cart", e);
       }
-    } catch (e) {
-      console.error("Failed to load cart", e);
-    }
-    setIsHydrated(true);
+      setIsHydrated(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   // Сохраняем в localStorage при каждом изменении

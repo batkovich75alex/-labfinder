@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -24,16 +24,11 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") || "";
 
-  const [query, setQuery] = useState(urlQuery);
+  const query = urlQuery;
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
-  useEffect(() => {
-    setQuery(urlQuery);
-    setActiveTab("all");
-  }, [urlQuery]);
-
   const updateQuery = (value: string) => {
-    setQuery(value);
+    setActiveTab("all");
     const normalized = value.trim();
     router.replace(normalized ? `/search?q=${encodeURIComponent(normalized)}` : "/search", { scroll: false });
   };

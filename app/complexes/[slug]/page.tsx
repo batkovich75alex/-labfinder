@@ -13,7 +13,6 @@ import {
   AlertCircle,
   Share2,
   Check,
-  ExternalLink,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -107,7 +106,7 @@ export default function ComplexPage({ params }: Props) {
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       }
-    } catch (e) {}
+    } catch {}
   };
 
   return (
@@ -272,7 +271,7 @@ export default function ComplexPage({ params }: Props) {
                             {complex.priceFrom} ₽
                           </div>
                           <div className="text-xs text-[#667085]">
-                            +300 ₽ взятие
+                            Взятие оплачивается отдельно
                           </div>
                         </div>
 

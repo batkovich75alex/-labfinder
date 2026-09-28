@@ -26,6 +26,12 @@ const navItems = [
   { label: "Библиотека", href: "/library" },
 ];
 
+function cartPositionWord(count: number) {
+  if (count % 10 === 1 && count % 100 !== 11) return "позиция";
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return "позиции";
+  return "позиций";
+}
+
 export function Header() {
   const { count } = useCart();
   const router = useRouter();
@@ -41,6 +47,7 @@ export function Header() {
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
+    const trigger = mobileMenuTriggerRef.current;
     mobileCloseRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMobileMenuOpen(false);
@@ -60,7 +67,7 @@ export function Header() {
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      mobileMenuTriggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [mobileMenuOpen]);
 
@@ -191,7 +198,7 @@ export function Header() {
             <Link
               href="/cart"
               className="relative flex h-11 w-11 items-center justify-center rounded-md transition hover:bg-[#F2F4F7]"
-              aria-label={count > 0 ? `Корзина, ${count} позиций` : "Корзина"}
+              aria-label={count > 0 ? `Корзина, ${count} ${cartPositionWord(count)}` : "Корзина"}
             >
               <ShoppingCart className="h-5 w-5 text-[#475467]" />
               {count > 0 && (

@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Search,
-  SlidersHorizontal,
   ChevronDown,
   Clock,
   Heart,
@@ -21,26 +20,6 @@ import { useCart } from "@/lib/cart-context";
 import { useFavorites } from "@/lib/favorites-context";
 import { useCity } from "@/lib/use-city";
 import { getComplexImage } from "@/lib/images";
-
-const categories = [
-  {
-    title: "Анализы",
-    items: [
-      { label: "Все анализы", count: 32 },
-      { label: "Биохимические исследования", count: 12 },
-      { label: "Гормональные исследования", count: 7 },
-      { label: "Витамины", count: 3 },
-    ],
-  },
-  {
-    title: "Чекапы и комплексы",
-    items: [
-      { label: "Все комплексы", count: 2, active: true },
-      { label: "Сердечно-сосудистые", count: 1 },
-      { label: "Проверка витаминов", count: 1 },
-    ],
-  },
-];
 
 const sortOptions = [
   { value: "popular", label: "По популярности" },
