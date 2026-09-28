@@ -151,7 +151,7 @@ export default function AnalysisPage({ params }: Props) {
 
         <div className="mt-6 grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
           <div>
-            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+            <h1 className="type-h1 text-[#101828]">
               {analysis.name}
             </h1>
 
@@ -259,7 +259,7 @@ export default function AnalysisPage({ params }: Props) {
 
             <div className="mt-8 space-y-8">
               <section id="short" className="scroll-mt-32">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Коротко об анализе
                 </h2>
                 <p className="mt-3 text-[#475467]">
@@ -270,7 +270,7 @@ export default function AnalysisPage({ params }: Props) {
               </section>
 
               <section id="preparation" className="scroll-mt-32">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Подготовка
                 </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
@@ -290,7 +290,7 @@ export default function AnalysisPage({ params }: Props) {
               </section>
 
               <section id="indications" className="scroll-mt-32">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Показания
                 </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
@@ -310,7 +310,7 @@ export default function AnalysisPage({ params }: Props) {
               </section>
 
               <section id="results" className="scroll-mt-32">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Как читать результаты
                 </h2>
                 <p className="mt-3 text-[#475467]">
@@ -320,7 +320,7 @@ export default function AnalysisPage({ params }: Props) {
               </section>
 
               <section id="doctor" className="scroll-mt-32">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Что важно сообщить врачу
                 </h2>
                 <ul className="mt-3 space-y-2 text-[#475467]">
@@ -340,7 +340,7 @@ export default function AnalysisPage({ params }: Props) {
               </section>
 
               <section id="labs" className="scroll-mt-32">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Предложения лабораторий
                 </h2>
 
@@ -404,7 +404,7 @@ export default function AnalysisPage({ params }: Props) {
               <CardContent className="p-5">
                 <div className="flex items-baseline gap-2">
                   <span className="text-xs text-[#667085]">от</span>
-                  <span className="text-3xl font-bold text-[#101828]">
+                  <span className="price-xl text-[#101828]">
                     {analysis.priceFrom} ₽
                   </span>
                 </div>

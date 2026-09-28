@@ -92,7 +92,7 @@ function LibraryContent() {
         <div className="mt-6 rounded-2xl bg-gradient-to-r from-[var(--primary-light)] to-[#F2F4F7] p-6 md:p-10">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-[#101828] md:text-4xl">
+              <h1 className="type-h1 text-[#101828]">
                 Медицинская библиотека
               </h1>
               <p className="mt-2 max-w-xl text-[#475467]">
@@ -178,7 +178,7 @@ function LibraryContent() {
         {/* СТАТЬИ */}
         <section className="mt-10 pb-12">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+            <h2 className="type-h2 text-[#101828]">
               {isSearching
                 ? `Результаты поиска: «${searchQuery}»`
                 : activeCategory === "all"
@@ -222,7 +222,7 @@ function LibraryContent() {
                       <Badge variant="secondary" className="mb-3 text-xs">
                         {art.category}
                       </Badge>
-                      <h3 className="font-semibold text-[#101828] hover:text-[var(--primary)]">
+                      <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                         {art.title}
                       </h3>
                       <p className="mt-2 line-clamp-2 text-sm text-[#667085]">

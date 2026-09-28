@@ -199,8 +199,8 @@ export default function ArticlePage({ params }: Props) {
 
         <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
           {/* ОСНОВНОЙ КОНТЕНТ */}
-          <article>
-            <h1 className="text-2xl font-bold text-[#101828] md:text-4xl">
+          <article className="article-copy min-w-0">
+            <h1 className="type-h1 text-[#101828]">
               {article.title}
             </h1>
 
@@ -254,7 +254,7 @@ export default function ArticlePage({ params }: Props) {
             <div className="mt-8 space-y-8 leading-relaxed text-[#475467]">
               {content.sections.map((s) => (
                 <section key={s.id} id={s.id}>
-                  <h2 className="text-xl font-semibold text-[#101828]">
+                  <h2 className="type-h2 text-[#101828]">
                     {s.title}
                   </h2>
                   <p className="mt-3">{s.text}</p>
@@ -316,7 +316,7 @@ export default function ArticlePage({ params }: Props) {
             {/* СВЯЗАННЫЕ СТАТЬИ */}
             {relatedArticles.length > 0 && (
               <section className="mt-10">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Читайте также
                 </h2>
                 <div className="mt-4 space-y-3">

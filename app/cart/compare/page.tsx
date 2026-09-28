@@ -127,7 +127,7 @@ export default function ComparePage() {
               <ShoppingCart className="h-10 w-10 text-[var(--primary)]" />
             </div>
 
-            <h1 className="mt-6 text-2xl font-bold text-[#101828]">
+            <h1 className="type-h1 mt-6 text-[#101828]">
               Сравнивать нечего
             </h1>
             <p className="mt-2 max-w-md text-[#667085]">
@@ -165,7 +165,7 @@ export default function ComparePage() {
         />
 
         <div className="mt-6">
-          <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+          <h1 className="type-h1 text-[#101828]">
             Сравнение стоимости
           </h1>
           <p className="mt-1 text-sm text-[#667085]">

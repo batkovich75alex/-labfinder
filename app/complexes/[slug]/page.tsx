@@ -103,7 +103,7 @@ export default function ComplexPage({ params }: Props) {
 
         <div className="mt-6 grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
           <div>
-            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+            <h1 className="type-h1 text-[#101828]">
               {complex.name}
             </h1>
 
@@ -153,7 +153,7 @@ export default function ComplexPage({ params }: Props) {
 
             {/* О КОМПЛЕКСЕ */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 О комплексе
               </h2>
               <p className="mt-3 text-[#475467]">
@@ -166,7 +166,7 @@ export default function ComplexPage({ params }: Props) {
 
             {/* СОСТАВ */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 Состав комплекса ({includedAnalyses.length} исследований)
               </h2>
 
@@ -199,7 +199,7 @@ export default function ComplexPage({ params }: Props) {
 
             {/* ПОДГОТОВКА */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 Подготовка
               </h2>
               <ul className="mt-3 space-y-2 text-[#475467]">
@@ -216,7 +216,7 @@ export default function ComplexPage({ params }: Props) {
 
             {/* ПРЕДЛОЖЕНИЯ ЛАБОРАТОРИЙ */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 Предложения лабораторий
               </h2>
 
@@ -280,7 +280,7 @@ export default function ComplexPage({ params }: Props) {
               <CardContent className="p-5">
                 <div className="flex items-baseline gap-2">
                   <span className="text-xs text-[#667085]">от</span>
-                  <span className="text-3xl font-bold text-[#101828]">
+                  <span className="price-xl text-[#101828]">
                     {complex.priceFrom} ₽
                   </span>
                 </div>

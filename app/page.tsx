@@ -75,7 +75,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
             {/* ЛЕВАЯ — текст и поиск */}
             <div className="p-6 md:p-10 lg:p-12">
-              <h1 className="text-2xl font-bold leading-tight text-[#101828] md:text-4xl lg:text-5xl">
+              <h1 className="display-xl text-[#101828]">
                 Анализы и обследования
                 <br />
                 <span className="text-[var(--primary)]">в лабораториях</span> вашего
@@ -156,7 +156,7 @@ export default function HomePage() {
       {/* DIRECTIONS */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Популярные направления
           </h2>
           <Link
@@ -190,7 +190,7 @@ export default function HomePage() {
       {/* POPULAR ANALYSES — с картинками */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Популярные анализы
           </h2>
           <Link
@@ -221,7 +221,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-[#101828] hover:text-[var(--primary)]">
+                    <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                       {a.name}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -246,7 +246,7 @@ export default function HomePage() {
       {/* POPULAR COMPLEXES — с фото */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Популярные комплексы
           </h2>
           <Link
@@ -277,7 +277,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="p-5">
-                    <h3 className="text-lg font-semibold text-[#101828] hover:text-[var(--primary)]">
+                    <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                       {c.name}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -303,7 +303,7 @@ export default function HomePage() {
       {/* LABS — с фирменными цветами */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Лаборатории
           </h2>
           <Link
@@ -358,7 +358,7 @@ export default function HomePage() {
       {/* LIBRARY — с фото статей */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Медицинская библиотека
           </h2>
           <Link
@@ -387,7 +387,7 @@ export default function HomePage() {
                     <Badge variant="secondary" className="mb-2 text-xs">
                       {art.category}
                     </Badge>
-                    <h3 className="font-semibold text-[#101828] hover:text-[var(--primary)]">
+                    <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                       {art.title}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -408,7 +408,7 @@ export default function HomePage() {
 
       {/* EXTRA SERVICES */}
       <section className="mx-auto max-w-[1280px] px-4 py-6 pb-12 md:px-6 md:py-8 md:pb-16">
-        <h2 className="mb-4 text-xl font-semibold text-[#101828] md:text-2xl">
+        <h2 className="type-h2 mb-4 text-[#101828]">
           Дополнительные возможности
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

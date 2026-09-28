@@ -49,7 +49,7 @@ export default function CartPage() {
               <ShoppingCart className="h-10 w-10 text-[var(--primary)]" />
             </div>
 
-            <h1 className="mt-6 text-2xl font-bold text-[#101828]">
+            <h1 className="type-h1 mt-6 text-[#101828]">
               Ваша корзина пуста
             </h1>
             <p className="mt-2 max-w-md text-[#667085]">
@@ -85,7 +85,7 @@ export default function CartPage() {
 
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+            <h1 className="type-h1 text-[#101828]">
               Корзина
             </h1>
             <p className="mt-1 text-sm text-[#667085]">
@@ -198,7 +198,7 @@ export default function CartPage() {
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
-                <h2 className="text-lg font-semibold text-[#101828]">Итого</h2>
+                <h2 className="type-h2 text-[#101828]">Итого</h2>
 
                 <div className="mt-4 space-y-2 text-sm">
                   <div className="flex justify-between">

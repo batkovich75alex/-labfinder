@@ -93,7 +93,7 @@ function SearchContent() {
 
         {!isIdle && (
           <>
-            <h1 className="mt-6 text-2xl font-bold text-[#101828]">
+            <h1 className="type-h1 mt-6 text-[#101828]">
               Результаты поиска: «{query}»
             </h1>
 
@@ -147,7 +147,7 @@ function SearchContent() {
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--primary-light)]">
               <SearchIcon className="h-10 w-10 text-[var(--primary)]" />
             </div>
-            <h2 className="mt-6 text-xl font-semibold text-[#101828]">
+            <h2 className="type-h2 mt-6 text-[#101828]">
               Ничего не найдено
             </h2>
             <p className="mt-2 max-w-md text-[#667085]">
@@ -192,7 +192,7 @@ function SearchContent() {
               foundAnalyses.length > 0 && (
                 <section>
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-[#101828]">
+                    <h2 className="type-h2 text-[#101828]">
                       Анализы
                     </h2>
                     <button
@@ -249,7 +249,7 @@ function SearchContent() {
               foundComplexes.length > 0 && (
                 <section>
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-[#101828]">
+                    <h2 className="type-h2 text-[#101828]">
                       Комплексы
                     </h2>
                     <button
@@ -299,7 +299,7 @@ function SearchContent() {
               foundArticles.length > 0 && (
                 <section>
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-[#101828]">
+                    <h2 className="type-h2 text-[#101828]">
                       Статьи
                     </h2>
                     <button

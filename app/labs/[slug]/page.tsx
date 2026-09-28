@@ -152,7 +152,7 @@ export default function LabPage({ params }: Props) {
                 {lab.name[0]}
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+                <h1 className="type-h1 text-[#101828]">
                   {lab.name}
                 </h1>
                 <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[#667085]">
@@ -177,7 +177,7 @@ export default function LabPage({ params }: Props) {
 
             {/* О лаборатории */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 О лаборатории
               </h2>
               <p className="mt-3 text-[#475467]">
@@ -189,7 +189,7 @@ export default function LabPage({ params }: Props) {
 
             {/* Отделения */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 Отделения в Москве
               </h2>
 

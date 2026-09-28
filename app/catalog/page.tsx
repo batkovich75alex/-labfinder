@@ -218,7 +218,7 @@ export default function CatalogPage() {
 
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+            <h1 className="type-h1 text-[#101828]">
               Анализы
             </h1>
             <p className="mt-1 text-sm text-[#667085]">
