@@ -2,7 +2,7 @@
 // Все ссылки проверены, бесплатные (Unsplash License)
 
 export const heroImage =
-  "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=1200&q=80&auto=format&fit=crop";
+  "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&q=75&auto=format&fit=crop";
 
 // Обложки по категориям анализов
 export const categoryImages: Record<string, string> = {
