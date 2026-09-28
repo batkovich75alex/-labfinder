@@ -22,12 +22,12 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
               {item.href && !isLast ? (
                 <Link
                   href={item.href}
-                  className="hover:text-[#1677FF] hover:underline"
+                  className="hover:text-[var(--primary)] hover:underline"
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span className={isLast ? "text-[#101828]" : ""}>
+                <span className={isLast ? "text-[#101828]" : ""} aria-current={isLast ? "page" : undefined}>
                   {item.label}
                 </span>
               )}

@@ -1,7 +1,6 @@
 "use client";
 
 import { use } from "react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Star,
@@ -12,12 +11,12 @@ import {
   AlertCircle,
   Calendar,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { labs } from "@/data/mock";
 import { getLabColor } from "@/lib/images";
+import { cityIn, useCity } from "@/lib/use-city";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -114,8 +113,37 @@ const labOffices: Record<string, Array<{
   ],
 };
 
+const cityLocations: Record<string, Array<{ address: string; nearby: string }>> = {
+  Москва: [
+    { address: "ул. Тверская, 12", nearby: "Тверская · 200 м" },
+    { address: "ул. Большая Дмитровка, 5", nearby: "Охотный Ряд · 350 м" },
+    { address: "пр-т Мира, 28", nearby: "Проспект Мира · 400 м" },
+  ],
+  "Санкт-Петербург": [
+    { address: "Невский пр-т, 54", nearby: "Гостиный двор · 250 м" },
+    { address: "Литейный пр-т, 32", nearby: "Маяковская · 600 м" },
+    { address: "Московский пр-т, 73", nearby: "Фрунзенская · 350 м" },
+  ],
+  Казань: [
+    { address: "ул. Баумана, 35", nearby: "Площадь Тукая · 300 м" },
+    { address: "ул. Пушкина, 17", nearby: "Площадь Тукая · 450 м" },
+    { address: "пр-т Ямашева, 46", nearby: "Козья слобода · 1,2 км" },
+  ],
+  Екатеринбург: [
+    { address: "ул. Малышева, 42", nearby: "Площадь 1905 года · 500 м" },
+    { address: "ул. Белинского, 86", nearby: "Геологическая · 700 м" },
+    { address: "пр-т Ленина, 50", nearby: "Динамо · 1 км" },
+  ],
+  Новосибирск: [
+    { address: "Красный пр-т, 39", nearby: "Площадь Ленина · 300 м" },
+    { address: "ул. Фрунзе, 18", nearby: "Красный проспект · 550 м" },
+    { address: "ул. Кирова, 44", nearby: "Октябрьская · 400 м" },
+  ],
+};
+
 export default function LabPage({ params }: Props) {
   const { slug } = use(params);
+  const [city] = useCity();
   const lab = labs.find((l) => l.slug === slug);
 
   if (!lab) {
@@ -123,12 +151,17 @@ export default function LabPage({ params }: Props) {
   }
 
   const website = labWebsites[lab.slug] || "#";
-  const offices = labOffices[lab.slug] || [];
+  const locations = cityLocations[city] ?? cityLocations.Москва;
+  const offices = (labOffices[lab.slug] || []).map((office, index) => ({
+    ...office,
+    address: locations[index % locations.length].address,
+    metro: locations[index % locations.length].nearby,
+  }));
   const brandColor = getLabColor(lab.slug);
 
   // Ссылка на Яндекс.Карты с адресом
   const mapUrl = (address: string) =>
-    `https://yandex.ru/maps/?text=${encodeURIComponent("Москва, " + address)}`;
+    `https://yandex.ru/maps/?text=${encodeURIComponent(city + ", " + address)}`;
 
   return (
     <main className="bg-[#F8FAFC] min-h-screen">
@@ -152,7 +185,7 @@ export default function LabPage({ params }: Props) {
                 {lab.name[0]}
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#101828] md:text-3xl">
+                <h1 className="type-h1 text-[#101828]">
                   {lab.name}
                 </h1>
                 <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[#667085]">
@@ -166,7 +199,7 @@ export default function LabPage({ params }: Props) {
                   {lab.homeVisit && (
                     <Badge
                       variant="secondary"
-                      className="text-xs text-[#12B76A]"
+                      className="text-xs text-[var(--success-text)]"
                     >
                       Выезд на дом
                     </Badge>
@@ -177,7 +210,7 @@ export default function LabPage({ params }: Props) {
 
             {/* О лаборатории */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
+              <h2 className="type-h2 text-[#101828]">
                 О лаборатории
               </h2>
               <p className="mt-3 text-[#475467]">
@@ -187,10 +220,15 @@ export default function LabPage({ params }: Props) {
               </p>
             </section>
 
+            <div className="mt-6 rounded-lg border border-[#B2DDFF] bg-[#EFF8FF] px-4 py-3 text-sm text-[#175CD3]">
+              Адреса и графики ниже — демонстрационный пример интерфейса для города {city}.
+              Перед визитом проверьте отделение и условия на официальном сайте {lab.name}.
+            </div>
+
             {/* Отделения */}
             <section className="mt-8">
-              <h2 className="text-xl font-semibold text-[#101828]">
-                Отделения в Москве
+              <h2 className="type-h2 text-[#101828]">
+                Отделения в {cityIn(city)}
               </h2>
 
               <div className="mt-4 space-y-3">
@@ -200,7 +238,7 @@ export default function LabPage({ params }: Props) {
                       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#1677FF]" />
+                            <MapPin className="h-4 w-4 text-[var(--primary)]" />
                             <span className="font-medium text-[#101828]">
                               {o.address}
                             </span>
@@ -221,7 +259,7 @@ export default function LabPage({ params }: Props) {
                             </div>
 
                             <div className="flex items-start gap-2">
-                              <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#1677FF]" />
+                              <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--primary)]" />
                               <div>
                                 <div className="text-[#101828]">
                                   Время приёма биоматериала
@@ -237,7 +275,7 @@ export default function LabPage({ params }: Props) {
                             {o.homeVisit && (
                               <Badge
                                 variant="secondary"
-                                className="text-xs text-[#12B76A]"
+                                className="text-xs text-[var(--success-text)]"
                               >
                                 Выезд на дом
                               </Badge>
@@ -245,7 +283,7 @@ export default function LabPage({ params }: Props) {
                             {o.open ? (
                               <Badge
                                 variant="secondary"
-                                className="text-xs text-[#12B76A]"
+                                className="text-xs text-[var(--success-text)]"
                               >
                                 <CheckCircle2 className="mr-1 h-3 w-3" />
                                 Открыто
@@ -276,10 +314,10 @@ export default function LabPage({ params }: Props) {
                             href={website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[#1677FF] bg-white px-3 py-2 text-sm text-[#1677FF] transition hover:bg-[#EFF6FF] md:flex-none"
+                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--primary)] bg-white px-3 py-2 text-sm text-[var(--primary)] transition hover:bg-[var(--primary-light)] md:flex-none"
                           >
                             <Calendar className="h-4 w-4" />
-                            Записаться
+                            Уточнить условия
                           </a>
                         </div>
                       </div>
@@ -288,9 +326,10 @@ export default function LabPage({ params }: Props) {
                 ))}
               </div>
 
-              <button className="mt-4 text-sm text-[#1677FF] hover:underline">
-                Показать все {lab.offices} отделений →
-              </button>
+              <a href={website} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--primary)] hover:underline">
+                Все отделения на официальном сайте
+                <ExternalLink className="h-4 w-4" />
+              </a>
             </section>
           </div>
 
@@ -298,22 +337,22 @@ export default function LabPage({ params }: Props) {
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card className="border-[#E4E7EC]">
               <CardContent className="p-5">
-                <div className="flex items-center gap-2 text-sm text-[#12B76A]">
+                <div className="flex items-center gap-2 text-sm text-[var(--success-text)]">
                   <CheckCircle2 className="h-4 w-4" />
-                  <span>Актуально на {lab.actualOn}</span>
+                  <span>Демо-данные от {lab.actualOn}</span>
                 </div>
 
                 <div className="mt-3 text-xs text-[#667085]">
-                  Цены и наличие услуг обновлены лабораторией
+                  Демонстрационные данные интерфейса
                 </div>
 
                 <a
                   href={website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#1677FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#0969E8]"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[var(--primary-hover)]"
                 >
-                  Перейти на сайт
+                  Официальный сайт
                   <ExternalLink className="h-4 w-4" />
                 </a>
 

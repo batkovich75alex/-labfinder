@@ -25,15 +25,18 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("labfinder_favorites");
-      if (saved) {
-        setFavorites(JSON.parse(saved));
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = localStorage.getItem("labfinder_favorites");
+        if (saved) {
+          setFavorites(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error("Failed to load favorites", e);
       }
-    } catch (e) {
-      console.error("Failed to load favorites", e);
-    }
-    setIsHydrated(true);
+      setIsHydrated(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {

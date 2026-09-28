@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Droplet,
@@ -13,12 +14,12 @@ import {
   BookOpen,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { articles } from "@/data/mock";
+import { getArticleImage } from "@/lib/images";
 
 const categories = [
   { id: "all", name: "Все рубрики", icon: Grid3x3 },
@@ -26,22 +27,17 @@ const categories = [
   { id: "Заболевания", name: "Заболевания", icon: Heart },
   { id: "Подготовка", name: "Подготовка", icon: FileText },
   { id: "Расшифровка", name: "Расшифровка", icon: BarChart3 },
-];
+].filter((category) => category.id === "all" || articles.some((article) => article.category === category.id));
 
 function LibraryContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlCategory = searchParams.get("category") || "all";
 
-  const [activeCategory, setActiveCategory] = useState(urlCategory);
+  const activeCategory = urlCategory;
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    setActiveCategory(urlCategory);
-  }, [urlCategory]);
-
   const handleCategoryClick = (catId: string) => {
-    setActiveCategory(catId);
     if (catId === "all") {
       router.push("/library");
     } else {
@@ -89,19 +85,19 @@ function LibraryContent() {
         />
 
         {/* HERO */}
-        <div className="mt-6 rounded-2xl bg-gradient-to-r from-[#EFF6FF] to-[#F2F4F7] p-6 md:p-10">
+        <div className="mt-6 rounded-2xl bg-gradient-to-r from-[var(--primary-light)] to-[#F2F4F7] p-6 md:p-10">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-[#101828] md:text-4xl">
+              <h1 className="type-h1 text-[#101828]">
                 Медицинская библиотека
               </h1>
               <p className="mt-2 max-w-xl text-[#475467]">
-                Проверенные статьи об анализах, заболеваниях, подготовке и
-                расшифровке результатов
+                Понятные материалы об анализах и результатах с датой проверки
+                и ссылками на официальные медицинские источники
               </p>
             </div>
             <div className="hidden h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-sm md:flex">
-              <BookOpen className="h-12 w-12 text-[#1677FF]" />
+              <BookOpen className="h-12 w-12 text-[var(--primary)]" />
             </div>
           </div>
 
@@ -142,25 +138,25 @@ function LibraryContent() {
                   }}
                   className={`flex flex-col gap-3 rounded-xl p-4 text-left shadow-sm transition md:p-5 ${
                     isActive
-                      ? "bg-[#EFF6FF] ring-2 ring-[#1677FF]"
+                      ? "bg-[var(--primary-light)] ring-2 ring-[var(--primary)]"
                       : "bg-white hover:shadow-md"
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-full md:h-12 md:w-12 ${
-                      isActive ? "bg-[#1677FF]" : "bg-[#EFF6FF]"
+                      isActive ? "bg-[var(--primary)]" : "bg-[var(--primary-light)]"
                     }`}
                   >
                     <Icon
                       className={`h-5 w-5 md:h-6 md:w-6 ${
-                        isActive ? "text-white" : "text-[#1677FF]"
+                        isActive ? "text-white" : "text-[var(--primary)]"
                       }`}
                     />
                   </div>
                   <div>
                     <div
                       className={`font-semibold ${
-                        isActive ? "text-[#1677FF]" : "text-[#101828]"
+                        isActive ? "text-[var(--primary)]" : "text-[#101828]"
                       }`}
                     >
                       {cat.name}
@@ -178,7 +174,7 @@ function LibraryContent() {
         {/* СТАТЬИ */}
         <section className="mt-10 pb-12">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+            <h2 className="type-h2 text-[#101828]">
               {isSearching
                 ? `Результаты поиска: «${searchQuery}»`
                 : activeCategory === "all"
@@ -202,7 +198,7 @@ function LibraryContent() {
                   setSearchQuery("");
                   handleCategoryClick("all");
                 }}
-                className="mt-3 text-sm text-[#1677FF] hover:underline"
+                className="mt-3 text-sm text-[var(--primary)] hover:underline"
               >
                 Показать все статьи
               </button>
@@ -217,12 +213,20 @@ function LibraryContent() {
               >
                 <CardContent className="p-0">
                   <Link href={`/library/${art.slug}`}>
-                    <div className="h-40 rounded-t-xl bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]" />
+                    <div className="relative h-40 overflow-hidden rounded-t-xl bg-[#E4E7EC]">
+                      <Image
+                        src={getArticleImage(art.id)}
+                        alt=""
+                        fill
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
                     <div className="p-5">
                       <Badge variant="secondary" className="mb-3 text-xs">
                         {art.category}
                       </Badge>
-                      <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                      <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                         {art.title}
                       </h3>
                       <p className="mt-2 line-clamp-2 text-sm text-[#667085]">

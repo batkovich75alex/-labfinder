@@ -49,30 +49,45 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --primary-hover: #1849A9;
+  --primary-active: #194185;
+  --brand: #1677FF;
+  --primary-light: #EFF8FF;
+  --success-text: #067647;
+  --success-bg: #ECFDF3;
+  --warning-text: #B54708;
+  --warning-bg: #FFFAEB;
+  --error-text: #B42318;
+  --error-bg: #FEF3F2;
+  --text-secondary: #475467;
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --button-height: 48px;
+  --button-height-large: 52px;
+  --background: #F8FAFC;
+  --foreground: #101828;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #175CD3;
+  --primary-foreground: #FFFFFF;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --muted-foreground: #667085;
+  --accent: #0F766E;
+  --accent-foreground: #FFFFFF;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #E4E7EC;
+  --input: #667085;
+  --ring: #175CD3;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 1rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -159,4 +174,55 @@ textarea:focus-visible,
 /* Плавный скролл к якорям */
 html {
   scroll-behavior: smooth;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  border-radius: 0.5rem;
+  background: #101828;
+  color: white;
+  padding: 0.75rem 1rem;
+}
+.skip-link:focus { transform: translateY(0); }
+
+@media (pointer: coarse) {
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Typography: mobile first. Numeric alignment also applies to prices in tables. */
+body { font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.display-xl { font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.025em; }
+.type-h1 { font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -0.02em; }
+.type-h2 { font-size: 24px; line-height: 32px; font-weight: 600; }
+.type-h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
+.type-h4 { font-size: 18px; line-height: 26px; font-weight: 600; }
+.type-body { font-size: 16px; line-height: 24px; font-weight: 400; }
+.type-caption { font-size: 14px; line-height: 20px; font-weight: 400; }
+.price-xl { font-size: 28px; line-height: 36px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.price-m { font-size: 20px; line-height: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.article-copy { max-width: 70ch; }
+@media (min-width: 1024px) {
+  .display-xl { font-size: 48px; line-height: 56px; }
+  .type-h1 { font-size: 40px; line-height: 48px; }
+  .type-h2 { font-size: 32px; line-height: 40px; }
+  .type-h3 { font-size: 24px; line-height: 32px; }
+  .type-h4 { font-size: 20px; line-height: 28px; }
+  .price-xl { font-size: 32px; line-height: 40px; }
 }

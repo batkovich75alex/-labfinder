@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   Calendar,
@@ -18,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { articles, analyses } from "@/data/mock";
+import { getArticleImage } from "@/lib/images";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -26,6 +28,7 @@ type Props = {
 type ArticleContent = {
   toc: string[];
   sections: { id: string; title: string; text: string }[];
+  sources: { title: string; url: string }[];
 };
 
 // Содержимое каждой статьи
@@ -46,18 +49,21 @@ const articleContents: Record<string, ArticleContent> = {
       {
         id: "section-2",
         title: "2. Почему важно контролировать",
-        text: "Повышенный уровень холестерина — один из основных факторов риска развития атеросклероза, инфаркта и инсульта. Регулярный контроль позволяет вовремя заметить отклонения и принять меры.",
+        text: "Высокий уровень холестерина часто не вызывает симптомов. Липидный профиль помогает оценить общий холестерин, ЛПНП, ЛПВП и триглицериды, но результат рассматривают вместе с возрастом, семейной историей и другими факторами сердечно-сосудистого риска.",
       },
       {
         id: "section-3",
         title: "3. Как подготовиться к анализу",
-        text: "Кровь сдаётся натощак, минимум через 8–12 часов после последнего приёма пищи. За сутки до анализа исключите алкоголь и жирную пищу. Утром можно пить чистую воду.",
+        text: "Для некоторых вариантов липидного профиля может потребоваться 8–12 часов без еды. Требования зависят от назначения и лаборатории, поэтому заранее уточните подготовку у врача или в выбранной лаборатории.",
       },
       {
         id: "section-4",
         title: "4. Как расшифровать результат",
-        text: "Норма общего холестерина — до 5,2 ммоль/л. Показатели выше требуют консультации врача. Только специалист может оценить результат с учётом возраста, пола и других факторов.",
+        text: "Один показатель общего холестерина не определяет диагноз и тактику лечения. Врач оценивает весь липидный профиль и общий риск. Используйте референсные интервалы из своего бланка и не меняйте лечение самостоятельно.",
       },
+    ],
+    sources: [
+      { title: "CDC: Testing for Cholesterol", url: "https://www.cdc.gov/cholesterol/testing/index.html" },
     ],
   },
   "vitamin-d-zachem": {
@@ -71,23 +77,26 @@ const articleContents: Record<string, ArticleContent> = {
       {
         id: "section-1",
         title: "1. Зачем нужен витамин D",
-        text: "Витамин D участвует в усвоении кальция и фосфора, поддерживает здоровье костей, мышц и иммунной системы. Его дефицит широко распространён, особенно в регионах с малым количеством солнечных дней.",
+        text: "Витамин D участвует в обмене кальция и фосфора и важен для здоровья костей. Для оценки статуса обычно измеряют 25-гидроксивитамин D — 25(OH)D.",
       },
       {
         id: "section-2",
         title: "2. Кому особенно важно сдавать",
-        text: "Анализ рекомендуется людям с хронической усталостью, частыми простудами, болями в мышцах и костях, а также тем, кто редко бывает на солнце, беременным и людям старше 50 лет.",
+        text: "Не всем здоровым людям нужен плановый анализ на витамин D. Решение о тестировании лучше принимать с врачом с учетом симптомов, питания, заболеваний, лекарств и индивидуальных факторов риска.",
       },
       {
         id: "section-3",
         title: "3. Как подготовиться к анализу",
-        text: "Специальная подготовка не требуется. Сдавать кровь лучше утром натощак. Если вы принимаете витамин D в виде добавок — сообщите об этом врачу.",
+        text: "Требования к подготовке могут различаться. Сообщите врачу и лаборатории о добавках и лекарствах, а перед сдачей следуйте инструкции выбранной лаборатории.",
       },
       {
         id: "section-4",
         title: "4. Как читать результат",
-        text: "Норма 25-OH витамина D — 30–100 нг/мл. Значения ниже 20 нг/мл говорят о дефиците, 20–30 — о недостаточности. Дозировку добавок подбирает врач.",
+        text: "Пороговые значения различаются между рекомендациями и методами измерения. NIH указывает, что уровень 25(OH)D 20 нг/мл и выше достаточен для большинства людей, а риск дефицита возрастает ниже 12 нг/мл. Интерпретируйте результат по референсам лаборатории вместе с врачом.",
       },
+    ],
+    sources: [
+      { title: "NIH ODS: Vitamin D — Fact Sheet for Health Professionals", url: "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/" },
     ],
   },
   "glyukoza-normy": {
@@ -106,18 +115,21 @@ const articleContents: Record<string, ArticleContent> = {
       {
         id: "section-2",
         title: "2. Причины отклонений",
-        text: "Повышение глюкозы может быть связано с диабетом, стрессом, приёмом некоторых лекарств. Снижение — с голоданием, передозировкой инсулина, заболеваниями печени.",
+        text: "На результат могут влиять прием пищи, стресс, острое заболевание и некоторые лекарства. Отклонение одного показателя само по себе не объясняет причину и требует оценки в контексте состояния человека.",
       },
       {
         id: "section-3",
         title: "3. Подготовка к анализу",
-        text: "Кровь сдаётся строго натощак, через 8–12 часов после последнего приёма пищи. Утром можно пить только воду. За сутки исключите алкоголь и сладкое.",
+        text: "Для глюкозы плазмы натощак NIDDK указывает минимум 8 часов без еды; допускаются небольшие глотки воды. Для других тестов, например HbA1c, голодание не требуется. Выполняйте именно ту подготовку, которую указал врач или лаборатория.",
       },
       {
         id: "section-4",
         title: "4. Нормы и что делать",
-        text: "Норма глюкозы натощак — 3,9–5,5 ммоль/л. Значения 5,6–6,9 — преддиабет. Выше 7,0 — повод обратиться к эндокринологу для подтверждения диагноза.",
+        text: "Диагноз диабета не ставят по домашнему глюкометру или одному случайному результату. При отсутствии явных симптомов отклонение обычно подтверждают повторным лабораторным тестом. Обсудите результат и референсный интервал своего бланка с врачом.",
       },
+    ],
+    sources: [
+      { title: "NIDDK: Diabetes Tests & Diagnosis", url: "https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis" },
     ],
   },
 };
@@ -128,7 +140,7 @@ const defaultContent: ArticleContent = {
     {
       id: "section-1",
       title: "1. О чём эта статья",
-      text: "Материал подготовлен врачами-специалистами и посвящён вопросам лабораторной диагностики.",
+      text: "Это справочный материал редакции LabFinder о лабораторной диагностике.",
     },
     {
       id: "section-2",
@@ -141,6 +153,7 @@ const defaultContent: ArticleContent = {
       text: "Перед сдачей анализа уточните у врача особенности подготовки и перечень необходимых исследований.",
     },
   ],
+  sources: [],
 };
 
 export default function ArticlePage({ params }: Props) {
@@ -175,7 +188,7 @@ export default function ArticlePage({ params }: Props) {
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       }
-    } catch (e) {}
+    } catch {}
   };
 
   return (
@@ -191,7 +204,7 @@ export default function ArticlePage({ params }: Props) {
 
         <Link
           href="/library"
-          className="mt-6 inline-flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+          className="mt-6 inline-flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
           Все статьи
@@ -199,8 +212,8 @@ export default function ArticlePage({ params }: Props) {
 
         <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
           {/* ОСНОВНОЙ КОНТЕНТ */}
-          <article>
-            <h1 className="text-2xl font-bold text-[#101828] md:text-4xl">
+          <article className="article-copy min-w-0">
+            <h1 className="type-h1 text-[#101828]">
               {article.title}
             </h1>
 
@@ -216,8 +229,13 @@ export default function ArticlePage({ params }: Props) {
               </span>
               <span className="flex items-center gap-1">
                 <User className="h-4 w-4" />
-                Иван Петров, врач-терапевт
+                Редакция LabFinder
               </span>
+            </div>
+
+            <div className="mt-5 rounded-lg border border-[#FEDF89] bg-[#FFFAEB] px-4 py-3 text-sm text-[#93370D]">
+              Материал носит справочный характер и не заменяет консультацию врача.
+              Медицинские сведения проверены 28.09.2026.
             </div>
 
             {/* Теги */}
@@ -228,7 +246,9 @@ export default function ArticlePage({ params }: Props) {
             </div>
 
             {/* Картинка */}
-            <div className="mt-6 h-64 rounded-xl bg-gradient-to-br from-[#EFF6FF] to-[#F2F4F7]" />
+            <div className="relative mt-6 h-64 overflow-hidden rounded-xl bg-[#E4E7EC]">
+              <Image src={getArticleImage(article.id)} alt="" fill sizes="(min-width: 1024px) 800px, 100vw" className="object-cover" />
+            </div>
 
             {/* ОГЛАВЛЕНИЕ — mobile */}
             <div className="mt-6 rounded-xl border border-[#E4E7EC] bg-white p-4 lg:hidden">
@@ -240,7 +260,7 @@ export default function ArticlePage({ params }: Props) {
                   <li key={item}>
                     <a
                       href={`#section-${i + 1}`}
-                      className="flex gap-2 text-[#1677FF] hover:underline"
+                      className="flex gap-2 text-[var(--primary)] hover:underline"
                     >
                       <span className="text-[#667085]">{i + 1}.</span>
                       {item}
@@ -254,7 +274,7 @@ export default function ArticlePage({ params }: Props) {
             <div className="mt-8 space-y-8 leading-relaxed text-[#475467]">
               {content.sections.map((s) => (
                 <section key={s.id} id={s.id}>
-                  <h2 className="text-xl font-semibold text-[#101828]">
+                  <h2 className="type-h2 text-[#101828]">
                     {s.title}
                   </h2>
                   <p className="mt-3">{s.text}</p>
@@ -262,17 +282,36 @@ export default function ArticlePage({ params }: Props) {
               ))}
             </div>
 
+            {content.sources.length > 0 && (
+              <section className="mt-10 rounded-xl border border-[#E4E7EC] bg-white p-5">
+                <h2 className="type-h2 text-[#101828]">Источники</h2>
+                <p className="mt-2 text-sm text-[#667085]">
+                  Официальные материалы, использованные для проверки медицинских формулировок.
+                </p>
+                <ul className="mt-4 space-y-2">
+                  {content.sources.map((source) => (
+                    <li key={source.url}>
+                      <a href={source.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-sm font-medium text-[var(--primary)] hover:underline">
+                        {source.title}
+                        <ExternalLink className="mt-0.5 h-4 w-4 shrink-0" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
             {/* СВЯЗАННОЕ ИССЛЕДОВАНИЕ */}
             {relatedAnalysis && (
-              <Card className="mt-10 border-[#E4E7EC] bg-[#EFF6FF]">
+              <Card className="mt-10 border-[#E4E7EC] bg-[var(--primary-light)]">
                 <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <div className="text-xs font-medium uppercase text-[#1677FF]">
+                    <div className="text-xs font-medium uppercase text-[var(--primary)]">
                       Связанное исследование
                     </div>
                     <Link
                       href={`/catalog/${relatedAnalysis.slug}`}
-                      className="mt-2 block text-lg font-semibold text-[#101828] hover:text-[#1677FF]"
+                      className="mt-2 block text-lg font-semibold text-[#101828] hover:text-[var(--primary)]"
                     >
                       {relatedAnalysis.name}
                     </Link>
@@ -283,7 +322,7 @@ export default function ArticlePage({ params }: Props) {
                   </div>
 
                   <Link href={`/catalog/${relatedAnalysis.slug}`}>
-                    <Button className="bg-[#1677FF] hover:bg-[#0969E8]">
+                    <Button className="bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
                       Перейти к исследованию
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -301,7 +340,7 @@ export default function ArticlePage({ params }: Props) {
               >
                 {shareCopied ? (
                   <>
-                    <Check className="h-4 w-4 text-[#12B76A]" />
+                    <Check className="h-4 w-4 text-[var(--success-text)]" />
                     Скопировано
                   </>
                 ) : (
@@ -316,7 +355,7 @@ export default function ArticlePage({ params }: Props) {
             {/* СВЯЗАННЫЕ СТАТЬИ */}
             {relatedArticles.length > 0 && (
               <section className="mt-10">
-                <h2 className="text-xl font-semibold text-[#101828]">
+                <h2 className="type-h2 text-[#101828]">
                   Читайте также
                 </h2>
                 <div className="mt-4 space-y-3">
@@ -324,7 +363,7 @@ export default function ArticlePage({ params }: Props) {
                     <Card key={a.id} className="border-[#E4E7EC]">
                       <CardContent className="p-4">
                         <Link href={`/library/${a.slug}`}>
-                          <div className="font-medium text-[#101828] hover:text-[#1677FF]">
+                          <div className="font-medium text-[#101828] hover:text-[var(--primary)]">
                             {a.title}
                           </div>
                           <div className="mt-1 text-xs text-[#667085]">
@@ -351,7 +390,7 @@ export default function ArticlePage({ params }: Props) {
                     <li key={item}>
                       <a
                         href={`#section-${i + 1}`}
-                        className="flex gap-2 text-[#1677FF] hover:underline"
+                        className="flex gap-2 text-[var(--primary)] hover:underline"
                       >
                         <span className="text-[#667085]">{i + 1}.</span>
                         {item}
@@ -365,7 +404,7 @@ export default function ArticlePage({ params }: Props) {
             {relatedAnalysis && (
               <Card className="mt-4 border-[#E4E7EC]">
                 <CardContent className="p-5">
-                  <div className="text-xs font-medium uppercase text-[#1677FF]">
+                  <div className="text-xs font-medium uppercase text-[var(--primary)]">
                     Связанное исследование
                   </div>
                   <div className="mt-2 font-semibold text-[#101828]">
@@ -378,7 +417,7 @@ export default function ArticlePage({ params }: Props) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="mt-3 w-full border-[#1677FF] text-[#1677FF] hover:bg-[#EFF6FF]"
+                      className="mt-3 w-full border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-light)]"
                     >
                       Перейти
                     </Button>

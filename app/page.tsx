@@ -1,6 +1,10 @@
 "use client";
 
+import { useCity } from "@/lib/use-city";
+import { useCart } from "@/lib/cart-context";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import {
@@ -20,16 +24,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { analyses, complexes, labs, articles, directions } from "@/data/mock";
+import { analyses, complexes, labs, articles, directions, cities } from "@/data/mock";
 import {
   heroImage,
-  getCategoryImage,
   getComplexImage,
   getArticleImage,
   getLabColor,
 } from "@/lib/images";
 
-const directionIcons: Record<string, any> = {
+const directionIcons: Record<string, LucideIcon> = {
   blood: Droplet,
   hormones: Activity,
   vitamins: Pill,
@@ -49,6 +52,9 @@ const directionCategories: Record<string, string> = {
 
 export default function HomePage() {
   const router = useRouter();
+  const [city, setCity] = useCity();
+  const { addItem, isInCart } = useCart();
+  const [notice, setNotice] = useState("");
   const [query, setQuery] = useState("");
 
   const popularAnalyses = analyses.slice(0, 4);
@@ -70,36 +76,38 @@ export default function HomePage() {
   return (
     <main className="bg-[#F8FAFC]">
       {/* HERO — двухколоночный с фото */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-10">
-        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-[#EFF6FF] via-white to-[#F2F4F7]">
+      <section className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-10">
+        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--primary-light)] via-white to-[#F2F4F7]">
           <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
             {/* ЛЕВАЯ — текст и поиск */}
             <div className="p-6 md:p-10 lg:p-12">
-              <h1 className="text-2xl font-bold leading-tight text-[#101828] md:text-4xl lg:text-5xl">
-                Анализы и обследования
-                <br />
-                <span className="text-[#1677FF]">в лабораториях</span> вашего
-                города
-              </h1>
+              <h1 className="display-xl text-[#101828]">Найдите анализы и сравните лаборатории</h1>
 
               <p className="mt-4 max-w-md text-sm text-[#475467] md:text-base">
-                Сравнивайте предложения лабораторий и выбирайте подходящее
-                место сдачи — удобно, быстро, прозрачно.
+                Сравните стоимость исследований, сроки и отделения в вашем городе
               </p>
 
-              <form onSubmit={handleSearch} className="mt-6 flex gap-2">
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <label htmlFor="home-city" className="text-sm font-medium">Ваш город</label>
+                <select id="home-city" value={city} onChange={(e) => setCity(e.target.value)} className="min-h-11 rounded-xl border border-[#667085] bg-white px-3">
+                  {cities.map((c) => <option key={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <label htmlFor="home-search" className="mt-5 block font-medium">Название анализа или код</label>
+              <form onSubmit={handleSearch} className="mt-2 flex flex-col gap-2 sm:flex-row">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                   <Input
+                    id="home-search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Найдите анализ, комплекс или статью"
-                    className="h-11 border-[#E4E7EC] bg-white pl-9"
+                    placeholder="Например, общий анализ крови"
+                    className="h-12 border-[#667085] bg-white pl-9"
                   />
                 </div>
                 <Button
                   type="submit"
-                  className="h-11 bg-[#1677FF] px-6 hover:bg-[#0969E8]"
+                  className="h-12 bg-[var(--primary)] px-6 hover:bg-[var(--primary-hover)]"
                 >
                   Найти
                 </Button>
@@ -112,7 +120,7 @@ export default function HomePage() {
                     <button
                       key={q}
                       onClick={() => handleQuickSearch(q)}
-                      className="text-[#1677FF] hover:underline"
+                      className="text-[var(--primary)] hover:underline"
                     >
                       {q}
                     </button>
@@ -120,15 +128,15 @@ export default function HomePage() {
                 )}
               </div>
 
-              {/* Бейджи доверия */}
+              <p className="mt-4 text-sm text-[#475467]">Демонстрационный каталог. Цены и условия уточняйте у лаборатории.</p>
               <div className="mt-6 flex flex-wrap gap-4">
                 {[
-                  { num: "1000+", label: "анализов" },
-                  { num: "50+", label: "лабораторий" },
-                  { num: "24/7", label: "поддержка" },
+                  { num: String(analyses.length), label: "анализа в каталоге" },
+                  { num: String(labs.length), label: "лаборатории" },
+                  { num: String(complexes.length), label: "комплекса" },
                 ].map((b) => (
                   <div key={b.label} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-[#12B76A]" />
+                    <CheckCircle2 className="h-5 w-5 text-[var(--success-text)]" />
                     <div>
                       <div className="text-sm font-bold text-[#101828]">
                         {b.num}
@@ -141,27 +149,30 @@ export default function HomePage() {
             </div>
 
             {/* ПРАВАЯ — фото медработника */}
-            <div className="relative h-64 md:h-auto">
-              <img
+            <div className="relative hidden min-h-80 md:block">
+              <Image
                 src={heroImage}
                 alt="Медицинская лаборатория"
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                priority
+                sizes="(min-width: 768px) 50vw, 0px"
+                className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#EFF6FF]/40 to-transparent md:bg-gradient-to-l" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-light)]/40 to-transparent md:bg-gradient-to-l" />
             </div>
           </div>
         </div>
       </section>
 
       {/* DIRECTIONS */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
+      <section className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Популярные направления
           </h2>
           <Link
             href="/catalog"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все направления <ArrowRight className="h-4 w-4" />
           </Link>
@@ -172,11 +183,11 @@ export default function HomePage() {
             return (
               <Link
                 key={d.id}
-                href="/catalog"
+                href={`/catalog?category=${directionCategories[d.id]}`}
                 className="group flex flex-col items-center gap-3 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EFF6FF] transition group-hover:bg-[#1677FF]">
-                  <Icon className="h-6 w-6 text-[#1677FF] transition group-hover:text-white" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary-light)] transition group-hover:bg-[var(--primary)]">
+                  <Icon className="h-6 w-6 text-[var(--primary)] transition group-hover:text-white" />
                 </div>
                 <div className="text-center text-sm font-medium text-[#101828]">
                   {d.name}
@@ -187,15 +198,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* POPULAR ANALYSES — с картинками */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
+      {/* Research cards use text, not repetitive stock photos. */}
+      <section className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Популярные анализы
           </h2>
           <Link
             href="/catalog"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все анализы <ArrowRight className="h-4 w-4" />
           </Link>
@@ -207,36 +218,17 @@ export default function HomePage() {
               className="overflow-hidden border-[#E4E7EC] transition hover:shadow-md"
             >
               <CardContent className="p-0">
-                <Link href={`/catalog/${a.slug}`}>
-                  <div className="relative h-40 overflow-hidden">
-                    <img
-                      src={getCategoryImage(a.category)}
-                      alt={a.name}
-                      className="h-full w-full object-cover transition hover:scale-105"
-                    />
-                    <div className="absolute right-2 top-2">
-                      <Badge className="bg-white/95 text-xs text-[#101828] hover:bg-white">
-                        {a.duration}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
-                      {a.name}
-                    </h3>
-                    <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
-                      {a.short}
-                    </p>
-                    <div className="mt-3 flex items-center justify-between">
-                      <div>
-                        <span className="text-xs text-[#667085]">от </span>
-                        <span className="text-lg font-bold text-[#101828]">
-                          {a.priceFrom} ₽
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                <div className="flex h-full flex-col p-5">
+                  <Link href={`/catalog/${a.slug}`}><h3 className="type-h4 text-[#101828] hover:text-[var(--primary)]">{a.name}</h3></Link>
+                  <p className="mt-2 text-sm text-[#475467]">{a.short}</p>
+                  <p className="mt-3 text-sm text-[#475467]">{a.biomaterial} · {a.duration}</p>
+                  <p className="mt-4"><span className="text-sm text-[#475467]">от </span><span className="price-m">{a.priceFrom.toLocaleString("ru-RU")} ₽</span></p>
+                  {isInCart(a.id) ? <Link href="/cart" className="mt-4 flex min-h-12 items-center justify-center rounded-xl bg-[var(--success-bg)] px-3 font-semibold text-[var(--success-text)]">Открыть корзину</Link> :
+                    <Button className="mt-4 w-full whitespace-normal" onClick={() => {
+                      addItem({ id: a.id, slug: a.slug, type: "analysis", name: a.name, price: a.priceFrom, duration: a.duration });
+                      setNotice(`${a.name}: анализ добавлен в корзину`);
+                    }}>Добавить в корзину</Button>}
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -244,14 +236,14 @@ export default function HomePage() {
       </section>
 
       {/* POPULAR COMPLEXES — с фото */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
+      <section className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Популярные комплексы
           </h2>
           <Link
             href="/complexes"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все комплексы <ArrowRight className="h-4 w-4" />
           </Link>
@@ -265,19 +257,21 @@ export default function HomePage() {
               <CardContent className="p-0">
                 <Link href={`/complexes/${c.slug}`}>
                   <div className="relative h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={getComplexImage(c.id)}
                       alt={c.name}
-                      className="h-full w-full object-cover transition hover:scale-105"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition hover:scale-105"
                     />
                     <div className="absolute left-3 top-3">
-                      <Badge className="bg-[#1677FF] text-xs text-white hover:bg-[#1677FF]">
+                      <Badge className="bg-[var(--primary)] text-xs text-white hover:bg-[var(--primary)]">
                         {c.analysesCount} исследований
                       </Badge>
                     </div>
                   </div>
                   <div className="p-5">
-                    <h3 className="text-lg font-semibold text-[#101828] hover:text-[#1677FF]">
+                    <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                       {c.name}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -301,14 +295,14 @@ export default function HomePage() {
       </section>
 
       {/* LABS — с фирменными цветами */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
+      <section className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Лаборатории
           </h2>
           <Link
             href="/labs"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все лаборатории <ArrowRight className="h-4 w-4" />
           </Link>
@@ -342,7 +336,7 @@ export default function HomePage() {
                     {l.homeVisit && (
                       <Badge
                         variant="secondary"
-                        className="mt-2 text-xs text-[#12B76A]"
+                        className="mt-2 text-xs text-[var(--success-text)]"
                       >
                         Выезд на дом
                       </Badge>
@@ -356,14 +350,14 @@ export default function HomePage() {
       </section>
 
       {/* LIBRARY — с фото статей */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
+      <section className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[#101828] md:text-2xl">
+          <h2 className="type-h2 text-[#101828]">
             Медицинская библиотека
           </h2>
           <Link
             href="/library"
-            className="flex items-center gap-1 text-sm text-[#1677FF] hover:underline"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
           >
             Все статьи <ArrowRight className="h-4 w-4" />
           </Link>
@@ -376,18 +370,20 @@ export default function HomePage() {
             >
               <CardContent className="p-0">
                 <Link href={`/library/${art.slug}`}>
-                  <div className="h-40 overflow-hidden">
-                    <img
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
                       src={getArticleImage(art.id)}
                       alt={art.title}
-                      className="h-full w-full object-cover transition hover:scale-105"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition hover:scale-105"
                     />
                   </div>
                   <div className="p-5">
                     <Badge variant="secondary" className="mb-2 text-xs">
                       {art.category}
                     </Badge>
-                    <h3 className="font-semibold text-[#101828] hover:text-[#1677FF]">
+                    <h3 className="type-h3 text-[#101828] hover:text-[var(--primary)]">
                       {art.title}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[#667085]">
@@ -406,10 +402,17 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-[1200px] px-4 py-10 md:px-6" aria-labelledby="how-it-works">
+        <h2 id="how-it-works" className="type-h2">Как пользоваться</h2>
+        <ol className="mt-6 grid gap-4 md:grid-cols-3">
+          {[ ["Выберите исследования", "Найдите анализы или комплекс и добавьте их в корзину."], ["Сравните лаборатории", "Посмотрите стоимость, сроки и доступность выбранного набора."], ["Перейдите к лаборатории", "Уточните условия и выберите подходящее отделение."] ].map(([title, text], i) => <li key={title} className="rounded-2xl bg-white p-6"><span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--primary-light)] font-semibold text-[var(--primary)]">{i + 1}</span><h3 className="type-h4">{title}</h3><p className="mt-2 text-[#475467]">{text}</p></li>)}
+        </ol>
+      </section>
+      <p role="status" className="sr-only">{notice}</p>
       {/* EXTRA SERVICES */}
-      <section className="mx-auto max-w-[1280px] px-4 py-6 pb-12 md:px-6 md:py-8 md:pb-16">
-        <h2 className="mb-4 text-xl font-semibold text-[#101828] md:text-2xl">
-          Дополнительные возможности
+      <section className="mx-auto max-w-[1200px] px-4 py-6 pb-12 md:px-6 md:py-8 md:pb-16">
+        <h2 className="type-h2 mb-4 text-[#101828]">
+          Планируемые возможности
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {[
@@ -431,8 +434,8 @@ export default function HomePage() {
           ].map((s) => (
             <Card key={s.title} className="border-[#E4E7EC]">
               <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#EFF6FF]">
-                  <s.icon className="h-6 w-6 text-[#1677FF]" />
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[var(--primary-light)]">
+                  <s.icon className="h-6 w-6 text-[var(--primary)]" />
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-[#101828]">{s.title}</div>
@@ -441,7 +444,7 @@ export default function HomePage() {
                     variant="secondary"
                     className="mt-2 text-xs text-[#667085]"
                   >
-                    Скоро
+                    Функция пока недоступна
                   </Badge>
                 </div>
               </CardContent>

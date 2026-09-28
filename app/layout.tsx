@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | LabFinder",
   },
   description:
-    "Поиск анализов и медицинских комплексов, сравнение цен в лабораториях, выбор места сдачи. Актуальные предложения — ГЕМОТЕСТ, ИНВИТРО, KDL, CMD.",
+    "Демонстрационный сервис поиска анализов и медицинских комплексов, сравнения условий лабораторий и выбора места сдачи.",
   keywords: [
     "анализы",
     "медицинские анализы",
@@ -70,10 +70,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${inter.className} bg-[#F8FAFC]`}>
+        <a href="#main-content" className="skip-link">Перейти к содержанию</a>
         <CartProvider>
           <FavoritesProvider>
             <Header />
-            {children}
+            <div id="main-content" tabIndex={-1}>{children}</div>
             <Footer />
           </FavoritesProvider>
         </CartProvider>

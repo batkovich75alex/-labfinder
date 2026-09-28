@@ -61,7 +61,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1677FF] text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand)] text-white">
                 L
               </div>
               LabFinder
@@ -138,7 +138,7 @@ export function Footer() {
             </div>
             <Button
               disabled
-              className="bg-[#1677FF] opacity-60 hover:bg-[#0969E8]"
+              className="bg-[var(--primary)] opacity-60 hover:bg-[var(--primary-hover)]"
             >
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -146,7 +146,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/60 md:flex-row md:items-center md:justify-between">
-          <div>© 2024 LabFinder. Все права защищены.</div>
+          <div>© 2026 LabFinder. Демонстрационный проект.</div>
           <div className="flex gap-6">
             <span className="flex items-center gap-1 text-white/40">
               Карта сайта

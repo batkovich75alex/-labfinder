@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LabFinder
 
-## Getting Started
+LabFinder — демонстрационный интерфейс для поиска лабораторных исследований, формирования корзины, сравнения предложений и выбора лаборатории.
 
-First, run the development server:
+Проект не принимает заказы и не хранит медицинские данные. Цены, адреса, доступность исследований и графики отделений используются для демонстрации интерфейса. Перед сдачей анализов пользователь должен проверить условия на официальном сайте лаборатории.
+
+## Возможности
+
+- каталог из 32 исследований с поиском по названию, синониму и коду;
+- фильтры по категории, цене, сроку, биоматериалу и методу с сохранением в URL;
+- карточки исследований и двух комплексов;
+- единая сохраняемая корзина;
+- сравнение четырех лабораторий с учетом полного и неполного набора;
+- список и схема лабораторий для выбранного города;
+- библиотека с оглавлением, связанными анализами и официальными медицинскими источниками;
+- общий поиск и полезная страница 404;
+- адаптивная версия от 375 px и базовая клавиатурная доступность.
+
+## Основной маршрут
+
+`Главная → поиск → анализ → корзина → сравнение → лаборатория`
+
+## Технологии
+
+- Next.js 16 App Router;
+- React 19 и TypeScript;
+- Tailwind CSS 4;
+- Base UI и Lucide Icons;
+- `next/font` и `next/image`.
+
+## Локальный запуск
+
+Требуется актуальная LTS-версия Node.js.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Проверки
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run typecheck
+npm run lint
+npm run build
+```
 
-## Learn More
+Production-режим:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Данные и состояние
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Демонстрационные данные находятся в `data/mock.ts`. Выбранный город, корзина и избранное сохраняются в `localStorage` браузера. Проект не использует серверную базу данных и авторизацию.
 
-## Deploy on Vercel
+Медицинские материалы библиотеки содержат дату проверки и ссылки на официальные источники CDC, NIH ODS и NIDDK. Они носят справочный характер и не заменяют консультацию врача.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Развертывание
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Проект собирается стандартной командой `npm run build` и подходит для Vercel. Необязательная переменная `NEXT_PUBLIC_SITE_URL` задает публичный адрес для metadata, sitemap и canonical URL.
+
+Для изображений требуется исходящий доступ к `images.unsplash.com`; домен разрешен в `next.config.ts`.
+
+## Документы проекта
+
+- `docs/REDESIGN_PLAN.md` — план этапов 0–15;
+- `docs/PROGRESS.md` — журнал выполненных изменений и проверок.
